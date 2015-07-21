@@ -19,7 +19,7 @@ Install
 
 3. mongodb
 
-			sudo apt-get install mongodb
+		sudo apt-get install mongodb
 
 
 [redhat/oracle]
@@ -88,4 +88,3 @@ Run
 
 		http://localhost:8080
 
-		
