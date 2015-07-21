@@ -7,6 +7,8 @@ NMON Web
 Install
 ------------
 
+[ubuntu]
+
 1. node.js
 
 	sudo apt-get install nodejs
@@ -19,29 +21,49 @@ Install
 
 	sudo apt-get install mongodb
 
-3. node modules
+[redhat/oracle]
+1. node.js
 
-	3.1 mondodb
+    curl -sL https://rpm.nodesource.com/setup | bash -
+    yum install -y gcc-c++ make
+    yum install -y nodejs
+	
+2. npm
+
+3. mongodb
+
+	cat > /etc/yum.repos.d/mongodb-org-3.0.repo << EOF
+	[mongodb-org-2.6]
+	name=MongoDB 2.6 Repository
+	baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+	gpgcheck=0
+	enabled=1
+	EOF
+	yum install -y mongodb-org
+
+4. node modules
+
+	4.1 mondodb
 
 		npm install mongodb --mongodb:native
 
-	3.2 mongojs
+	4.2 mongojs
 
 		npm install mongojs
 
-	3.3 winston
+	4.3 winston
 
 		npm install winston
 
-	3.4 csv-streamify
+	4.4 csv-streamify
 
 		npm install csv-streamify
 
-	3.5 JSONStream
+	4.5 JSONStream
 
 		npm install JSONStream
 
-	3.6 swig
+	4.6 swig
 
 		npm install swig
 
