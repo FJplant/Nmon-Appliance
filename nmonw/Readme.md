@@ -24,7 +24,6 @@ Install
 [redhat/oracle]
 
 1. node.js
-
     curl -sL https://rpm.nodesource.com/setup | bash -
     yum install -y gcc-c++ make
     yum install -y nodejs
@@ -32,7 +31,6 @@ Install
 2. npm
 
 3. mongodb
-
 	cat > /etc/yum.repos.d/mongodb-org-3.0.repo << EOF
 	[mongodb-org-2.6]
 	name=MongoDB 2.6 Repository
