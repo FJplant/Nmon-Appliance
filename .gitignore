@@ -1,3 +1,4 @@
 *.log
 *.nmon
 nmonw/node_modules
+nmonw/db

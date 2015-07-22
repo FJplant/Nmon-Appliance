@@ -52,7 +52,7 @@ http.Server(function(req, res) {
                 return;
             }
         }
-        else if ( pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/([A-Za-z0-9_%]+)$/) ) {
+        else if ( pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/([A-Za-z0-9_\-\/%]+)$/) ) {
             if( method == 'GET' ) {
                 get_fields(url_info, req, res);
                 return;
@@ -201,15 +201,36 @@ function get_titles(url_info, req, res) {
 
 function get_fields(url_info, req, res) {
     var results = [];
-    var m = url_info.pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/([A-Za-z0-9_%]+)$/);
+    var m = url_info.pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/([A-Za-z0-9_\-\/%]+)$/);
     var collection = db.collection(m[1]);
     var fields = {datetime:1, _id: 0};
     fields[m[2]] = 1;
-    collection.find({}, fields).forEach(function(err, doc) {
-        if( err )
+    collection.count({}, function(err, doc) {
+        if (err)
             return error_handler(res, err, 500);
-        if( doc ) {
-            results.push([doc['datetime'], doc[m[2]]]);
+        if (doc) {
+            var granularity = Math.ceil(doc / 1000.0);
+            var cnt = 0;
+            var peak = [0, 0.0];
+            collection.find({}, fields).forEach(function(err, doc) {
+                if( err )
+                    return error_handler(res, err, 500);
+                if( doc ) {
+                    cnt++;
+                    peak[0] += doc['datetime'];
+                    if (doc[m[2]] > peak[1])
+                        peak[1] = doc[m[2]];
+                    if (cnt % granularity == 0) {
+                        peak[0] = parseInt(peak[0] / granularity);
+                        results.push(peak);
+                        peak = [0, 0.0];
+                    }
+                }
+                else {
+                    res.writeHead(200, {'Content-Type': 'text/json'});
+                    res.end(JSON.stringify(results));
+                }
+            });
         }
         else {
             res.writeHead(200, {'Content-Type': 'text/json'});
