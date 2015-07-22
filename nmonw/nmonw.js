@@ -69,16 +69,25 @@ log.info('Server running at http://localhost:8080');
 
 function put_nmonlog(url_info, req, res) {
     var csvToJson = csv({objectMode: true});
+
     var parser = new Transform({objectMode: true});
     parser.header = null;
     parser._rawHeader = {};
     parser._datetime = {};
+    parser._cnt = 0;
     parser._transform = function(data, encoding, done) {
+        parser._cnt++;
+        if (parser._cnt % 100 == 0) {
+            process.stdout.write('.');
+            if (parser._cnt % 8000 == 0)
+                process.stdout.write('\n');
+        }
         if( data[0].substring(0, 3) === 'AAA' || data[0].substring(0, 3) === 'BBB' )
-            ;
+            done();
         else if (data[0].substring(0, 3) === 'ZZZ' ) {
             var ts = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
             parser._datetime[data[1]] = (new Date(ts)).getTime();
+            done();
         }
         else {
             if( data[0] in parser._rawHeader ) {
@@ -88,35 +97,54 @@ function put_nmonlog(url_info, req, res) {
                 kv['datetime'] = parser._datetime[data[1]];
                 var collection = db.collection(h[0]);
                 collection.findOne({datetime: kv['datetime'], host: kv['host']}, function(err, doc) {
+                    if (err) {
+                        log.error(err.toString());
+                        done();
+                        return;
+                    }
                     if (!doc) {
                         for( var i = 2; i < h.length; i++ ) {
                             kv[h[i]] = parseFloat(data[i]);
                         }
                         collection.save(kv, function(err) {
                             if( err )
-                            log.error(err.toString());
+                                log.error(err.toString());
+                            done();
                         });
+                    }
+                    else {
+                        done();
                     }
                 });
             }
             else {
                 var collection = db.collection('categories');
                 collection.findOne({name: data[0]}, function(err, doc) {
+                    if (err) {
+                        log.error(err.toString());
+                        done();
+                        return;
+                    }
                     if (!doc) {
                         collection.save({name: data[0]}, function(err) {
                             if( err )
                                 log.error(err.toString());
+                            done();
                         });
+                    }
+                    else {
+                        done();
                     }
                 });
                 parser._rawHeader[data[0]] = data;
             }
         }
-        this.push(data);
-        done();
     }
-    req.pipe(csvToJson).pipe(parser);
+
+    res.connection.setTimeout(0);
+    req.pipe(csvToJson).pipe(parser); //.pipe(writer);
     req.on('end', function() {
+        process.stdout.write('\n');
         res.writeHead(200);
         res.end();
     });

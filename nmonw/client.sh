@@ -3,7 +3,7 @@
 HOSTNAME=localhost
 PORT=8080
 #VERBOSE="-v"
-OPTION="-w \\n\\n%{http_code} %{url_effective}\\n\\n"
+OPTION="-w \\n\\n%{http_code} %{url_effective} %{time_total}\\n\\n"
 
 function nmonlog_upload {
     echo -e "> upload nmonlog...\n"
