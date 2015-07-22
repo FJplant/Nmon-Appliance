@@ -58,18 +58,20 @@
             var data = new google.visualization.DataTable();
             data.addColumn('datetime', x);
             data.addColumn('number', y);
+            console.log(row.length);
             for(var i = 0; i < row.length; i++) {
                 row[i][0] = new Date(row[i][0]);
             }
             data.addRows(row);
 
-                var options = {
-                    hAxis : { title : x },
-                    vAxis : { title : y }
-                };
+            var options = {
+                //explorer : { axis: 'horizontal' },
+                hAxis : { title : x },
+                vAxis : { title : y }
+            };
 
-                var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-                chart.draw(data, options);
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+            chart.draw(data, options);
         }
         $(function() {
             $("#categories").change(function() {
@@ -86,7 +88,7 @@
                     }
                 });
             });
-                getCategories();
+            getCategories();
         });
     </script>
   </head>

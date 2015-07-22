@@ -203,7 +203,9 @@ function get_fields(url_info, req, res) {
     var results = [];
     var m = url_info.pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/([A-Za-z0-9_%]+)$/);
     var collection = db.collection(m[1]);
-    collection.find().sort({datetime:1}).forEach(function(err, doc) {
+    var fields = {datetime:1, _id: 0};
+    fields[m[2]] = 1;
+    collection.find({}, fields).forEach(function(err, doc) {
         if( err )
             return error_handler(res, err, 500);
         if( doc ) {
