@@ -88,3 +88,39 @@ Run
 
         http://localhost:8080
 
+
+
+MongoDB HowTo
+=============
+
+
+Dump & Restore Database
+-----------------------
+
+* dump
+
+        mongodump -d [db] -o [dir]
+
+
+* restore
+
+        mongorestore [dir]
+
+
+Export & Import Data
+--------------------
+
+* export
+
+        mongoexport -d [db] -c [collection] -o [file]
+
+* import
+
+        mongoimport -d [db] -c [collection [file]]
+
+Indexing
+--------
+
+        db.XXX.ensureIndex({datetime: 1, host: 1}, {unique: true});
+
+
