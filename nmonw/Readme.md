@@ -22,7 +22,7 @@ Install
         sudo apt-get install mongodb
 
 
-[redhat/oracle]
+[redhat/centos/oracle]
 
 1. node.js
 
