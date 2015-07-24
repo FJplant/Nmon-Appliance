@@ -63,7 +63,7 @@ http.Server(function(req, res) {
     catch(e) {
         error_handler(res, e, 500);
     }
-}).listen(8080);
+}).listen(8081);
 
 log.info('Server running at http://localhost:8080');
 
@@ -83,11 +83,10 @@ function put_nmonlog(url_info, req, res) {
                 process.stdout.write('\n');
         }
         if( data[0].substring(0, 3) === 'AAA' || data[0].substring(0, 3) === 'BBB' )
-            done();
+            ;
         else if (data[0].substring(0, 3) === 'ZZZ' ) {
             var ts = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
             parser._datetime[data[1]] = (new Date(ts)).getTime();
-            done();
         }
         else {
             if( data[0] in parser._rawHeader ) {
@@ -95,55 +94,68 @@ function put_nmonlog(url_info, req, res) {
                 var kv = {};
                 kv['host'] = h[1].split(' ').pop();  
                 kv['datetime'] = parser._datetime[data[1]];
-                var collection = db.collection(h[0]);
-                collection.findOne({datetime: kv['datetime'], host: kv['host']}, function(err, doc) {
-                    if (err) {
-                        log.error(err.toString());
-                        done();
-                        return;
-                    }
-                    if (!doc) {
-                        for( var i = 2; i < h.length; i++ ) {
-                            kv[h[i]] = parseFloat(data[i]);
-                        }
-                        collection.save(kv, function(err) {
-                            if( err )
-                                log.error(err.toString());
-                            done();
-                        });
-                    }
-                    else {
-                        done();
-                    }
-                });
+                for( var i = 2; i < h.length; i++ ) {
+                    kv[h[i]] = parseFloat(data[i]);
+                }
+                this.push([h[0], kv]);
             }
             else {
-                var collection = db.collection('categories');
-                collection.findOne({name: data[0]}, function(err, doc) {
-                    if (err) {
-                        log.error(err.toString());
-                        done();
-                        return;
-                    }
-                    if (!doc) {
-                        collection.save({name: data[0]}, function(err) {
-                            if( err )
-                                log.error(err.toString());
-                            done();
-                        });
-                    }
-                    else {
-                        done();
-                    }
-                });
+                this.push(['categories', {name: data[0]}]);
                 parser._rawHeader[data[0]] = data;
             }
         }
+        done();
     }
 
+    var writer = new Transform({objectMode: true});
+    writer._bulkcnt = 0;
+    writer._bulk = [];
+    writer._flushSave = function(done) {
+        var bulks = {};
+        for(var i = 0; i < writer._bulkcnt; i++) {
+            if( !(writer._bulk[i][0] in bulks) ) {
+                bulks[writer._bulk[i][0]] = db.collection(writer._bulk[i][0]).initializeOrderedBulkOp();
+            }
+            if (writer._bulk[i][0] === 'categories') {
+                bulks[writer._bulk[i][0]].insert(writer._bulk[i][1]);
+                var collection = db.collection(writer._bulk[i][1]['name']);
+                collection.ensureIndex({datetime: 1, host: 1}, {unique: true});
+            }
+            else {
+                bulks[writer._bulk[i][0]].insert(writer._bulk[i][1]);
+            }
+        }
+        var cnt = 0;
+        for (var c in bulks) {
+            bulks[c].execute(function(err, res) {
+                if (err)
+                    log.error(err.toString());
+                cnt++;
+                if (cnt >= Object.keys(bulks).length) {
+                    writer._bulkcnt = 0;
+                    writer._bulk = [];
+                    if (done) {
+                        done();    
+                    }
+                }
+            });
+        }
+    }
+    writer._transform = function(data, encoding, done) {
+        writer._bulkcnt ++;
+        writer._bulk.push(data);
+        if ( writer._bulkcnt >= 1000 ) {
+            writer._flushSave(done);
+        }
+        else {
+            done();
+        }
+    };
+
     res.connection.setTimeout(0);
-    req.pipe(csvToJson).pipe(parser); //.pipe(writer);
+    req.pipe(csvToJson).pipe(parser).pipe(writer);
     req.on('end', function() {
+        writer._flushSave();
         process.stdout.write('\n');
         res.writeHead(200);
         res.end();
