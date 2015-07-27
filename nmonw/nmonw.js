@@ -15,6 +15,8 @@ var log = new (winston.Logger)({
     ]
 });
 
+var graph_row_number = 500.0;
+
 http.Server(function(req, res) {
     var url_info = url.parse(req.url, true);
     var pathname = url_info.pathname;
@@ -24,6 +26,13 @@ http.Server(function(req, res) {
         if( pathname == '/' ) {
             res.writeHead(200, {'Content-Type': 'text/html'});
             var html = swig.renderFile('template/index.html', {
+            });
+            res.end(html);
+            return;
+        }
+        else if( pathname == '/detail' ) {
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            var html = swig.renderFile('template/detail.html', {
             });
             res.end(html);
             return;
@@ -40,19 +49,19 @@ http.Server(function(req, res) {
                 return;
             }
         }
-        else if ( pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/hosts$/) ) {
+        else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/) ) {
             if( method == 'GET' ) {
                 get_hosts(url_info, req, res);
                 return;
             }
         }
-        else if ( pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/titles$/) ) {
+        else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/) ) {
             if( method == 'GET' ) {
                 get_titles(url_info, req, res);
                 return;
             }
         }
-        else if ( pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/([A-Za-z0-9_\-\/%]+)$/) ) {
+        else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/) ) {
             if( method == 'GET' ) {
                 get_fields(url_info, req, res);
                 return;
@@ -68,6 +77,8 @@ http.Server(function(req, res) {
 log.info('Server running at http://localhost:8080');
 
 function put_nmonlog(url_info, req, res) {
+    db.collection('categories').ensureIndex({name: 1}, {unique: true});
+
     var csvToJson = csv({objectMode: true});
 
     var parser = new Transform({objectMode: true});
@@ -179,8 +190,8 @@ function get_categories(url_info, req, res) {
 }
 
 function get_hosts(url_info, req, res) {
-    var m = url_info.pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/hosts$/);
-    var collection = db.collection(m[1]);
+    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
+    var collection = db.collection(m[2]);
     collection.distinct('host', {}, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
@@ -195,8 +206,8 @@ function get_hosts(url_info, req, res) {
 }
 
 function get_titles(url_info, req, res) {
-    var m = url_info.pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/titles$/);
-    var collection = db.collection(m[1]);
+    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
+    var collection = db.collection(m[2]);
     collection.findOne({}, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
@@ -213,29 +224,46 @@ function get_titles(url_info, req, res) {
 
 function get_fields(url_info, req, res) {
     var results = [];
-    var m = url_info.pathname.match(/^\/categories\/([A-Za-z0-9_]+)\/([A-Za-z0-9_\-\/%]+)$/);
-    var collection = db.collection(m[1]);
+    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
+    var data = eval(url_info.query['data']);
+    var collection = db.collection(m[2]);
     var fields = {datetime:1, _id: 0};
-    fields[m[2]] = 1;
-    collection.count({}, function(err, doc) {
+    for (var i = 0; i < data.length; i++) {
+        fields[data[i]] = 1;
+    }
+    var query = {};
+    if (m[1] !== 'All') {
+        query['host'] = m[1];
+    }
+    collection.count(query, function(err, doc) {
         if (err)
             return error_handler(res, err, 500);
         if (doc) {
-            var granularity = Math.ceil(doc / 1000.0);
+            var granularity = Math.ceil(doc / graph_row_number);
             var cnt = 0;
-            var peak = [0, 0.0];
-            collection.find({}, fields).forEach(function(err, doc) {
+            var average = [0];
+            for (var i = 0; i < data.length; i++) {
+                average.push(0.0);
+            }
+            collection.find(query, fields).sort({datetime:1}).forEach(function(err, doc) {
                 if( err )
                     return error_handler(res, err, 500);
                 if( doc ) {
                     cnt++;
-                    peak[0] += doc['datetime'];
-                    if (doc[m[2]] > peak[1])
-                        peak[1] = doc[m[2]];
+                    average[0] += doc['datetime'];
+                    for (var i = 0; i < data.length; i++) {
+                        average[i+1] += doc[data[i]];
+                    }
                     if (cnt % granularity == 0) {
-                        peak[0] = parseInt(peak[0] / granularity);
-                        results.push(peak);
-                        peak = [0, 0.0];
+                        average[0] = parseInt(average[0] /  granularity);
+                        for (var i = 0; i < data.length; i++) {
+                            average[i+1] = average[i+1] / parseFloat(granularity);
+                        }
+                        results.push(average);
+                        average = [0];
+                        for (var i = 0; i < data.length; i++) {
+                            average.push(0.0);
+                        }
                     }
                 }
                 else {

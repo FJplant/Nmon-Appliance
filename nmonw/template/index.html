@@ -1,4 +1,5 @@
 <html>
+
   <head>
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script type="text/javascript"
@@ -10,29 +11,13 @@
             }]
           }"></script>
     <script type="text/javascript">
-        function getCategories() {
-                $.ajax({
-                url: "/categories",
-                data: {},
-                success: function( data ) {
-                    var result = eval(data);
-                    var html = '';
-                    for (var i = 0; i < result.length; i++) {
-                        html += '<option value="' + result[i] + '">' + result[i] + '</option>';
-                    }
-                    $("#categories").html(html);
-                    getHosts($("#categories").val());
-                        getTitles($("#categories").val());
-                }
-            });
-        }
         function getHosts(category) {
                 $.ajax({
-                url: "/categories/" + category + "/hosts",
+                url: "/All/" + category + "/hosts",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
-                    var html = '';
+                    var html = '<option value="All">All</option>';
                     for (var i = 0; i < result.length; i++) {
                         html += '<option value="' + result[i] + '">' + result[i] + '</option>';
                     }
@@ -40,75 +25,164 @@
                 }
             });
         }
-        function getTitles(category) {
-                $.ajax({
-                url: "/categories/" + category + "/titles",
-                data: {},
-                success: function( data ) {
-                    var result = eval(data);
-                    var html = '';
-                    for (var i = 0; i < result.length; i++) {
-                        html += '<option value="' + result[i] + '">' + result[i] + '</option>';
-                    }
-                    $("#fields").html(html);
-                }
-            });
-        }
-        function drawChart(x, y, row) {
+
+        function drawChart(did, x, y, label, row, stack) {
             var data = new google.visualization.DataTable();
             data.addColumn('datetime', x);
-            data.addColumn('number', y);
-            console.log(row.length);
+            for(var i = 0; i < y.length; i++) {
+                data.addColumn('number', y[i]);
+            }
             for(var i = 0; i < row.length; i++) {
                 row[i][0] = new Date(row[i][0]);
             }
             data.addRows(row);
 
             var options = {
-                //explorer : { axis: 'horizontal' },
-                hAxis : { title : x },
-                vAxis : { title : y }
+                vAxis : { title : label },
+                isStacked : stack
             };
 
-            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+            var chart = new google.visualization.AreaChart(document.getElementById(did));
             chart.draw(data, options);
         }
-        $(function() {
-            $("#categories").change(function() {
-                    getHosts($("#categories").val());
-                    getTitles($("#categories").val());
+
+        function updateGraph(hostname) {
+            var start = +new Date();
+            // cpu
+            $.ajax({
+                url: "/" + hostname + "/CPU_ALL?data=['User%25', 'Sys%25', 'Wait%25']",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    drawChart("cpu_chart", "time", ['User%', 'Sys%', 'Wait%'], '%', result, true);
+                    console.log('cpu chart :' + (+new Date() - start));
+                }
             });
-            $("#view").click(function(event) {
-                    $.ajax({
-                    url: "/categories/" + $("#categories").val() + '/' + $("#fields").val(),
-                    data: {},
-                    success: function( data ) {
-                        var result = eval(data);
-                        drawChart("time", $("#fields").val(), result);
+
+            // memory
+            $.ajax({
+                url: "/" + hostname + "/MEM?data=['active', 'inactive', 'memfree']",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    drawChart("mem_chart", "time", ['active', 'inactive', 'memfree'], 'MB', result, true);
+                    console.log('mem chart :' + (+new Date() - start));
+                }
+            });
+
+            // swap
+            $.ajax({
+                url: "/" + hostname + "/MEM?data=['swaptotal', 'swapfree']",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    for(var i = 0; i < result.length; i++) {
+                        result[i][2] = result[i][1] - result[i][2];
                     }
-                });
+                    drawChart("swap_chart", "time", ['swaptotal', 'used'], 'MB', result, false);
+                    console.log('swap chart :' + (+new Date() - start));
+                }
             });
-            getCategories();
+
+            // disk
+            $.ajax({
+                url: "/" + hostname + "/DISKREAD/titles",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    $.ajax({
+                        url: "/" + hostname + "/DISKREAD?data=" + JSON.stringify(result),
+                        data: {},
+                        success: function( data ) {
+                            var result1 = eval(data);
+                            $.ajax({
+                                url: "/" + hostname + "/DISKWRITE?data=" + JSON.stringify(result),
+                                data: {},
+                                success: function( data ) {
+                                    var result2 = eval(data);
+                                    var result3 = []
+                                    for(var i = 0; i < result1.length; i++) {
+                                        result3.push([result1[i][0], (result1[i][1] + result1[i][2]) / 2.0, (result2[i][1] + result2[i][2]) / 2.0]);
+                                    }
+                                    drawChart("disk_chart", "time", ['read', 'write'], 'KB/s', result3, true);
+                                    console.log('disk chart :' + (+new Date() - start));
+                                }
+                            });
+                        }
+                    });
+                    
+                }
+            });
+
+            // network
+            $.ajax({
+                url: "/" + hostname + "/NET/titles",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    var len = Math.floor(result.length / 2);
+                    $.ajax({
+                        url: "/" + hostname + "/NET?data=" + JSON.stringify(result),
+                        data: {},
+                        success: function( data ) {
+                            var result1 = eval(data);
+                            var result2 = [];
+                            for(var i = 0; i < result1.length; i++) {
+                                result2.push([result1[i][0], 0.0, 0.0]);
+                                for(var j = 0; j < len; j++) {
+                                    result2[i][1] += result1[i][1+j];
+                                    result2[i][2] += result1[i][1+len+j];
+                                }
+                                result2[i][1] = result2[i][1] / len;
+                                result2[i][2] = result2[i][2] / len;
+
+                            }
+                            drawChart("network_chart", "time", ['read', 'write'], 'KB/s', result2, true);
+                            console.log('network chart :' + (+new Date() - start));                         
+                        }
+                    });
+                }
+            });
+        }
+
+        $(function() {
+            $("#hosts").change(function() {
+                updateGraph($("#hosts").val())
+            });
+            getHosts('CPU_ALL');
+            updateGraph('All');
         });
     </script>
   </head>
+
   <body>
     <h1>NMONW</h1>
     <div class="menu">
-        <label for="categories">category : </label>
-        <select name="categories" id="categories">
-        </select>
-
         <label for="hosts">host : </label>
         <select name="hosts" id="hosts">
         </select>
-
-        <label for="fields">field : </label>
-        <select name="fields" id="fields">
-        </select>
-
-        <button type="button" id="view">View</button>
     </div>
-    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+
+    <div style="display: inline-block; width: 500px;">
+        <h2>CPU</h2>
+        <div id="cpu_chart" style="margin: auto; width: 480px; height: 230px;"></div>
+    </div>
+    <div style="display: inline-block; width: 500px;">
+        <h2>Memory</h2>
+        <div id="mem_chart" style="margin: auto; width: 480px; height: 230px;"></div>
+    </div>
+    <div style="display: inline-block; width: 500px;">
+        <h2>Swap</h2>
+        <div id="swap_chart" style="margin: auto; width: 480px; height: 230px;"></div>
+    </div>
+    <div style="display: inline-block; width: 500px;">
+        <h2>Disk</h2>
+        <div id="disk_chart" style="margin: auto; width: 480px; height: 230px;"></div>
+    </div>
+    <div style="display: inline-block; width: 500px;">
+        <h2>Network</h2>
+        <div id="network_chart" style="margin: auto; width: 480px; height: 230px;"></div>
+    </div>
   </body>
+
 </html>

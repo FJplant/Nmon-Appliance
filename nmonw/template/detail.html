@@ -1,0 +1,114 @@
+<html>
+  <head>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript"
+          src="https://www.google.com/jsapi?autoload={
+            'modules':[{
+              'name':'visualization',
+              'version':'1',
+              'packages':['corechart']
+            }]
+          }"></script>
+    <script type="text/javascript">
+        function getCategories() {
+                $.ajax({
+                url: "/categories",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    var html = '';
+                    for (var i = 0; i < result.length; i++) {
+                        html += '<option value="' + result[i] + '">' + result[i] + '</option>';
+                    }
+                    $("#categories").html(html);
+                    getHosts($("#categories").val());
+                        getTitles($("#categories").val());
+                }
+            });
+        }
+        function getHosts(category) {
+                $.ajax({
+                url: "/All/" + category + "/hosts",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    var html = '<option value="All">All</option>';
+                    for (var i = 0; i < result.length; i++) {
+                        html += '<option value="' + result[i] + '">' + result[i] + '</option>';
+                    }
+                    $("#hosts").html(html);
+                }
+            });
+        }
+        function getTitles(category) {
+                $.ajax({
+                url: "/All/" + category + "/titles",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    var html = '';
+                    for (var i = 0; i < result.length; i++) {
+                        html += '<option value="' + result[i] + '">' + result[i] + '</option>';
+                    }
+                    $("#fields").html(html);
+                }
+            });
+        }
+        function drawChart(x, y, row) {
+            var data = new google.visualization.DataTable();
+            data.addColumn('datetime', x);
+            data.addColumn('number', y);
+            console.log(row.length);
+            for(var i = 0; i < row.length; i++) {
+                row[i][0] = new Date(row[i][0]);
+            }
+            data.addRows(row);
+
+            var options = {
+                //explorer : { axis: 'horizontal' },
+                hAxis : { title : x },
+                vAxis : { title : y }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+            chart.draw(data, options);
+        }
+        $(function() {
+            $("#categories").change(function() {
+                    getHosts($("#categories").val());
+                    getTitles($("#categories").val());
+            });
+            $("#view").click(function(event) {
+                $.ajax({
+                    url: "/" + $("#hosts").val() + "/" + $("#categories").val() + "?data=['" + escape($("#fields").val()) + "']",
+                    data: {},
+                    success: function( data ) {
+                        var result = eval(data);
+                        drawChart("time", $("#fields").val(), result);
+                    }
+                });
+            });
+            getCategories();
+        });
+    </script>
+  </head>
+  <body>
+    <h1>NMONW</h1>
+    <div class="menu">
+        <label for="categories">category : </label>
+        <select name="categories" id="categories">
+        </select>
+
+        <label for="hosts">host : </label>
+        <select name="hosts" id="hosts">
+        </select>
+
+        <label for="fields">field : </label>
+        <select name="fields" id="fields">
+        </select>
+
+        <button type="button" id="view">View</button>
+    </div>
+    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+  </body>
+</html>
