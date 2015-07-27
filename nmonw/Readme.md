@@ -45,27 +45,23 @@ Install
 
 4. node modules
 
-    4.1 mondodb
-
-        npm install mongodb --mongodb:native
-
-    4.2 mongojs
+    4.1 mongojs
 
         npm install mongojs
 
-    4.3 winston
+    4.2 winston
 
         npm install winston
 
-    4.4 csv-streamify
+    4.3 csv-streamify
 
         npm install csv-streamify
 
-    4.5 JSONStream
+    4.4 JSONStream
 
         npm install JSONStream
 
-    4.6 swig
+    4.5 swig
 
         npm install swig
 
