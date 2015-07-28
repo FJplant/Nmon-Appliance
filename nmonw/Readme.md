@@ -7,6 +7,12 @@ NMON Web
 Install
 ------------
 
+[git]
+
+1. refer to
+
+        https://oracle-base.com/articles/linux/git-2-installation-on-linux
+
 [ubuntu]
 
 1. node.js
