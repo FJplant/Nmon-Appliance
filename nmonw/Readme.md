@@ -12,6 +12,10 @@ Install
 1. refer to
 
         https://oracle-base.com/articles/linux/git-2-installation-on-linux
+        
+2. Clone master branch
+
+        git clone user@git-server:project_name.git -b branch_name /some/folder
 
 [ubuntu]
 
