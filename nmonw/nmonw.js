@@ -72,9 +72,9 @@ http.Server(function(req, res) {
     catch(e) {
         error_handler(res, e, 500);
     }
-}).listen(8081);
+}).listen(9000);
 
-log.info('Server running at http://localhost:8080');
+log.info('Server running at http://localhost:9000');
 
 function put_nmonlog(url_info, req, res) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true});
@@ -290,6 +290,3 @@ function error_handler(res, err, code) {
     res.writeHead(code);
     res.end();
 }
-
-
-
