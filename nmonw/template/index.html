@@ -137,7 +137,7 @@
                                 result2[i][2] = result2[i][2] / len;
 
                             }
-                            drawChart("network_chart", "time", ['read', 'write'], 'KB/s', result2, true);
+                            drawChart("network_chart", "time", ['recv', 'send'], 'KB/s', result2, true);
                             console.log('network chart :' + (+new Date() - start));                         
                         }
                     });
