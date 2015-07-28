@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOSTNAME=localhost
-PORT=8081
+PORT=6900
 #VERBOSE="-v"
 OPTION="-w \\n\\n%{http_code} %{url_effective} %{time_total}\\n\\n"
 
