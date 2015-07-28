@@ -1,6 +1,24 @@
 <!DOCTYPE=html>
 <html>
-  <head>
+<head>
+<style>
+.googlechart {
+  border-size:2px;
+  border-style:dotted;
+  border-radius:10px;
+  border-color:black;
+  margin-top:10px;
+  font-size:15px;
+  padding:10px;
+  margin-top:0px;
+  margin-bottom:0px;
+  margin-left:0px;
+  margin-right:0px;
+  width: 1024px;
+  height: 576px;
+}
+
+</style>
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script type="text/javascript"
           src="https://www.google.com/jsapi?autoload={
@@ -110,7 +128,7 @@
                             });
                         }
                     });
-                    
+
                 }
             });
 
@@ -138,7 +156,7 @@
 
                             }
                             drawChart("network_chart", "time", ['recv', 'send'], 'KB/s', result2, true);
-                            console.log('network chart :' + (+new Date() - start));                         
+                            console.log('network chart :' + (+new Date() - start));
                         }
                     });
                 }
@@ -153,9 +171,8 @@
             updateGraph('All');
         });
     </script>
-  </head>
-
-  <body>
+</head>
+<body>
     <h3><font color=blue>NMONW</font></h3>
     <div class="menu">
         <label for="hosts">host : </label>
@@ -166,31 +183,31 @@
     </div>
     <div style="display: inline-block; width: 1044px;">
         <h4><font color=blue>CPU</font></h4>
-        <div id="cpu_chart" style="margin: auto; width: 1024px; height: 576px;"></div>
+        <div id="cpu_chart" class="googlechart"></div>
     </div>
     <div style="display: inline-block; width: 1044px;">
         <h4><font color=blue>Memory</font></h4>
-        <div id="mem_chart" style="margin: auto; width: 1024px; height: 576px;"></div>
+        <div id="mem_chart" class="googlechart"></div>
     </div>
     <div style="display: inline-block; width: 1044px;">
         <h4><font color=blue>Swap</font></h4>
-        <div id="swap_chart" style="margin: auto; width: 1024px; height: 576px;"></div>
+        <div id="swap_chart" class="googlechart"></div>
     </div>
     <div style="display: inline-block; width: 1044px;">
         <h4><font color=blue>Disk</font></h4>
-        <div id="disk_chart" style="margin: auto; width: 1024px; height: 576px;"></div>
+        <div id="disk_chart" class="googlechart"></div>
     </div>
     <div style="display: inline-block; width: 1044px;">
         <h4><font color=blue>Network</font></h4>
-        <div id="network_chart" style="margin: auto; width: 1024px; height: 576px;"></div>
+        <div id="network_chart" class="googlechart"></div>
     </div>
     <div style="display: inline-block; width: 1044px;">
         <h4><font color=blue>Process</font></h4>
-        <div id="process_chart" style="margin: auto; width: 1024px; height: 576px;"></div>
+        <div id="process_chart" class="googlechart"></div>
     </div>
     <div style="display: inline-block; width: 1044px;">
         <h4><font color=blue>NFS</font></h4>
-        <div id="nfs_chart" style="margin: auto; width: 1024px; height: 576px;"></div>
-    </div>    
+        <div id="nfs_chart" class="googlechart"></div>
+    </div>
   </body>
 </html>
