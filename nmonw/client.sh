@@ -17,17 +17,17 @@ function categories_list {
 
 function hosts_list {
     echo -e "> list hosts...\n"
-    curl $VERBOSE "$OPTION" http://$HOSTNAME:$PORT/categories/$1/hosts
+    curl $VERBOSE "$OPTION" http://$HOSTNAME:$PORT/All/$1/hosts
 }
 
 function titles_list {
     echo -e "> list titles...\n"
-    curl $VERBOSE "$OPTION" http://$HOSTNAME:$PORT/categories/$1/titles
+    curl $VERBOSE "$OPTION" http://$HOSTNAME:$PORT/$1/$2/titles
 }
 
-function fileds_list {
+function fields_list {
     echo -e "> list fields...\n"
-    curl $VERBOSE "$OPTION" http://$HOSTNAME:$PORT/categories/$1/$2
+    curl $VERBOSE "$OPTION" "http://$HOSTNAME:$PORT/$1/$2?data=\['"$3"'\]"
 }
 
 function help_ {
@@ -37,7 +37,7 @@ function help_ {
     echo "    ./client.sh nmonlog upload omrms12_1_110303_0000.nmon"
     echo "    ./client.sh categories list"
     echo "    ./client.sh hosts list CPU001"
-    echo "    ./client.sh fileds list CPU001 User%"
+    echo "    ./client.sh fields list All MEM memtotal"
     echo
 
 }
@@ -45,6 +45,6 @@ function help_ {
 if [ -z $1 ]; then
     help_
 else
-    $1_$2 $3 $4
+    $1_$2 $3 $4 $5
 fi
 

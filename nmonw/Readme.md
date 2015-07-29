@@ -55,24 +55,24 @@ Install
 
 4. node modules
 
-    4.1 mongojs
+    4.1 mongojs (MongoDB API)
 
         npm install mongojs
         추가로 최신버전으로 업데이트 필요 (2015.07.28)
 
-    4.2 winston
+    4.2 winston (Log System)
 
         npm install winston
 
-    4.3 csv-streamify
+    4.3 csv-streamify (CSV Parser)
 
         npm install csv-streamify
 
-    4.4 JSONStream
+    4.4 JSONStream (JSON Parser)
 
         npm install JSONStream
 
-    4.5 swig
+    4.5 swig (HTML Template)
 
         npm install swig
 
