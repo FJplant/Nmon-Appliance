@@ -58,6 +58,7 @@ Install
     4.1 mongojs
 
         npm install mongojs
+        추가로 최신버전으로 업데이트 필요 (2015.07.28)
 
     4.2 winston
 

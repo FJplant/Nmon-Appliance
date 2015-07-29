@@ -86,61 +86,23 @@
 
             // disk
             $.ajax({
-                url: "/" + hostname + "/DISKREAD/titles",
+                url: "/" + hostname + "/DISK_TOTAL?data=['read', 'write']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
-                    $.ajax({
-                        url: "/" + hostname + "/DISKREAD?data=" + JSON.stringify(result),
-                        data: {},
-                        success: function( data ) {
-                            var result1 = eval(data);
-                            $.ajax({
-                                url: "/" + hostname + "/DISKWRITE?data=" + JSON.stringify(result),
-                                data: {},
-                                success: function( data ) {
-                                    var result2 = eval(data);
-                                    var result3 = []
-                                    for(var i = 0; i < result1.length; i++) {
-                                        result3.push([result1[i][0], (result1[i][1] + result1[i][2]) / 2.0, (result2[i][1] + result2[i][2]) / 2.0]);
-                                    }
-                                    drawChart("disk_chart", "time", ['read', 'write'], 'KB/s', result3, true);
-                                    console.log('disk chart :' + (+new Date() - start));
-                                }
-                            });
-                        }
-                    });
-                    
+                    drawChart("disk_chart", "time", ['read', 'write'], 'KB/s', result, true);
+                    console.log('disk chart :' + (+new Date() - start));
                 }
             });
 
             // network
             $.ajax({
-                url: "/" + hostname + "/NET/titles",
+                url: "/" + hostname + "/NET_TOTAL?data=['read', 'write']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
-                    var len = Math.floor(result.length / 2);
-                    $.ajax({
-                        url: "/" + hostname + "/NET?data=" + JSON.stringify(result),
-                        data: {},
-                        success: function( data ) {
-                            var result1 = eval(data);
-                            var result2 = [];
-                            for(var i = 0; i < result1.length; i++) {
-                                result2.push([result1[i][0], 0.0, 0.0]);
-                                for(var j = 0; j < len; j++) {
-                                    result2[i][1] += result1[i][1+j];
-                                    result2[i][2] += result1[i][1+len+j];
-                                }
-                                result2[i][1] = result2[i][1] / len;
-                                result2[i][2] = result2[i][2] / len;
-
-                            }
-                            drawChart("network_chart", "time", ['recv', 'send'], 'KB/s', result2, true);
-                            console.log('network chart :' + (+new Date() - start));                         
-                        }
-                    });
+                    drawChart("network_chart", "time", ['read', 'write'], 'KB/s', result, true);
+                    console.log('network chart :' + (+new Date() - start));
                 }
             });
         }
