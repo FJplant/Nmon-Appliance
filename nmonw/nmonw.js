@@ -244,7 +244,11 @@ function get_hosts(url_info, req, res) {
 function get_titles(url_info, req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
     var collection = db.collection(m[2]);
-    collection.findOne({}, function (err, doc) {
+    var query = {};
+    if (m[1] !== 'All') {
+        query['host'] = m[1];
+    }
+    collection.findOne(query, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
         var results = [];
