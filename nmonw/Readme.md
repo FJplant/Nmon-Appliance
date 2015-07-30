@@ -17,6 +17,10 @@ Install
 
         git clone user@git-server:project_name.git -b branch_name /some/folder
 
+3. git simple guide. no deep shit!
+
+        http://rogerdudler.github.io/git-guide/
+        
 [ubuntu]
 
 1. node.js
