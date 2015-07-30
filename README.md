@@ -3,10 +3,15 @@
 This README would normally document whatever steps are necessary to get your application up and running.
 
 
-### Websites related to nmon.io ###
+### Websites related to nmon.io services ###
 * http://nmon.io ( public website )
 * http://db.nmon.io ( Nmon Dashboard )
          dashboard.nmon.io ( alias to db.nmon.io )
+
+### Websites related to nmon.io project ###
+* https://bitbucket.org/Nmon_io-team/nmon.io.git ( source development )
+* http://jira.nmon.io ( project management )
+* http://conf.nmon.io ( project collaboration )
 
 ### SNS ###
 * [ facebook] https://fb.com/nmon.io
