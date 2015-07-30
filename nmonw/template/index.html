@@ -104,10 +104,11 @@
 
             // disk
             $.ajax({
-                url: "/" + hostname + "/DISKREAD/titles",
+                url: "/" + hostname + "/DISK_TOTAL?data=['read', 'write']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
+<<<<<<< HEAD
                     $.ajax({
                         url: "/" + hostname + "/DISKREAD?data=" + JSON.stringify(result),
                         data: {},
@@ -129,15 +130,20 @@
                         }
                     });
 
+=======
+                    drawChart("disk_chart", "time", ['read', 'write'], 'KB/s', result, true);
+                    console.log('disk chart :' + (+new Date() - start));
+>>>>>>> 992a4eadde05f8fdd7bc37206da022c2aacb3a47
                 }
             });
 
             // network
             $.ajax({
-                url: "/" + hostname + "/NET/titles",
+                url: "/" + hostname + "/NET_TOTAL?data=['read', 'write']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
+<<<<<<< HEAD
                     var len = Math.floor(result.length / 2);
                     $.ajax({
                         url: "/" + hostname + "/NET?data=" + JSON.stringify(result),
@@ -159,6 +165,10 @@
                             console.log('network chart :' + (+new Date() - start));
                         }
                     });
+=======
+                    drawChart("network_chart", "time", ['read', 'write'], 'KB/s', result, true);
+                    console.log('network chart :' + (+new Date() - start));
+>>>>>>> 992a4eadde05f8fdd7bc37206da022c2aacb3a47
                 }
             });
         }

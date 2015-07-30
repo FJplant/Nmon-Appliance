@@ -22,7 +22,6 @@
                     }
                     $("#categories").html(html);
                     getHosts($("#categories").val());
-                        getTitles($("#categories").val());
                 }
             });
         }
@@ -37,15 +36,17 @@
                         html += '<option value="' + result[i] + '">' + result[i] + '</option>';
                     }
                     $("#hosts").html(html);
+                    getTitles($("#hosts").val(), $("#categories").val());
                 }
             });
         }
-        function getTitles(category) {
+        function getTitles(host, category) {
                 $.ajax({
-                url: "/All/" + category + "/titles",
+                url: "/" + host + "/" + category + "/titles",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
+                    console.log(result);
                     var html = '';
                     for (var i = 0; i < result.length; i++) {
                         html += '<option value="' + result[i] + '">' + result[i] + '</option>';
@@ -75,8 +76,10 @@
         }
         $(function() {
             $("#categories").change(function() {
-                    getHosts($("#categories").val());
-                    getTitles($("#categories").val());
+                getHosts($("#categories").val());
+            });
+            $("#hosts").change(function() {
+                getTitles($("#hosts").val(), $("#categories").val());
             });
             $("#view").click(function(event) {
                 $.ajax({

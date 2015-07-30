@@ -78,6 +78,8 @@ log.info('Server running at http://localhost:6900');
 
 function put_nmonlog(url_info, req, res) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true});
+    db.collection('categories').save({name: 'DISK_TOTAL'});
+    db.collection('categories').save({name: 'NET_TOTAL'});
 
     var csvToJson = csv({objectMode: true});
 
@@ -86,6 +88,7 @@ function put_nmonlog(url_info, req, res) {
     parser._rawHeader = {};
     parser._datetime = {};
     parser._cnt = 0;
+    parser._diskTotal = {}
     parser._transform = function(data, encoding, done) {
         parser._cnt++;
         if (parser._cnt % 100 == 0) {
@@ -102,16 +105,49 @@ function put_nmonlog(url_info, req, res) {
         else {
             if( data[0] in parser._rawHeader ) {
                 var h = parser._rawHeader[data[0]];
-                var kv = {};
-                kv['host'] = h[1].split(' ').pop();  
-                kv['datetime'] = parser._datetime[data[1]];
+                var query = { host: h[1].split(' ').pop(), datetime: parser._datetime[data[1]]};
+                var val = 0.0, read = 0.0, write = 0.0;
                 for( var i = 2; i < h.length; i++ ) {
-                    kv[h[i]] = parseFloat(data[i]);
+                    if(h[i] !== '') {
+                        query[h[i]] = parseFloat(data[i]);
+                    }
+                    if( (h[0] === 'DISKREAD' || h[0] == 'DISKWRITE') && !h[i].match(/.+\d+$/) ) {
+                        val += parseFloat(data[i]);
+                    }
+                    else if (h[0] === 'NET') {
+                        if( h[i].indexOf('read') != -1 )
+                            read += parseFloat(data[i]);
+                        else if( h[i].indexOf('write') != -1)
+                            write += parseFloat(data[i]);
+                    }
                 }
-                this.push([h[0], kv]);
+                this.push([h[0], query, null]);
+                
+                if( h[0] === 'DISKREAD' ) {
+                    parser._diskTotal['host'] = query['host'];
+                    parser._diskTotal['datetime'] = query['datetime'];
+                    parser._diskTotal['read'] = val;
+                    if ('write' in parser._diskTotal) {
+                        this.push(['DISK_TOTAL', parser._diskTotal, null]);
+                        parser._diskTotal = {};
+                    }
+                }
+                else if (h[0] === 'DISKWRITE') {
+                    parser._diskTotal['host'] = query['host'];
+                    parser._diskTotal['datetime'] = query['datetime'];
+                    parser._diskTotal['write'] = val;
+                    if ('read' in parser._diskTotal) {
+                        this.push(['DISK_TOTAL', parser._diskTotal, null]);
+                        parser._diskTotal = {};
+                    }
+                }
+                else if (h[0] === 'NET') {
+                    var query2 = { host : query['host'], datetime: query['datetime'], read: read, write: write };
+                    this.push(['NET_TOTAL', query2, null]);
+                }
             }
             else {
-                this.push(['categories', {name: data[0]}]);
+                this.push(['categories', {name: data[0]}, {name: data[0]}]);
                 parser._rawHeader[data[0]] = data;
             }
         }
@@ -128,7 +164,7 @@ function put_nmonlog(url_info, req, res) {
                 bulks[writer._bulk[i][0]] = db.collection(writer._bulk[i][0]).initializeOrderedBulkOp();
             }
             if (writer._bulk[i][0] === 'categories') {
-                bulks[writer._bulk[i][0]].insert(writer._bulk[i][1]);
+                bulks[writer._bulk[i][0]].find(writer._bulk[i][1]).upsert().update({ $set: writer._bulk[i][2]});
                 var collection = db.collection(writer._bulk[i][1]['name']);
                 collection.ensureIndex({datetime: 1, host: 1}, {unique: true});
             }
@@ -208,7 +244,11 @@ function get_hosts(url_info, req, res) {
 function get_titles(url_info, req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
     var collection = db.collection(m[2]);
-    collection.findOne({}, function (err, doc) {
+    var query = {};
+    if (m[1] !== 'All') {
+        query['host'] = m[1];
+    }
+    collection.findOne(query, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
         var results = [];
