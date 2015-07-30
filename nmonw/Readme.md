@@ -76,6 +76,11 @@ Install
 
         npm install swig
 
+    4.6 forever (Daemon Tool)
+
+        npm install forever
+
+
 5. create folders
     
         mkdir logs 
