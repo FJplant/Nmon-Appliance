@@ -15,7 +15,7 @@ var log = new (winston.Logger)({
     ]
 });
 
-var graph_row_number = 500.0;
+var graph_row_number = 300.0;
 
 http.Server(function(req, res) {
     var url_info = url.parse(req.url, true);
