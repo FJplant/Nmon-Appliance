@@ -102,7 +102,7 @@ Run
 
 3. Agent (reporting nmon log)
 
-        ./agent.sh 30
+        nohup ./agent.sh 5 > agent.log &
 
 3. Browsing
 
