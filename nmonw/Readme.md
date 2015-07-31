@@ -96,9 +96,13 @@ Run
 
         node nmonw.js
 
-2. Upload data
+2. Bulk data upload
 
         ./client.sh nmonlog upload data/data.txt
+
+3. Agent (reporting nmon log)
+
+        ./agent.sh 30
 
 3. Browsing
 

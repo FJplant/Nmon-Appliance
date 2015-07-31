@@ -39,7 +39,13 @@ http.Server(function(req, res) {
         }
         else if ( pathname == '/nmonlog' ) {
             if( method == 'POST' ) {
-                put_nmonlog(url_info, req, res);
+                put_nmonlog(url_info, req, res, 1);
+                return;
+            }
+        }
+        else if ( pathname == '/nmonlog_bulk' ) {
+            if( method == 'POST' ) {
+                put_nmonlog(url_info, req, res, 1000);
                 return;
             }
         }
@@ -76,7 +82,7 @@ http.Server(function(req, res) {
 
 log.info('Server running at http://localhost:6900');
 
-function put_nmonlog(url_info, req, res) {
+function put_nmonlog(url_info, req, res, bulk_unit) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true});
     db.collection('categories').save({name: 'DISK_TOTAL'});
     db.collection('categories').save({name: 'NET_TOTAL'});
@@ -191,7 +197,7 @@ function put_nmonlog(url_info, req, res) {
     writer._transform = function(data, encoding, done) {
         writer._bulkcnt ++;
         writer._bulk.push(data);
-        if ( writer._bulkcnt >= 1000 ) {
+        if ( writer._bulkcnt >= bulk_unit ) {
             writer._flushSave(done);
         }
         else {
