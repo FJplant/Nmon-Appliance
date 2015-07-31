@@ -272,6 +272,7 @@ function get_fields(url_info, req, res) {
     var results = [];
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
     var data = eval(url_info.query['data']);
+    var date = eval(url_info.query['date']);
     var collection = db.collection(m[2]);
     var fields = {datetime:1, _id: 0};
     for (var i = 0; i < data.length; i++) {
@@ -280,6 +281,9 @@ function get_fields(url_info, req, res) {
     var query = {};
     if (m[1] !== 'All') {
         query['host'] = m[1];
+    }
+    if (typeof date !== 'undefined') {
+        query['datetime'] = { $gt : date[0], $lt : date[1] };
     }
     collection.count(query, function(err, doc) {
         if (err)

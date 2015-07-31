@@ -46,11 +46,14 @@
             chart.draw(data, options);
         }
 
-        function updateGraph(hostname) {
+        function updateGraph(hostname, fromDate, toDate) {
+            console.log(fromDate + " " + fromDate.getTime());
+            console.log(toDate + " " + toDate.getTime());
+
             var start = +new Date();
             // cpu
             $.ajax({
-                url: "/" + hostname + "/CPU_ALL?data=['User%25', 'Sys%25', 'Wait%25']",
+                url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User%25', 'Sys%25', 'Wait%25']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
@@ -61,7 +64,7 @@
 
             // memory
             $.ajax({
-                url: "/" + hostname + "/MEM?data=['active', 'inactive', 'memfree']",
+                url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['active', 'inactive', 'memfree']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
@@ -72,7 +75,7 @@
 
             // swap
             $.ajax({
-                url: "/" + hostname + "/MEM?data=['swaptotal', 'swapfree']",
+                url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['swaptotal', 'swapfree']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
@@ -86,7 +89,7 @@
 
             // disk
             $.ajax({
-                url: "/" + hostname + "/DISK_TOTAL?data=['read', 'write']",
+                url: "/" + hostname + "/DISK_TOTAL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
@@ -97,7 +100,7 @@
 
             // network
             $.ajax({
-                url: "/" + hostname + "/NET_TOTAL?data=['read', 'write']",
+                url: "/" + hostname + "/NET_TOTAL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
@@ -108,11 +111,22 @@
         }
 
         $(function() {
-            $("#hosts").change(function() {
-                updateGraph($("#hosts").val())
-            });
             getHosts('CPU_ALL');
-            updateGraph('All');
+            var today = new Date();
+            $("#from").val((today.getMonth() + 1) + "/" + today.getDate() + "/" + today.getFullYear());
+            $("#to").val("now");
+            $("#view").click(function(event) {
+                var fromDate = new Date($("#from").val());
+                var toDate = new Date();
+                if ($("#to").val() !== "now") {
+                    toDate = new Date($("#to").val());
+                    toDate.setDate(toDate.getDate() + 1);
+                }
+                updateGraph($("#hosts").val(), fromDate, toDate)
+            });
+            var fromDate = new Date($("#from").val());
+            var toDate = new Date();
+            updateGraph('All', fromDate, toDate);
         });
     </script>
 
@@ -144,6 +158,14 @@
         <label for="hosts">host : </label>
         <select name="hosts" id="hosts">
         </select>
+
+        <label for="from">from : </label>
+        <input type="text" id="from">
+
+        <label for="to">to : </label>
+        <input type="text" id="to">    
+
+        <button type="button" id="view">View</button>    
 
         <a href="/detail" style="float: right;">Detail</a>
     </div>
