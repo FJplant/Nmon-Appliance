@@ -144,3 +144,15 @@ Indexing
         db.XXX.ensureIndex({datetime: 1, host: 1}, {unique: true});
 
 
+Drop  DB
+--------
+$ mongo
+MongoDB shell version: 2.6.10
+connecting to: test
+> use nmonw
+switched to db nmonw
+> db.dropDatabase()
+{ "dropped" : "nmonw", "ok" : 1 }
+> exit
+bye
+$
