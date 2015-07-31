@@ -106,7 +106,7 @@ Run
 
 3. Browsing
 
-        http://localhost:8080
+        http://localhost:6900
 
 
 
