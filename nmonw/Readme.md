@@ -100,13 +100,13 @@ Run
 
         ./client.sh nmonlog upload data/data.txt
 
-3. Agent (reporting nmon log)
+3. Agent (reporting nmon log) ; for long term monitoring it's better 30 secs than 2 secs.
 
-        ./agent.sh 30
+        nohup ./agent.sh 30 > agent.log &
 
 3. Browsing
 
-        http://localhost:8080
+        http://localhost:6900
 
 
 
