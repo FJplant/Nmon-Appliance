@@ -146,13 +146,21 @@ Indexing
 
 Drop  DB
 --------
+
 $ mongo
-MongoDB shell version: 2.6.10
-connecting to: test
+
+	MongoDB shell version: 2.6.10
+
+	connecting to: test
+
 > use nmonw
-switched to db nmonw
+
+	switched to db nmonw
+
 > db.dropDatabase()
-{ "dropped" : "nmonw", "ok" : 1 }
+
+	{ "dropped" : "nmonw", "ok" : 1 }
+
 > exit
-bye
+	bye
 $
