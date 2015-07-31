@@ -153,14 +153,16 @@ $ mongo
 
 	connecting to: test
 
-> use nmonw
+use nmonw
 
 	switched to db nmonw
 
-> db.dropDatabase()
+db.dropDatabase()
 
 	{ "dropped" : "nmonw", "ok" : 1 }
 
-> exit
+exit
+
 	bye
+
 $
