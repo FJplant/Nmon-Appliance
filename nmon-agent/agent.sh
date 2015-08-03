@@ -3,22 +3,26 @@
 HOST="localhost"
 PORT="6900"
 INTERVAL="5"
+COUNT="17280"
+HOMEDIR="/home/amoriya/nmon.io/nmon-agent"
+#HOMEDIR="."
 
-LOGDIR="data"
+LOGDIR="$HOMEDIR/data"
 PIDFILE="$LOGDIR/NMON.pid"
+PYFILE="$HOMEDIR/nmon_agent.py"
 
 function start {
     DATE=$(eval date +_%y%m%d_%H%M)
     LOGFILE="$LOGDIR/$HOSTNAME$DATE.nmon"
-    nmon -F $LOGFILE -t -s $INTERVAL
+    nmon -F $LOGFILE -t -s $INTERVAL -c $COUNT
     PID=$(eval ps | grep nmon | head -n 1 | awk '{print $1}')
     echo $PID > $PIDFILE
     URL="http://$HOST:$PORT/nmonlog"
-    forever start -c python nmon_agent.py $LOGFILE $INTERVAL $URL
+    forever start -c python $PYFILE $LOGFILE $INTERVAL $URL
 }
 
 function stop {
-    forever stop nmon_agent.py
+    forever stop $PYFILE
     PID="$(cat $PIDFILE)"
     kill -9 $PID
 }
