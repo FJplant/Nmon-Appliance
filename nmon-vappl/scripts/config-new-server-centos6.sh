@@ -64,10 +64,16 @@ echo "[`date`] Configuring local firewall..."
 
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
 ~/myfirewall.sh > /dev/null &
-echo "[`date`] Please set hostname using nmtui..."
+echo "[`date`] Please set hostname using nmtui (CentOS 7) or vi /etc/sysconfig/network (CentOS 6)..."
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
-nmtui
+
+# for CentOS 7
+#nmtui
+# for CentOS 6
+vi /etc/sysconfig/network
 echo "[`date`] Check host name: `hostname`"
+echo "[`date`] Add configured hostname to /etc/hosts using vi"
+vi /etc/hosts
 
 echo "[`date`] Next step: installing RPMs"
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
