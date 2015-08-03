@@ -93,6 +93,9 @@ read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
 echo "[`date`] Installing gcc, git, lsof..."
 yum install gcc git lsof -y
 
+echo "[`date`] Installing httpd and httpd..."
+yum install httpd -y
+
 echo "[`date`] Installing Node.js and MongoDB..."
 yum install mongodb-org -y
 yum install nodejs -y
