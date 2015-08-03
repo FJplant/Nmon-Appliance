@@ -2,7 +2,7 @@
 
 HOST="localhost"
 PORT="6900"
-INTERVAL="3"
+INTERVAL="5"
 
 LOGDIR="data"
 PIDFILE="$LOGDIR/NMON.pid"
