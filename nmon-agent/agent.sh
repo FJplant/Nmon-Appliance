@@ -2,28 +2,40 @@
 
 HOST="localhost"
 PORT="6900"
-LOGDIR="data"
+INTERVAL="3"
 
-function main {
+LOGDIR="data"
+PIDFILE="$LOGDIR/NMON.pid"
+
+function start {
     DATE=$(eval date +_%y%m%d_%H%M)
     LOGFILE="$LOGDIR/$HOSTNAME$DATE.nmon"
-    nmon -F $LOGFILE -t -s $1
+    nmon -F $LOGFILE -t -s $INTERVAL
     PID=$(eval ps | grep nmon | head -n 1 | awk '{print $1}')
+    echo $PID > $PIDFILE
     URL="http://$HOST:$PORT/nmonlog"
-    python nmon_agent.py $LOGFILE $1 $URL
+    forever start -c python nmon_agent.py $LOGFILE $INTERVAL $URL
+}
+
+function stop {
+    forever stop nmon_agent.py
+    PID="$(cat $PIDFILE)"
     kill -9 $PID
+}
+
+function list {
+    forever list
 }
 
 function help_ {
     echo 
-    echo "Usage: ./agent.sh interval"
-    echo 
-    echo "example) ./agent.sh 30"
+    echo "Usage: ./agent.sh [command]"
+    echo "command: start, stop, list"
     echo
 }
 
 if [ -z $1 ]; then
     help_
 else
-    main $1 
+    $1 
 fi
