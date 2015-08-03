@@ -53,7 +53,7 @@ yum install bind-utils -y
 yum install iptables-services -y
 
 echo "[`date`] Installing gcc, git, lsof..."
-yum install gcc git lsof curl libcurl -y
+yum install gcc git lsof curl libcurl unzip -y
 
 echo "[`date`] Configuring local firewall..."
 #for CentOS 7
