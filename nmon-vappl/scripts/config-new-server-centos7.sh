@@ -48,16 +48,19 @@ echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 echo "nameserver 8.8.4.4" >> /etc/resolv.conf
 
 echo "[`date`] Installing base RPMs..."
-rm -f /var/cache/yum/x86_64/7/timedhosts.txt
-yum install bind-utils -y
 yum install deltarpm -y
+yum install bind-utils -y
 yum install iptables-services -y
 
+echo "[`date`] Installing gcc, git, lsof..."
+yum install gcc git lsof curl libcurl -y
+
 echo "[`date`] Configuring local firewall..."
-systemctl stop firewalld
-systemctl mask firewalld
-systemctl enable iptables
-systemctl start iptables
+#for CentOS 7
+#systemctl stop firewalld
+#systemctl mask firewalld
+#systemctl enable iptables
+#systemctl start iptables
 
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
 ~/myfirewall.sh > /dev/null &
@@ -70,35 +73,46 @@ echo "[`date`] Next step: installing RPMs"
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
 
 echo "[`date`] Installing NFS utils..."
-yum install nfs-utils nfs-utils-lib -y
 yum install rpcbind -y
+yum install nfs-utils nfs-utils-lib -y
 yum install nfs4-acl-tools -y
 
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
 echo "[`date`] Starting NFS services"
-systemctl enable rpcbind
-systemctl enable nfs-server
-systemctl enable nfs-lock
-systemctl enable nfs-idmap
-systemctl start rpcbind
-systemctl start nfs-server
-systemctl start nfs-lock
-systemctl start nfs-idmap
+
+#for centos 7
+#systemctl enable rpcbind
+#systemctl enable nfs-server
+#systemctl enable nfs-lock
+#systemctl enable nfs-idmap
+#systemctl start rpcbind
+#systemctl start nfs-server
+#systemctl start nfs-lock
+#systemctl start nfs-idmap
 
 #for centos 6
-#chkconfig --level 35 rpcbind on
-#chkconfig --level 35 nfs on
+chkconfig --level 35 rpcbind on
+chkconfig --level 35 nfs on
+/etc/rc.d/init.d/rpcbind start
+/etc/rc.d/init.d/nfs start
+/etc/rc.d/init.d/nfslock start
 
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
-echo "[`date`] Installing gcc, git, lsof..."
-yum install gcc git lsof -y
-
 echo "[`date`] Installing httpd and httpd..."
 yum install httpd -y
 
 echo "[`date`] Installing Node.js and MongoDB..."
+yum install gcc-c++ make -y
+curl -sL https://rpm.nodesource.com/setup | bash -
+yum install nodejs npm -y
+cat > /etc/yum.repos.d/mongodb-org-3.0.repo << EOF
+[mongodb-org-2.6]
+name=MongoDB 2.6 Repository
+baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+gpgcheck=0
+enabled=1
+EOF
 yum install mongodb-org -y
-yum install nodejs -y
 
 echo "[`date`] Installing ip-traf utils"
 yum install ip-traf -y
