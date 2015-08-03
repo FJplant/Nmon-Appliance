@@ -59,6 +59,8 @@ yum install -y gcc-c++ make
 echo "[`date`] Installing Node.js, npm..."
 curl -sL https://rpm.nodesource.com/setup | bash -
 yum install -y nodejs
+npm install winston
+npm install forever
 
 echo "[`date`] Configuring local firewall..."
 #for CentOS 7
