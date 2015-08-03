@@ -48,13 +48,17 @@ echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 echo "nameserver 8.8.4.4" >> /etc/resolv.conf
 
 echo "[`date`] Installing base RPMs..."
-yum install deltarpm -y
-yum install bind-utils -y
-yum install iptables-services -y
+yum install -y deltarpm
+yum install -y bind-utils
+yum install -y iptables-services
 
 echo "[`date`] Installing gcc, git, lsof..."
-yum install gcc python curl libcurl unzip lsof -y
-yum install git -y
+yum install -y gcc python curl libcurl unzip lsof
+yum install -y gcc-c++ make
+
+echo "[`date`] Installing Node.js, npm..."
+curl -sL https://rpm.nodesource.com/setup | bash -
+yum install -y nodejs
 
 echo "[`date`] Configuring local firewall..."
 #for CentOS 7
@@ -80,9 +84,8 @@ echo "[`date`] Next step: installing RPMs"
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
 
 echo "[`date`] Installing NFS utils..."
-yum install rpcbind -y
-yum install nfs-utils nfs-utils-lib -y
-yum install nfs4-acl-tools -y
+yum install -y rpcbind nfs-utils nfs-utils-lib
+yum install -y nfs4-acl-tools
 
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
 echo "[`date`] Starting NFS services"
@@ -106,12 +109,12 @@ chkconfig --level 35 nfs on
 
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
 echo "[`date`] Installing httpd and httpd..."
-yum install httpd -y
+yum install -y httpd
 
 echo "[`date`] Installing Node.js and MongoDB..."
-yum install gcc-c++ make -y
+yum install -y gcc-c++ make
 curl -sL https://rpm.nodesource.com/setup | bash -
-yum install nodejs npm -y
+yum install -y nodejs npm
 cat > /etc/yum.repos.d/mongodb-org-3.0.repo << EOF
 [mongodb-org-2.6]
 name=MongoDB 2.6 Repository
@@ -119,10 +122,10 @@ baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
 gpgcheck=0
 enabled=1
 EOF
-yum install mongodb-org -y
+yum install -y mongodb-org
 
 echo "[`date`] Installing ip-traf utils"
-yum install ip-traf -y
+yum install -y ip-traf
 
 echo "[`date`] Please change kernel counts"
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo
