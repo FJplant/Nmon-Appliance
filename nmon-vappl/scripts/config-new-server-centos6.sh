@@ -4,6 +4,9 @@
 
 echo "[`date`] Change your root password first..."
 passwd
+echo "[`date`] Local time to KST..."
+unlink /etc/localtime
+ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 echo
 echo "[`date`] cat /etc/redhat-release and df -h..."
 echo "Redhat release: `cat /etc/redhat-release`"
