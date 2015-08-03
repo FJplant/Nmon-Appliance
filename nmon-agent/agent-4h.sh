@@ -24,7 +24,7 @@ function start {
 function stop {
     forever stop $PYFILE
     PID="$(cat $PIDFILE)"
-    kill -9 $PID
+    kill -USR2 $PID
 }
 
 function list {
