@@ -54,6 +54,7 @@ echo "[`date`] Installing base RPMs..."
 yum install -y deltarpm
 yum install -y bind-utils
 yum install -y iptables-services
+yum install -y sysstat
 
 echo "[`date`] Installing gcc, git, lsof..."
 yum install -y gcc python curl libcurl unzip lsof
