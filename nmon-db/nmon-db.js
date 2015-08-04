@@ -5,17 +5,16 @@ var http = require('http'),
     Transform = require('stream').Transform,
     csv = require('csv-streamify'),
     swig = require('swig');
-            
 
-var db = mongojs('nmonw', ['record']);
+var db = mongojs('nmon-db', ['record']);
 
 var log = new (winston.Logger)({
     transports: [
-        new (winston.transports.File)({ filename: 'logs/nmonw.log', level: 'debug' }),
+        new (winston.transports.File)({ filename: 'logs/nmon-db.log', level: 'debug' }),
     ]
 });
 
-var graph_row_number = 300.0;
+var graph_row_number = 3000.0;
 
 http.Server(function(req, res) {
     var url_info = url.parse(req.url, true);
@@ -33,6 +32,13 @@ http.Server(function(req, res) {
         else if( pathname == '/detail' ) {
             res.writeHead(200, {'Content-Type': 'text/html'});
             var html = swig.renderFile('template/detail.html', {
+            });
+            res.end(html);
+            return;
+        }
+        else if( pathname == '/process.json' ) {
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            var html = swig.renderFile('template/process.json', {
             });
             res.end(html);
             return;

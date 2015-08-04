@@ -1,12 +1,14 @@
 #!/bin/bash
 
+FOREVER_OPTS="--minUptime 5000 --spinSleepTime 5000"
+
 function start {
-    node_modules/forever/bin/forever start nmonw.js 
+    node_modules/forever/bin/forever start \
+    $FOREVER_OPTS nmon-db.js 
 }
 
-
 function stop {
-    node_modules/forever/bin/forever stop nmonw.js 
+    node_modules/forever/bin/forever stop nmon-db.js 
 }
 
 function list {
