@@ -57,7 +57,7 @@ yum install -y iptables-services
 yum install -y sysstat
 
 echo "[`date`] Installing gcc, git, lsof..."
-yum install -y gcc python curl libcurl unzip lsof
+yum install -y gcc python curl libcurl unzip lsof vim*
 yum install -y gcc-c++ make
 
 echo "[`date`] Installing Node.js, npm..."

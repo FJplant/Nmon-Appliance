@@ -233,6 +233,7 @@
     </p>
     <p>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <h4>Simple bubble chart test case</h4>
     <script>
 var diameter = 960,
     format = d3.format(",d"),
@@ -248,8 +249,8 @@ var svg = d3.select("body").append("svg")
     .attr("height", diameter)
     .attr("class", "bubble");
 
-// get flare.json file
-d3.json("flare.json", function(error, root) {
+// get process.json file
+d3.json("process.json", function(error, root) {
   if (error) throw error;
 
   var node = svg.selectAll(".node")
