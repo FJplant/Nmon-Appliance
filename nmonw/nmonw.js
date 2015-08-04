@@ -115,9 +115,23 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                 var val = 0.0, read = 0.0, write = 0.0;
                 for( var i = 2; i < h.length; i++ ) {
                     if(h[i] !== '') {
-                        query[h[i]] = parseFloat(data[i]);
+                        if (h[0] === 'MEM') {
+                            if (h[i] === 'memtotal')
+                                query['Real total(MB)'] = parseFloat(data[i]);
+                            else if (h[i] === 'memfree')
+                                query['Real free(MB)'] = parseFloat(data[i]);
+                            else if (h[i] === 'swaptotal')
+                                query['Virtual total(MB)'] = parseFloat(data[i]);
+                            else if (h[i] === 'swapfree')
+                                query['Virtual free(MB)'] = parseFloat(data[i]);
+                            else
+                                query[h[i]] = parseFloat(data[i]);
+                        } 
+                        else {
+                            query[h[i]] = parseFloat(data[i]);
+                        }
                     }
-                    if( (h[0] === 'DISKREAD' || h[0] == 'DISKWRITE') && !h[i].match(/.+\d+$/) ) {
+                    if( (h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/) ) {
                         val += parseFloat(data[i]);
                     }
                     else if (h[0] === 'NET') {

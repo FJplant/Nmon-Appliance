@@ -64,25 +64,28 @@
 
             // memory
             $.ajax({
-                url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['active', 'inactive', 'memfree']",
-                data: {},
-                success: function( data ) {
-                    var result = eval(data);
-                    drawChart("mem_chart", "time", ['active', 'inactive', 'memfree'], 'MB', result, true);
-                    console.log('mem chart :' + (+new Date() - start));
-                }
-            });
-
-            // swap
-            $.ajax({
-                url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['swaptotal', 'swapfree']",
+                url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total(MB)', 'Real free(MB)']",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
                     for(var i = 0; i < result.length; i++) {
                         result[i][2] = result[i][1] - result[i][2];
                     }
-                    drawChart("swap_chart", "time", ['swaptotal', 'used'], 'MB', result, false);
+                    drawChart("mem_chart", "time", ['Real total(MB)', 'Real used(MB)'], 'MB', result, false);
+                    console.log('mem chart :' + (+new Date() - start));
+                }
+            });
+
+            // swap
+            $.ajax({
+                url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total(MB)', 'Virtual free(MB)']",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    for(var i = 0; i < result.length; i++) {
+                        result[i][2] = result[i][1] - result[i][2];
+                    }
+                    drawChart("swap_chart", "time", ['Virtual total(MB)', 'Virtual used(MB)'], 'MB', result, false);
                     console.log('swap chart :' + (+new Date() - start));
                 }
             });
