@@ -1,0 +1,20 @@
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
+#MAILTO=amoriya
+#HOME=/DATA/nmon-capture/
+
+# cron jobs
+# nmon: 5 seconds gap and 4 hours
+00 00 * * * /home/amoriya/nmon.io/nmon-agt/nmon-agt-4h.sh start
+# nmon: 5 seconds gap and 4 hours
+00 04 * * * /home/amoriya/nmon.io/nmon-agt/nmon-agt-4h.sh start
+# nmon: 5 seconds gap and 4 hours
+00 08 * * * /home/amoriya/nmon.io/nmon-agt/nmon-agt-4h.sh start
+# nmon: 5 seconds gap and 4 hours
+00 12 * * * /home/amoriya/nmon.io/nmon-agt/nmon-agt-4h.sh start
+# nmon: 5 seconds gap and 4 hours
+00 16 * * * /home/amoriya/nmon.io/nmon-agt/nmon-agt-4h.sh start
+# nmon: 5 seconds gap and 4 hours
+00 20 * * * /home/amoriya/nmon.io/nmon-agt/nmon-agt-4h.sh start
+# nmon: 5 seconds gap and 24 hours
+#00 00 * * * /home/amoriya/nmon.io/nmon-agt/agt.sh start

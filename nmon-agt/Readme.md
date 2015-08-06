@@ -1,5 +1,7 @@
-NMON Agent
+nmon-agt
 =========
+
+Nmon.io Agent Component
 
 Config
 ------------

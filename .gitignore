@@ -1,5 +1,5 @@
 *.log
 *.nmon
 *.pid
-nmon-db/node_modules
-nmon-db/logs
+nmon-repo/node_modules
+nmon-repo/logs
