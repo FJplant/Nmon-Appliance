@@ -7,7 +7,7 @@ COUNT="17280"
 HOMEDIR="$HOME/nmon.io/nmon-agt"
 #HOMEDIR="."
 
-LOGDIR="$HOMEDIR/data"
+LOGDIR="$HOMEDIR/logs"
 PIDFILE="$LOGDIR/nmon-agt.pid"
 PYFILE="$HOMEDIR/nmon-agt.py"
 
@@ -18,7 +18,8 @@ function start {
     PID=$(eval ps | grep nmon | head -n 1 | awk '{print $1}')
     echo $PID > $PIDFILE
     URL="http://$HOST:$PORT/nmonlog"
-    forever start -c python $PYFILE $LOGFILE $INTERVAL $URL
+#    forever start -c python $PYFILE $LOGFILE $INTERVAL $URL
+    nohup python $PYFILE $LOGFILE $INTERVAL $URL > $LOGDIR/nmon-agt.log &
 }
 
 function stop {

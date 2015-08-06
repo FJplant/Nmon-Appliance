@@ -4,10 +4,9 @@ HOST="localhost"
 PORT="6900"
 INTERVAL="5"
 COUNT="2880"
-HOMEDIR="$HOME/nmon.io/nmon-agent"
-#HOMEDIR="."
+HOMEDIR="$HOME/nmon.io/nmon-agt"
 
-LOGDIR="$HOMEDIR/data"
+LOGDIR="$HOMEDIR/logs"
 PIDFILE="$LOGDIR/nmon-agt-4h.pid"
 PYFILE="$HOMEDIR/nmon-agt.py"
 
@@ -18,7 +17,8 @@ function start {
     PID=$(eval ps | grep nmon | head -n 1 | awk '{print $1}')
     echo $PID > $PIDFILE
     URL="http://$HOST:$PORT/nmonlog"
-    forever start -c python $PYFILE $LOGFILE $INTERVAL $URL
+#    forever start -c python $PYFILE $LOGFILE $INTERVAL $URL
+    nohup python $PYFILE $LOGFILE $INTERVAL $URL > $LOGDIR/nmon-agt-4h.log &
 }
 
 function stop {
