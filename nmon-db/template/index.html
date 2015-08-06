@@ -148,15 +148,28 @@
         border-style:dotted;
         border-radius:10px;
         border-color:black;
-        margin-top:10px;
         font-size:15px;
-        padding:10px;
+        padding:0px;
         margin-top:0px;
         margin-bottom:0px;
         margin-left:0px;
         margin-right:0px;
         width: 1024px;
         height: 576px;
+      }
+      .nmon_references {
+        border-size:1px;
+        border-style:dotted;
+        border-radius:10px;
+        border-color:black;
+        font-size:15px;
+        padding:0px;
+        margin-top:0px;
+        margin-bottom:0px;
+        margin-left:0px;
+        margin-right:0px;
+        width: 1024px;
+        height: 610px;
       }
     </style>
   </head>
@@ -181,6 +194,18 @@
         <h4><font color=blue>CPU</font></h4>
         <div id="cpu_chart" class="googlechart"></div>
     </div>
+    <br><br><center>
+          <!-- Google AdSense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- http://db.nmon.io -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-7660708060036828"
+     data-ad-slot="9822759341"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+    </center>
     <div style="display: inline-block; width: 1044px;">
         <h4><font color=blue>Memory</font></h4>
         <div id="mem_chart" class="googlechart"></div>
@@ -205,10 +230,13 @@
         <h4><font color=blue>NFS</font></h4>
         <div id="nfs_chart" class="googlechart"></div>
     </div>
-    <!-- from here test code for bubble chart -->
+    <!-- Nmon - reference sites --> 
+    <h4><font color=blue>Some pretty d3js charts for reference...</font></h4>
     <div style="display: inline-block; width: 1044px;">
-        <h4><font color=blue>Some pretty d3js charts for reference...</font></h4>
-        <div id="bubble_chart" class="googlechart">
+        <div id="nmon_references" class="nmon_references">
+        <table widht=1024>
+        <tr>
+        <td valign="top">
         <p>
           <br><a target="_new" href="http://d3js.org/">d3js.org - D3 Data-Driven Documents</a>
           <br><a target="_new" href="http://bl.ocks.org/mbostock">mbostock's blocks</a>
@@ -225,18 +253,6 @@
           <br><a target="_new" href="http://bl.ocks.org/mbostock/4061502">Box Plots</a>
           <br><a target="_new" href="http://budgetapps.artzub.com/minfin/">Russian Budget</a>
           <br><a target="_new" href="http://energia.ningunaparte.net/en/">Electric Generation in Spain - Latest 24 hours/Generation Structure</a>
-          <br><center>
-          <!-- Google AdSense -->
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- http://db.nmon.io -->
-<ins class="adsbygoogle"
-     style="display:inline-block;width:728px;height:90px"
-     data-ad-client="ca-pub-7660708060036828"
-     data-ad-slot="9822759341"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-          </center>
           <br><a target="_new" href="">TBU...</a>
           <br><a target="_new" href="">TBU...</a>
           <br><a target="_new" href="">TBU...</a>
@@ -244,9 +260,25 @@
           <br><a target="_new" href=""></a>
           <br><a target="_new" href=""></a>      
         </p>
+        </td>
+        <td alight="right"><div>
+        <!-- google ad vertical for nmon - reference -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- http://db.nmon.io - refer urls vertical -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:160px;height:600px"
+     data-ad-client="ca-pub-7660708060036828"
+     data-ad-slot="1902539742"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+        </td></div>
+        </tr>
+        </table>
         </div>
     </div>
     <p>
+    <!-- from here test code for bubble chart -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
     <h4>Simple bubble chart test case from http://bl.ocks.org/mbostock/4063269 - mbostock's block #4063269</h4>
     <script>
