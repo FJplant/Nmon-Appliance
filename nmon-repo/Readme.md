@@ -3,6 +3,20 @@ nmon-repo
 
 Nmon.io Repository Component
 
+Introduction
+------------
+nmon-repo 
+
+	manages nmon log data.
+
+	uses MongoDB or Oracle to store nmon log data.
+
+	serves RESTful web service.
+
+	receives nmon log data from nmon-apt running on various hosts.
+
+	interects with nmon-agt & nmon-db
+
 Install
 ------------
 
