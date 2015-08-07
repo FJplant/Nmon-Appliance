@@ -25,7 +25,7 @@ This README would normally document whatever steps are necessary to get your app
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### Nmon.io components ###
-<img src="http://nmon.io/images/nmon-io-components.png">
+![Nmon.io Components](http://nmon.io/images/nmon-io-components.png "Nmon.io Components")
 
 ### How do I get set up? ###
 
