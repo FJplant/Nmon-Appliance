@@ -9,9 +9,9 @@ This README would normally document whatever steps are necessary to get your app
          dashboard.nmon.io ( alias to db.nmon.io )
 
 ### Websites related to nmon.io project ###
-* https://bitbucket.org/Nmon_io-team/nmon.io.git ( source development )
-* http://jira.nmon.io ( project management )
-* http://conf.nmon.io ( project collaboration )
+* https://bitbucket.org/Nmon_io-team/nmon.io.git ( source development / here )
+* ![http://jira.fjint.com/projects/NMIO/](http://jira.fjint.com/projects/NMIO/) ( project management )
+* ![http://www.fjint.com/display/NmioDev/](http://www.fjint.com/display/NmioDev/) ( project collaboration )
 
 ### SNS ###
 * [ facebook] https://fb.com/nmon.io
@@ -25,7 +25,7 @@ This README would normally document whatever steps are necessary to get your app
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### Nmon.io components ###
-![Nmon.io Components](http://nmon.io/images/nmon-io-components.png "Nmon.io Components")
+![Nmon.io Components](http://www.fjplant.com/nmon.io/images/nmon-io-components.png "Nmon.io Components")
 
 ### How do I get set up? ###
 
