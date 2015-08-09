@@ -11,6 +11,11 @@ function stop {
     node_modules/forever/bin/forever stop nmon-db.js 
 }
 
+function restart {
+    stop
+    start
+}
+
 function list {
     node_modules/forever/bin/forever list
 }
@@ -18,7 +23,7 @@ function list {
 function help_ {
     echo
     echo "Usage: ./daemon.sh [command]"
-    echo "command: start, stop, list"
+    echo "command: start, stop, restart, list"
     echo
 }
 
