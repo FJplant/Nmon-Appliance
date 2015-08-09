@@ -5,7 +5,7 @@
 ![Nmon.io Components](http://www.fjplant.com/nmon.io/images/nmon-io-components.png "Nmon.io Components")
 
 ### Websites related to nmon.io services ###
-    * [http://nmon.io](public website)
+        * [http://nmon.io](public website)
     * [http://db.nmon.io](Nmon Dashboard)
              [dashboard.nmon.io](alias to db.nmon.io)
 
