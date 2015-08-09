@@ -15,9 +15,9 @@ This README would normally document whatever steps are necessary to get your app
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### SNS ###
-* [ facebook|https://fb.com/nmon.io](https://fb.com/nmon.io)
-* [  twitter|https://twitter.com/nmon_io](https://twitter.com/nmon_io)
-* [pinterest|https://pinterest.com/nmonio](https://pinterest.com/nmonio)
+*  [facebook | https://fb.com/nmon.io](https://fb.com/nmon.io)
+*   [twitter | https://twitter.com/nmon_io](https://twitter.com/nmon_io)
+* [pinterest | https://pinterest.com/nmonio](https://pinterest.com/nmonio)
 
 ### Nmon.io components ###
 ![Nmon.io Components](http://www.fjplant.com/nmon.io/images/nmon-io-components.png "Nmon.io Components")
