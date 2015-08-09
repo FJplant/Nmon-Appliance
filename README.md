@@ -26,23 +26,3 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Nmon.io components ###
 ![Nmon.io Components](http://www.fjplant.com/nmon.io/images/nmon-io-components.png "Nmon.io Components")
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
