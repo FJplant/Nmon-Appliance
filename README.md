@@ -1,6 +1,5 @@
 # README #
-
-         This is a git repository for Nmon.io development project.
+         This repository is a git repository for Nmon.io development project.
 
 ### Nmon.io components ###
 ![Nmon.io Components](http://www.fjplant.com/nmon.io/images/nmon-io-components.png "Nmon.io Components")
