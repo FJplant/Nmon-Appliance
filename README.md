@@ -1,48 +1,21 @@
 # README #
-
-This README would normally document whatever steps are necessary to get your application up and running.
-
-
-### Websites related to nmon.io services ###
-* http://nmon.io ( public website )
-* http://db.nmon.io ( Nmon Dashboard )
-         dashboard.nmon.io ( alias to db.nmon.io )
-
-### Websites related to nmon.io project ###
-* https://bitbucket.org/Nmon_io-team/nmon.io.git ( source development )
-* http://jira.nmon.io ( project management )
-* http://conf.nmon.io ( project collaboration )
-
-### SNS ###
-* [ facebook] https://fb.com/nmon.io
-* [  twitter] @nmon_io
-* [pinterest] https://pinterest.com/nmonio
-
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+    This repository is a git repository for Nmon.io development project.
 
 ### Nmon.io components ###
-![Nmon.io Components](http://nmon.io/images/nmon-io-components.png "Nmon.io Components")
+![Nmon.io Components](http://www.fjplant.com/nmon.io/images/nmon-io-components.png "Nmon.io Components")
 
-### How do I get set up? ###
+### Websites related to nmon.io services ###
+    * http://nmon.io ( public website )
+    * http://db.nmon.io ( Nmon Dashboard )
+             dashboard.nmon.io ( alias to db.nmon.io )
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+### Websites related to nmon.io project ###
+    * https://bitbucket.org/Nmon_io-team/nmon.io.git ( source development / here )
+    * http://jira.fjint.com/projects/NMIO/ ( http://jira.fjint.com/projects/NMIO/ ) ( project management )
+    * http://www.fjint.com/display/NmioDev/ ( http://www.fjint.com/display/NmioDev/ ) ( project collaboration )
+    * [Learn Markdown] (https://bitbucket.org/tutorials/markdowndemo)
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+### SNS ###
+    * [ facebook] (https://fb.com/nmon.io)
+    * [  twitter] (https://twitter.com/nmon_io)
+    * [pinterest] (https://pinterest.com/nmonio)
