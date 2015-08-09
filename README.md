@@ -10,8 +10,8 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Websites related to nmon.io project ###
 * https://bitbucket.org/Nmon_io-team/nmon.io.git ( source development / here )
-* ![http://jira.fjint.com/projects/NMIO/](http://jira.fjint.com/projects/NMIO/) ( project management )
-* ![http://www.fjint.com/display/NmioDev/](http://www.fjint.com/display/NmioDev/) ( project collaboration )
+* [http://jira.fjint.com/projects/NMIO/](http://jira.fjint.com/projects/NMIO/) ( project management )
+* [http://www.fjint.com/display/NmioDev/](http://www.fjint.com/display/NmioDev/) ( project collaboration )
 
 ### SNS ###
 * [ facebook] https://fb.com/nmon.io
