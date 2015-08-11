@@ -6,13 +6,20 @@ Nmon.io Agent Component
 Config
 ------------
 
-* Edit agent.sh
+* Edit nmon-agt.conf
 
-        HOST="localhost"
-        PORT="6900"
-        INTERVAL="5"
-        COUNT="17280"
-        HOMEDIR="/home/amoriya/nmon.io/nmon-agent"
+        [agent]
+        interval: 5
+        repeatCycle: 86400
+        nmonLogDir: logs
+        serverUrl: http://localhost:6900/nmonlog
+        log: logs/nmon-agt.log
+
+        [watchdog]
+        interval: 5
+        retries: 10
+        log: logs/nmon-agt.log
+
 
 
 Run
@@ -20,9 +27,9 @@ Run
 
 1. Start
 
-        ./agent.sh start
+        ./nmon-agt.sh
 
 2. Stop
 
-        ./agent.sh stop
+        ./nmon-agt-stop.sh
 
