@@ -1,3 +1,12 @@
+#
+# nmon-agt-watchdog.py is
+#   an elastic nmon-agt component written in Python
+#   and written by amoriya ( Junkoo Hea, junkoo.hea@gmail.com )
+#
+#      since Aug 12, 2015
+# (c) All rights reserved to Junkoo Hea.
+#
+
 import sys, subprocess, time, ConfigParser, logging
 from optparse import OptionParser
 

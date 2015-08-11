@@ -27,9 +27,11 @@ Run
 
 1. Start
 
+        cd ./bin/
         ./nmon-agt.sh
 
 2. Stop
 
+        cd ./bin/
         ./nmon-agt-stop.sh
 
