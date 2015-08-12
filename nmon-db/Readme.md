@@ -1,30 +1,37 @@
-nmon-db
+nmon-agt
 =========
 
-Nmon.io Dashboard Component
+Nmon.io Agent Component
 
-Base
----------------
-Apache Tomcat
-Web Application
-
-
-Install
+Config
 ------------
 
-[Install Apache Tomcat]
+* Edit nmon-agt.conf
 
-[Install Nmon.io Dashboard]
+        [agent]
+        interval: 5
+        repeatCycle: 86400
+        nmonLogDir: logs
+        serverUrl: http://localhost:6900/nmonlog
+        log: logs/nmon-agt.log
 
-[To do]
-Making installation program
+        [watchdog]
+        interval: 5
+        retries: 10
+        log: logs/nmon-agt.log
+
+
 
 Run
----
+------------
 
-1. Start / Stop / Restart
+1. Start
 
-2. Log file location
+        cd ./bin/
+        ./nmon-agt.sh
 
+2. Stop
 
-$
+        cd ./bin/
+        ./nmon-agt-stop.sh
+

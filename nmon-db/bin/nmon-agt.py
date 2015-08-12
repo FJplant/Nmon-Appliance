@@ -76,7 +76,6 @@ def run(configfile):
         grep = subprocess.Popen(['grep', 'nmon'], stdin=ps.stdout, stdout=subprocess.PIPE)
         head = subprocess.Popen(['tail', '-n', '1'], stdin=grep.stdout, stdout=subprocess.PIPE)
         output = subprocess.check_output(['awk', '{print $1}'], stdin=head.stdout)
-        logging.info('after awk output: THIS is not called. need to be fixed!! by youngmo... :-)')
         ps.wait()
         pid = int(output)
     except:
