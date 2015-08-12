@@ -100,7 +100,8 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
     parser._rawHeader = {};
     parser._datetime = {};
     parser._cnt = 0;
-    parser._diskTotal = {}
+    parser._diskTotal = {};
+    parser._hostname = null;
     parser._transform = function(data, encoding, done) {
         parser._cnt++;
         if (parser._cnt % 100 == 0) {
@@ -118,6 +119,14 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
             if( data[0] in parser._rawHeader ) {
                 var h = parser._rawHeader[data[0]];
                 var query = { host: h[1].split(' ').pop(), datetime: parser._datetime[data[1]]};
+                if(h[0] === 'TOP') {
+                    query['host'] = parser._hostname;
+                    query['datetime'] = parser._datetime[data[2]];
+                }
+                else {
+                    parser._hostname = query['host'];
+                }
+
                 var val = 0.0, read = 0.0, write = 0.0;
                 for( var i = 2; i < h.length; i++ ) {
                     if(h[i] !== '') {
@@ -132,9 +141,17 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                                 query['Virtual free(MB)'] = parseFloat(data[i]);
                             else
                                 query[h[i]] = parseFloat(data[i]);
-                        } 
+                        }
                         else {
-                            query[h[i]] = parseFloat(data[i]);
+                            if( h[0] === 'TOP' && h[i] === 'Time' ) {
+                                // skip time
+                            }
+                            if( h[0] === 'TOP' && h[i] === 'Command' ) {
+                                query[h[i]] = data[i];
+                            }
+                            else {
+                                query[h[i]] = parseFloat(data[i]);
+                            }
                         }
                     }
                     if( (h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/) ) {
@@ -147,8 +164,10 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                             write += parseFloat(data[i]);
                     }
                 }
-                this.push([h[0], query, null]);
-                
+                if (!(h[0] === 'TOP' && data[2] == 'T0001')) {
+                    this.push([h[0], query, null]);
+                }
+
                 if( h[0] === 'DISKREAD' ) {
                     parser._diskTotal['host'] = query['host'];
                     parser._diskTotal['datetime'] = query['datetime'];
@@ -173,8 +192,10 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                 }
             }
             else {
-                this.push(['categories', {name: data[0]}, {name: data[0]}]);
-                parser._rawHeader[data[0]] = data;
+                if (!(data[0] === 'TOP' && data.length <= 2)) {
+                    this.push(['categories', {name: data[0]}, {name: data[0]}]);
+                    parser._rawHeader[data[0]] = data;
+                }
             }
         }
         done();
@@ -192,7 +213,8 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
             if (writer._bulk[i][0] === 'categories') {
                 bulks[writer._bulk[i][0]].find(writer._bulk[i][1]).upsert().update({ $set: writer._bulk[i][2]});
                 var collection = db.collection(writer._bulk[i][1]['name']);
-                collection.ensureIndex({datetime: 1, host: 1}, {unique: true});
+                if ( writer._bulk[i][1]['name'] !== 'TOP')
+                    collection.ensureIndex({datetime: 1, host: 1}, {unique: true});
             }
             else {
                 bulks[writer._bulk[i][0]].insert(writer._bulk[i][1]);
