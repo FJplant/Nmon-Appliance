@@ -311,8 +311,11 @@ function get_titles(url_info, req, res) {
 }
 
 function get_fields(url_info, req, res) {
-    var results = [];
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
+    if (m[2] === 'TOP' )
+        return get_top_fields(url_info, req, res);
+
+    var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
     var collection = db.collection(m[2]);
@@ -368,6 +371,40 @@ function get_fields(url_info, req, res) {
             res.writeHead(200, {'Content-Type': 'text/json'});
             res.end(JSON.stringify(results));
         }
+    });
+}
+
+function get_top_fields(url_info, req, res) {
+    var results = [];
+    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
+
+    var date = eval(url_info.query['date']);
+    var type = url_info.query['type'];
+
+    var match = {};
+    if (m[1] !== 'All')
+        match['host'] = m[1];
+    if (typeof date !== 'undefined')
+        match['datetime'] = { $gt : date[0], $lt : date[1] };
+
+    var group = { _id : { command: '$Command' } };
+    if (type === 'cpu')
+        group['val'] = { $avg : "$%CPU" }
+    else if (type === 'mem')
+        group['val'] = { $avg : { $add: ["$ResText", "$ResData"] } }
+
+    results.push(['command', type]);
+    var collection = db.collection(m[2]);
+    collection.aggregate({'$match' : match}, {'$group': group}, function (err, doc) {
+        if( err )
+            return error_handler(res, err, 500);
+        if( doc ) {
+            for( var i = 0; i < doc.length; i++ ) {
+                results.push([ doc[i]._id.command, doc[i].val ]);
+            }
+        }
+        res.writeHead(200, {'Content-Type': 'text/json'});
+        res.end(JSON.stringify(results));
     });
 }
 
