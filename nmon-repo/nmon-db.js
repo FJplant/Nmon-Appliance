@@ -146,7 +146,7 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                             if( h[0] === 'TOP' && h[i] === 'Time' ) {
                                 // skip time
                             }
-                            if( h[0] === 'TOP' && h[i] === 'Command' ) {
+                            else if( h[0] === 'TOP' && h[i] === 'Command' ) {
                                 query[h[i]] = data[i];
                             }
                             else {
