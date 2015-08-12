@@ -52,9 +52,7 @@ echo "nameserver 8.8.4.4" >> /etc/resolv.conf
 
 echo "[`date`] Installing base RPMs..."
 yum install -y deltarpm
-yum install -y bind-utils
-yum install -y iptables-services
-yum install -y sysstat
+yum install -y bind-utils iptables-services sysstat nmon
 
 echo "[`date`] Installing gcc, git, lsof..."
 yum install -y gcc python curl libcurl unzip lsof vim*
@@ -122,16 +120,16 @@ yum install -y gcc-c++ make
 curl -sL https://rpm.nodesource.com/setup | bash -
 yum install -y nodejs npm
 cat > /etc/yum.repos.d/mongodb-org-3.0.repo << EOF
-[mongodb-org-2.6]
-name=MongoDB 2.6 Repository
-baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+[mongodb-org-3.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/6/mongodb-org/3.0/x86_64/
 gpgcheck=0
 enabled=1
 EOF
 yum install -y mongodb-org
 
-echo "[`date`] Installing ip-traf utils"
-yum install -y ip-traf
+echo "[`date`] Installing ip-traf / iptop utils"
+yum install -y ip-traf iptop
 
 echo "[`date`] Please change kernel counts"
 read -t 10 -p "[Hit ENTER or wait ten seconds] "; echo

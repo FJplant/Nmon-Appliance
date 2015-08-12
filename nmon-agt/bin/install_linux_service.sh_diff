@@ -1,0 +1,87 @@
+5c5
+< jira_account=
+---
+> conf_account=
+7,8c7,8
+< if [ -z "$JIRA_USER" ]; then
+<         jira_account="jira"
+---
+> if [ -z "$CONF_USER" ]; then
+>         conf_account="confluence"
+10c10
+<         jira_account=$JIRA_USER
+---
+>         conf_account=$CONF_USER
+14c14
+<     echo uninstalling JIRA as a service
+---
+>     echo uninstalling Confluence as a service
+16,17c16,17
+<         update-rc.d -f $jira_account remove
+<         rm -f /etc/init.d/$jira_account
+---
+>         update-rc.d -f $conf_account remove
+>         rm -f /etc/init.d/$conf_account
+19c19
+<         rm -f /etc/init.d/$jira_account /etc/rc1.d/{S,K}95$jira_account
+---
+>         rm -f /etc/init.d/$conf_account /etc/rc1.d/{S,K}95$conf_account
+21c21
+<             rm -f /etc/rc$i.d/{S,K}95$jira_account
+---
+>             rm -f /etc/rc$i.d/{S,K}95$conf_account
+27,29c27,29
+<         echo installing JIRA as a service
+<         JIRA_BIN=`dirname $0`
+<         cat >/etc/init.d/$jira_account <<EOF
+---
+>         echo installing Confluence as a service
+>         CONF_BIN=`dirname $0`
+>         cat >/etc/init.d/$conf_account <<EOF
+32,33c32,33
+< # JIRA Linux service controller script
+< cd "$JIRA_BIN"
+---
+> # Confluence Linux service controller script
+> cd "$CONF_BIN"
+37c37
+<         ./start-jira.sh
+---
+>         ./start-confluence.sh
+40c40,44
+<         ./stop-jira.sh
+---
+>         ./stop-confluence.sh
+>         ;;
+>     restart)
+>         ./stop-confluence.sh
+>         ./start-confluence.sh
+43c47
+<         echo "Usage: \$0 {start|stop}"
+---
+>         echo "Usage: \$0 {start|stop|restart}"
+48c52
+<         chmod +x /etc/init.d/$jira_account
+---
+>         chmod +x /etc/init.d/$conf_account
+50c54
+<             update-rc.d -f $jira_account defaults
+---
+>             update-rc.d -f $conf_account defaults
+52,56c56,60
+<             ln -s /etc/init.d/$jira_account /etc/rc1.d/K95$jira_account
+<             ln -s /etc/init.d/$jira_account /etc/rc2.d/K95$jira_account
+<             ln -s /etc/init.d/$jira_account /etc/rc3.d/S95$jira_account
+<             ln -s /etc/init.d/$jira_account /etc/rc4.d/K95$jira_account
+<             ln -s /etc/init.d/$jira_account /etc/rc5.d/S95$jira_account
+---
+>             ln -s /etc/init.d/$conf_account /etc/rc1.d/K95$conf_account
+>             ln -s /etc/init.d/$conf_account /etc/rc2.d/K95$conf_account
+>             ln -s /etc/init.d/$conf_account /etc/rc3.d/S95$conf_account
+>             ln -s /etc/init.d/$conf_account /etc/rc4.d/K95$conf_account
+>             ln -s /etc/init.d/$conf_account /etc/rc5.d/S95$conf_account
+59c63
+< fi
+\ No newline at end of file
+---
+> fi

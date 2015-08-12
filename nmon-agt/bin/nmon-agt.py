@@ -1,3 +1,12 @@
+#
+# nmon-agt.py is
+#   an elastic nmon-agt component written in Python
+#   and written by amoriya ( Junkoo Hea, junkoo.hea@gmail.com )
+#
+#      since Aug 12, 2015
+# (c) All rights reserved to Junkoo Hea.
+#
+
 import sys, os, subprocess, signal, errno, time, requests, ConfigParser, logging
 from datetime import datetime
 from optparse import OptionParser
