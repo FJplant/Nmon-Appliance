@@ -44,8 +44,9 @@
             data.addRows(row);
 
             var options = {
-                vAxis : { title : label },
-                isStacked : stack
+                vAxis: { title : label },
+                isStacked: stack,
+                chartArea: {  width: "75%", height : '80%' },
             };
 
             var chart = new google.visualization.AreaChart(document.getElementById(did));
@@ -56,9 +57,10 @@
             var data = google.visualization.arrayToDataTable(data);
 
             var options = {
-              title: title,
-              pieSliceText: 'label',
-              pieHole: 0.4,
+                title: title,
+                pieSliceText: 'label',
+                pieHole: 0.4,
+                chartArea: {  width: "95%", height : '85%' }
             };
 
             var chart = new google.visualization.PieChart(document.getElementById(did));
