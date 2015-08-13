@@ -162,10 +162,8 @@
             $("#view").click(function(event) {
                 var fromDate = new Date($("#from").val());
                 var toDate = new Date();
-                if ($("#to").val() !== "now") {
+                if ($("#to").val() !== "now")
                     toDate = new Date($("#to").val());
-                    toDate.setDate(toDate.getDate() + 1);
-                }
                 updateGraph($("#hosts").val(), fromDate, toDate)
             });
             var fromDate = new Date($("#from").val());
