@@ -1,5 +1,5 @@
 #/bin/sh
-echo "[`date`] Killing my nmon processes..."
+echo "[`date`] Killing all of my nmon processes..."
 echo "[`date`] nmon process lists..."
 ps -f | grep nmon | grep -v "grep"
 
@@ -16,4 +16,4 @@ while [ ! -z $NMON_PID ]; do
   kill -9 $NMON_PID
   find_nmon_pid
 done
-echo "[`date`] my nmon processes have been all killed..."
+echo "[`date`] All of my nmon processes have been killed..."

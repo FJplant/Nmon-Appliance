@@ -44,8 +44,9 @@
             data.addRows(row);
 
             var options = {
-                vAxis : { title : label },
-                isStacked : stack
+                vAxis: { title : label },
+                isStacked: stack,
+                chartArea: {  width: "75%", height : '80%' },
             };
 
             var chart = new google.visualization.AreaChart(document.getElementById(did));
@@ -56,9 +57,10 @@
             var data = google.visualization.arrayToDataTable(data);
 
             var options = {
-              title: title,
-              pieSliceText: 'label',
-              pieHole: 0.4,
+                title: title,
+                pieSliceText: 'label',
+                pieHole: 0.4,
+                chartArea: {  width: "95%", height : '85%' }
             };
 
             var chart = new google.visualization.PieChart(document.getElementById(did));
@@ -162,10 +164,8 @@
             $("#view").click(function(event) {
                 var fromDate = new Date($("#from").val());
                 var toDate = new Date();
-                if ($("#to").val() !== "now") {
+                if ($("#to").val() !== "now")
                     toDate = new Date($("#to").val());
-                    toDate.setDate(toDate.getDate() + 1);
-                }
                 updateGraph($("#hosts").val(), fromDate, toDate)
             });
             var fromDate = new Date($("#from").val());
