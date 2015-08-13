@@ -40,7 +40,7 @@ def main():
                 ps = subprocess.Popen(['ps', 'aux'], stdout=subprocess.PIPE)
                 grep = subprocess.Popen(['grep', '[n]mon-agt.py'], stdin=ps.stdout, stdout=subprocess.PIPE)
                 head = subprocess.Popen(['head', '-n', '1'], stdin=grep.stdout, stdout=subprocess.PIPE)
-                output = subprocess.check_output(['awk', '{print $2}'], stdin=head.stdout)
+                output = subprocess.Popen(['awk', '{print $2}'], stdin=head.stdout, stdout=subprocess.PIPE).communicate()[0]
                 ps.wait()
                 pid = int(output)
                 count = 0

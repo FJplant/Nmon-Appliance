@@ -73,10 +73,9 @@ def run(configfile):
     global pid
     try:
         ps = subprocess.Popen(['ps'], stdout=subprocess.PIPE)
-        grep = subprocess.Popen(['grep', 'nmon'], stdin=ps.stdout, stdout=subprocess.PIPE)
+        grep = subprocess.Popen(['grep', '[n]mon'], stdin=ps.stdout, stdout=subprocess.PIPE)
         head = subprocess.Popen(['tail', '-n', '1'], stdin=grep.stdout, stdout=subprocess.PIPE)
-        output = subprocess.check_output(['awk', '{print $1}'], stdin=head.stdout)
-        logging.info('after awk output: THIS is not called. need to be fixed!! by youngmo... :-)')
+        output = subprocess.Popen(['awk', '{print $1}'], stdin=head.stdout, stdout=subprocess.PIPE).communicate()[0]
         ps.wait()
         pid = int(output)
     except:
