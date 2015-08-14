@@ -54,7 +54,7 @@ def run(configfile):
         repeatCycle = conf.getint("agent", "repeatCycle")
         count = repeatCycle / interval
         url = conf.get("agent", "serverUrl")
-        nmon_cmd = ["nmon", "-F", logfile, "-s", str(interval), "-c", str(count), "-t"];
+        nmon_cmd = ["nmon", "-F", logfile, "-s", str(interval), "-c", str(count), "-T"];
     except ConfigParser.Error:
         logging.error('Check your config file!')
         print "Check your config file!"
