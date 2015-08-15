@@ -219,24 +219,7 @@
         height: 610px;
       }
     </style>
-
   <script>
-  /*
-   * Invalidate function for slider workaround
-   * @param objid - div id 
-   */
-  function invalidateUtil(objid) {
-    var obj =  document.getElementById(objid);
-    // TODO: type and null checking is necessary
- 
-//    obj.style.display = "none";
-    setTimeout( function() {
-      // Some other thing to do
-      // do_stuffs();
-//      obj.style.display = "block";
-    }, 100);
-  }
-
     $(function() {
       $( "#from" ).datepicker({
         defaultDate: "-7m",
@@ -284,18 +267,15 @@
         slide: function( event, ui ) {
           var min = 0, max = 60*24*2/5,
               hour = 0, hourstr, min = 0, minstr;
-          //if ($( "#slider-range-time" ).slider("values", 0) > (max / 2) ) {
-          //    $( "#slider-range-time" ).slider("values", 0, max / 2);
-          //}
-          //if ($( "#slider-range-time" ).slider("values", 1) < (max / 2) ) {
-          //    $( "#slider-range-time" ).slider("values", 1, max /2 );
-          //}
 
           if (ui.values[0] > max/2) {
             $( "#slider-range-time" ).slider("values", 0, max / 2);
             hour = max/2*5/60;
             ui.values[0] = max/2;
-            invalidateUtil("slider-range-time");
+
+            // Just workaround, folowing refresh generates javascript error.
+            // But, it works as I wanted... :-) youngmo 2015.8.16.
+            $( "#slider-range-time" ).slider("refresh");
           } else { 
             hour = Math.floor(ui.values[0]*5/60);
           }
@@ -310,7 +290,9 @@
             $( "#slider-range-time" ).slider("values", 1, max /2 );
             hour = max/2*5/60;
             ui.values[1] = max/2;
-            invalidateUtil("slider-range-time");
+            // Just workaround, folowing refresh generates javascript error.
+            // But, it works as I wanted... :-) youngmo 2015.8.16.
+            $( "#slider-range-time" ).slider("refresh");
           } else {
             hour = Math.floor((ui.values[1]-max/2)*5/60);
           }
