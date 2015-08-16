@@ -36,6 +36,13 @@ http.Server(function(req, res) {
             res.end(html);
             return;
         }
+        else if( pathname == '/index_tabbed' ) {
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            var html = swig.renderFile('template/index_tabbed.html', {
+            });
+            res.end(html);
+            return;
+        }
         else if( pathname == '/process.json' ) {
             res.writeHead(200, {'Content-Type': 'application/json'});
             var html = swig.renderFile('template/process.json', {
