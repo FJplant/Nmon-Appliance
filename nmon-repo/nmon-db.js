@@ -149,6 +149,12 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                             else
                                 query[h[i]] = parseFloat(data[i]);
                         }
+                        else if (h[0] === 'CPU_ALL') {
+                            if (h[i] === 'PhysicalCPUs')
+                                query['CPUs'] = parseFloat(data[i]);
+                            else
+                                query[h[i]] = parseFloat(data[i]);
+                        }
                         else {
                             if( h[0] === 'TOP' && h[i] === 'Time' ) {
                                 // skip time
@@ -171,7 +177,7 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                             write += parseFloat(data[i]);
                     }
                 }
-                if (!(h[0] === 'TOP' && data[2] == 'T0001')) {
+                if (!(h[0] === 'TOP' && data[2] === 'T0001')) {
                     this.push([h[0], query, null]);
                 }
 
@@ -324,6 +330,8 @@ function get_fields(url_info, req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
     if (m[2] === 'TOP' )
         return get_top_fields(url_info, req, res);
+    else if (m[2] === 'HOST')
+        return get_host_fields(url_info, req, res);
 
     var results = [];
     var data = eval(url_info.query['data']);
@@ -415,6 +423,71 @@ function get_top_fields(url_info, req, res) {
         }
         res.writeHead(200, {'Content-Type': 'text/json'});
         res.end(JSON.stringify(results));
+    });
+}
+
+function get_host_fields(url_info, req, res) {
+    var results = {};
+    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
+
+    var date = eval(url_info.query['date']);
+
+    var match = {};
+    if (typeof date !== 'undefined')
+        match['datetime'] = { $gt : date[0], $lt : date[1] };
+
+    var group = { _id : { host: '$host' } };
+    group['val'] = { $avg : { $add: ["$User%", "$Sys%"] } };
+    group['no'] = { $avg : "$CPUs"};
+    db.collection('CPU_ALL').aggregate({'$match' : match}, {'$group': group}, function (err, doc) {
+        if( err )
+            return error_handler(res, err, 500);
+        if( doc ) {
+            for( var i = 0; i < doc.length; i++ ) {
+                if ( doc[i]._id.host in results ) {
+                    results[doc[i]._id.host]['cpu'] = doc[i].val;
+                    results[doc[i]._id.host]['no'] = doc[i].no;
+                }
+                else {
+                    results[doc[i]._id.host] = { cpu : doc[i].val, no : doc[i].no };
+                }
+            }
+            var group2 = { _id: { host: '$host'} };
+            group2['val'] = { $avg : { $add: ["$read", "$write"] } };
+            db.collection('DISK_TOTAL').aggregate({'$match' : match}, {'$group': group2}, function (err, doc) {
+                if( err )
+                    return error_handler(res, err, 500);
+                if( doc ) {
+                    for( var i = 0; i < doc.length; i++ ) {
+                        if ( doc[i]._id.host in results )
+                            results[doc[i]._id.host]['disk'] = doc[i].val;
+                        else
+                            results[doc[i]._id.host] = { disk : doc[i].val };
+                    }
+                    db.collection('NET_TOTAL').aggregate({'$match' : match}, {'$group': group2}, function (err, doc) {
+                        if( err )
+                            return error_handler(res, err, 500);
+                        if( doc ) {
+                            for( var i = 0; i < doc.length; i++ ) {
+                                if ( doc[i]._id.host in results )
+                                    results[doc[i]._id.host]['net'] = doc[i].val;
+                                else
+                                    results[doc[i]._id.host] = { net : doc[i].val };
+                            }
+
+                            var data = [['HOST', 'CPU (%)', 'Disk (KB/s)', 'Network (KB/s)', 'No of CPUs']];
+                            var hosts = Object.keys(results);
+                            for(var i = 0; i < hosts.length; i++) {
+                                data.push([hosts[i], results[hosts[i]]['cpu'], results[hosts[i]]['disk'], results[hosts[i]]['net'], results[hosts[i]]['no']]);
+                            }
+
+                            res.writeHead(200, {'Content-Type': 'text/json'});
+                            res.end(JSON.stringify(data));
+                        }
+                    });
+                }
+            });
+        }
     });
 }
 

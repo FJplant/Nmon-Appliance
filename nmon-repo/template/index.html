@@ -89,6 +89,21 @@
             chart.draw(data, options);
         }
 
+        function drawBubbleChart(did, data, titles) {
+            var data = google.visualization.arrayToDataTable(data);
+
+            var options = {
+                title: titles[0],
+                hAxis: {title: titles[1]},
+                vAxis: {title: titles[2]},
+                colorAxis: {colors: ['yellow', 'red']},
+                chartArea: {  width: "75%", height : '75%' }
+            };
+
+            var chart = new google.visualization.BubbleChart(document.getElementById(did));
+            chart.draw(data, options);
+        }
+
         function updateGraph(hostname, restype, fromDate, toDate) {
             var start = new Date();
             // cpu
@@ -205,6 +220,22 @@
                     reqStatus["PROCESS_MEM"] = true;
                     drawPieChart("process_mem_chart", data, "Process usage by MEM");
                     console.log(' PROCESS_MEM chart respose: ' + ((+new Date() - +start))/1000 + ' secs' );
+                }
+            });
+            }
+
+            // hosts
+            if ( restype == "HOSTS" || restype == "ALL" ) { 
+            reqStatus["HOSTS"] = true;
+            console.log("[Requesting HOSTS data] " + start.toLocaleString() );
+            $.ajax({
+                url: "/" + hostname + "/HOST?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    reqStatus["HOSTS"] = true;
+                    drawBubbleChart("hosts_chart", data, ["Hosts", 'CPU (%)', 'Disk (KB/s)']);
+                    console.log(' HOSTS chart respose: ' + ((+new Date() - +start))/1000 + ' secs' );
                 }
             });
             }
@@ -416,6 +447,10 @@
               curRes = "PROCESS_MEM"; 
               setLoading("process_mem_chart", curRes, "Loading Process usage by memory chart. Wait a moment..."); 
               break;
+            case "Hosts": 
+              curRes = "HOSTS"; 
+              setLoading("hosts_chart", curRes, "Loading hosts chart. Wait a moment..."); 
+              break;  
             case "Bubble Chart Example": 
               draw_bubble_chart(); 
               curRes = "NONE";
@@ -606,6 +641,7 @@ d3.select(self.frameElement).style("height", diameter + "px");
         <li><a href="#nfs_chart">NFS</a>
         <li><a href="#process_cpu_chart">Process CPU Usage</a>
         <li><a href="#process_mem_chart">Process Memory Usage</a>
+        <li><a href="#hosts">Hosts</a>
         <li><a href="#overall">Overall</a>
         <li><a href="#bubble_chart">Bubble Chart Example</a>
     </ul>
@@ -627,6 +663,7 @@ d3.select(self.frameElement).style("height", diameter + "px");
     <div id="nfs_chart" class="googlechart">&nbsp;</div>
     <div id="process_cpu_chart" class="googlechart">&nbsp;</div>
     <div id="process_mem_chart" class="googlechart">&nbsp;</div>
+    <div id="hosts_chart" class="googlechart">&nbsp;</div>
     <div id="bubble_chart" class="googlechart">
         <p>Simple bubble chart test case from http://bl.ocks.org/mbostock/4063269<br>
            - mbostock's block #4063269
