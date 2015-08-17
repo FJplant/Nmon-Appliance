@@ -107,9 +107,9 @@ http.Server(function(req, res) {
     catch(e) {
         error_handler(res, e, 500);
     }
-}).listen(6901);
+}).listen(6900);
 
-log.info('Server running at http://localhost:6901');
+log.info('Server running at http://localhost:6900');
 
 function put_nmonlog(url_info, req, res, bulk_unit) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true});
