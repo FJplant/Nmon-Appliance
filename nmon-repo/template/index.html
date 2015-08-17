@@ -106,6 +106,22 @@
 
         function updateGraph(hostname, restype, fromDate, toDate) {
             var start = new Date();
+            // hosts
+            if ( restype == "HOSTS" || restype == "ALL" ) { 
+            reqStatus["HOSTS"] = true;
+            console.log("[Requesting HOSTS data] " + start.toLocaleString() );
+            $.ajax({
+                url: "/" + hostname + "/HOST?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
+                data: {},
+                success: function( data ) {
+                    var result = eval(data);
+                    reqStatus["HOSTS"] = true;
+                    drawBubbleChart("hosts_chart", data, ["Hosts", 'CPU (%)', 'Disk (KB/s)']);
+                    console.log(' HOSTS chart respose: ' + ((+new Date() - +start))/1000 + ' secs' );
+                }
+            });
+            }
+
             // cpu
             if ( restype == "CPU" || restype == "ALL" ) {
             reqStatus["CPU"] = true;
@@ -224,21 +240,6 @@
             });
             }
 
-            // hosts
-            if ( restype == "HOSTS" || restype == "ALL" ) { 
-            reqStatus["HOSTS"] = true;
-            console.log("[Requesting HOSTS data] " + start.toLocaleString() );
-            $.ajax({
-                url: "/" + hostname + "/HOST?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
-                data: {},
-                success: function( data ) {
-                    var result = eval(data);
-                    reqStatus["HOSTS"] = true;
-                    drawBubbleChart("hosts_chart", data, ["Hosts", 'CPU (%)', 'Disk (KB/s)']);
-                    console.log(' HOSTS chart respose: ' + ((+new Date() - +start))/1000 + ' secs' );
-                }
-            });
-            }
         }
 
         $(function() {
@@ -415,6 +416,10 @@
 
           var curRes = getCurResType();
           switch ( newTab ) {
+            case "Hosts": 
+              curRes = "HOSTS"; 
+              setLoading("hosts_chart", curRes, "Loading hosts chart. Wait a moment..."); 
+              break;  
             case "CPU": 
               curRes = "CPU"; 
               setLoading("cpu_chart", curRes, "Loading CPU chart. Wait a moment..."); 
@@ -447,10 +452,6 @@
               curRes = "PROCESS_MEM"; 
               setLoading("process_mem_chart", curRes, "Loading Process usage by memory chart. Wait a moment..."); 
               break;
-            case "Hosts": 
-              curRes = "HOSTS"; 
-              setLoading("hosts_chart", curRes, "Loading hosts chart. Wait a moment..."); 
-              break;  
             case "Bubble Chart Example": 
               draw_bubble_chart(); 
               curRes = "NONE";
@@ -633,6 +634,7 @@ d3.select(self.frameElement).style("height", diameter + "px");
 </div>
 <div id="tabs">
     <ul>
+        <li><a href="#hosts_chart">Hosts</a>
         <li><a href="#cpu_chart">CPU</a>
         <li><a href="#mem_chart">Memory</a>
         <li><a href="#swap_chart">Swap</a>
@@ -641,7 +643,10 @@ d3.select(self.frameElement).style("height", diameter + "px");
         <li><a href="#nfs_chart">NFS</a>
         <li><a href="#process_cpu_chart">Process CPU Usage</a>
         <li><a href="#process_mem_chart">Process Memory Usage</a>
-        <li><a href="#hosts">Hosts</a>
+<<<<<<< HEAD
+=======
+        <li><a href="#hosts_chart">Hosts</a>
+>>>>>>> 5d4c890940a785070686079d8f66255949d85c93
         <li><a href="#overall">Overall</a>
         <li><a href="#bubble_chart">Bubble Chart Example</a>
     </ul>
@@ -655,6 +660,7 @@ d3.select(self.frameElement).style("height", diameter + "px");
             <h4><font color=blue>Process (CPU)</font></h4>
             <h4><font color=blue>Process (Memory)</font></h4>
     </div>
+    <div id="hosts_chart" class="googlechart">&nbsp;</div>
     <div id="cpu_chart" class="googlechart">&nbsp;</div>
     <div id="mem_chart" class="googlechart">&nbsp;</div>
     <div id="swap_chart" class="googlechart">&nbsp;</div>
@@ -663,7 +669,6 @@ d3.select(self.frameElement).style("height", diameter + "px");
     <div id="nfs_chart" class="googlechart">&nbsp;</div>
     <div id="process_cpu_chart" class="googlechart">&nbsp;</div>
     <div id="process_mem_chart" class="googlechart">&nbsp;</div>
-    <div id="hosts_chart" class="googlechart">&nbsp;</div>
     <div id="bubble_chart" class="googlechart">
         <p>Simple bubble chart test case from http://bl.ocks.org/mbostock/4063269<br>
            - mbostock's block #4063269
