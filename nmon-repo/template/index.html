@@ -483,6 +483,8 @@ var bubble = d3.layout.pack()
     .padding(1.5);
 
 // bubble chart location modified by youngmo 2015.8.17. 05:26 AM
+    document.getElementById("bubble_chart_area").innerHTML = "";
+
 var svg = d3.select("#bubble_chart_area").append("svg")
     .attr("width", diameter)
     .attr("height", diameter)
