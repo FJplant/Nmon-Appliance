@@ -410,11 +410,11 @@
               break;
             case "Process CPU Usage": 
               curRes = "PROCESS_CPU"; 
-              setLoading("process_cpu_chart", curRes, "Loading Process usage by CPU chart. It will take around 30 seconds..."); 
+              setLoading("process_cpu_chart", curRes, "Loading Process usage by CPU chart. It will take around 5 seconds..."); 
               break;
             case "Process Memory Usage": 
               curRes = "PROCESS_MEM"; 
-              setLoading("process_mem_chart", curRes, "Loading Process usage by memory chart. It will take around 30 seconds..."); 
+              setLoading("process_mem_chart", curRes, "Loading Process usage by memory chart. It will take around 5 seconds..."); 
               break;
             case "Bubble Chart Example": 
               draw_bubble_chart(); 
@@ -538,6 +538,9 @@ d3.select(self.frameElement).style("height", diameter + "px");
 <body>
 <h3><font color=blue>Nmon.io Dashboard</font></h3>
 <div>
+  <table width="100%">
+    <tr>
+    <td>
     <table>
         <tr>
             <th>
@@ -573,6 +576,21 @@ d3.select(self.frameElement).style("height", diameter + "px");
             <td><div id="slider-range-time"></div></td>
         </tr>
     </table>
+  </td>
+  <td width="320" align="right">
+<!-- Google AdSense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- db.nmon.io - 320x100 -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:320px;height:100px"
+     data-ad-client="ca-pub-7660708060036828"
+     data-ad-slot="3178966548"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+  </td>
+  </tr>
+</table>
 
     <a href="/detail" style="float: right;">Detail</a>
 </div>
