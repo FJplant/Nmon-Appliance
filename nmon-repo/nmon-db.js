@@ -6,7 +6,23 @@ var http = require('http'),
     csv = require('csv-streamify'),
     swig = require('swig');
 
-var db = mongojs('nmon-db', ['record']);
+db = mongojs('nmon-db', ['record']);
+// refer to https://github.com/mafintosh/mongojs
+//db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
+
+/*
+ * TODO: logging on db error status 
+ *
+ */
+/*
+db.on('error', function (err) {
+    console.log('database error', err);
+});
+
+db.on('ready', function () {
+    console.log('database connected');
+});
+*/
 
 var log = new (winston.Logger)({
     transports: [
@@ -91,9 +107,9 @@ http.Server(function(req, res) {
     catch(e) {
         error_handler(res, e, 500);
     }
-}).listen(6900);
+}).listen(6901);
 
-log.info('Server running at http://localhost:6900');
+log.info('Server running at http://localhost:6901');
 
 function put_nmonlog(url_info, req, res, bulk_unit) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true});
