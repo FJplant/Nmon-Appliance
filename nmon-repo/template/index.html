@@ -235,7 +235,7 @@
     <style>
         body {
           font-family: "Tahoma", "Helvetica", "Arial",  "Verdana", "sans-serif";
-//          font-size: 12px;
+          font-size: 10px;
         }
 
         text {
@@ -243,11 +243,12 @@
         }
 
         .ui-widget {
-            font-size: 75% !important;
+            font-size: 8pt; 
         }
 
-        .ui-tabs .ui-tabs-nav li {
-            font-size: 12pt !important;
+        .ui-tabs .ui-tabs-nav li a {
+            font-size: 8pt;
+            font-weight: bold;
         }
 
         .googlechart {
@@ -457,6 +458,7 @@
     progressBarValue = progressBar.find( ".ui-progressbar-value" );
     progressBarValue.css( {"background" : "#FFFF80" } );
     progressLabel.text ( message );
+    setCurResType(reqResType);
 
     function loading() {
       var val = progressBar.progressbar( "value" ) || 0;
@@ -535,7 +537,7 @@ d3.select(self.frameElement).style("height", diameter + "px");
 </head>
 <body>
 <h3><font color=blue>Nmon.io Dashboard</font></h3>
-<div class="menu">
+<div>
     <table>
         <tr>
             <th>
