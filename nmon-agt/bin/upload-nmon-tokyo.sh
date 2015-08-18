@@ -24,3 +24,4 @@
 ./nmon-upldr.sh nmonlog upload /DATA/nmon-capture/nmon-tokyo.fjint.com/nmon-tokyo_150817_0800.nmon
 ./nmon-upldr.sh nmonlog upload /DATA/nmon-capture/nmon-tokyo.fjint.com/nmon-tokyo_150817_1200.nmon
 ./nmon-upldr.sh nmonlog upload /DATA/nmon-capture/nmon-tokyo.fjint.com/nmon-tokyo_150817_1600.nmon
+./nmon-upldr.sh nmonlog upload /DATA/nmon-capture/nmon-tokyo.fjint.com/nmon-tokyo_150817_2000.nmon
