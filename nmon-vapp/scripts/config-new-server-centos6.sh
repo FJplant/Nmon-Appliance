@@ -52,7 +52,7 @@ echo "nameserver 8.8.4.4" >> /etc/resolv.conf
 
 echo "[`date`] Installing base RPMs..."
 yum install -y deltarpm
-yum install -y bind-utils iptables-services sysstat nmon
+yum install -y bind-utils iptables-services sysstat nmon iptraf iotop iptop iftop
 
 echo "[`date`] Installing gcc, git, lsof..."
 yum install -y gcc python curl libcurl unzip lsof vim*
