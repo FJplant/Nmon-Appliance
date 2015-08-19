@@ -74,7 +74,7 @@ http.Server(function(req, res) {
         }
         else if ( pathname == '/nmonlog_bulk' ) {
             if( method == 'POST' ) {
-                put_nmonlog(url_info, req, res, 1000);
+                put_nmonlog(url_info, req, res, 10000);
                 return;
             }
         }
