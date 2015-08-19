@@ -1,0 +1,445 @@
+Collections
+  +-- aix-db1
+      +-- Server configurations
+          +-- Server Config: Sat Jul 25 17:05:50 UTC 2015
+              +-- Summary (AAA)
+                  +-- AAA,progname,topas_nmon
+                  +-- AAA,command,/usr/bin/topas_nmon -A -L -N -f -T -m /home/swat -s60 -c1439 -youtput_dir=/home/swat/aix-db2 -ystart_time=08:00:03,Aug12,2015
+                  +-- AAA,version,TOPAS-NMON
+                  +-- AAA,build,AIX
+                  +-- AAA,disks_per_line,150
+                  +-- AAA,host,aix-db2
+                  +-- AAA,user,root
+                  +-- AAA,AIX,5.3.12.4
+                  +-- AAA,TL,12
+                  +-- AAA,runname,aix-db2
+                  +-- AAA,time,08:00:05
+                  +-- AAA,date,12-MAY-2015
+                  +-- AAA,interval,60
+                  +-- AAA,snapshots,1439
+                  +-- AAA,hardware,Architecture PowerPC Implementation POWER5.3 64 bit
+                  +-- AAA,cpus,60,60
+                  +-- AAA,kernel, HW-type=CHRP=Common H/W Reference Platform Bus=PCI LPAR=Dynamic Multi-Processor 64 bit
+                  +-- AAA,SerialNumber,83F5091
+                  +-- AAA,LPARNumberName,4,aix-db2
+                  +-- AAA,MachineType,IBM,9119-595
+                  +-- AAA,NodeName,aix-db2
+                  +-- AAA,timestampsize,0
+                  +-- AAA,note0, Warning - use the UNIX sort command to order this file before loading into a spreadsheet
+                  +-- AAA,note1, The First Column is simply to get the output sorted in the right order
+                  +-- AAA,note2, The T0001-T9999 column is a snapshot number. To work out the actual time; see the ZZZ section at the end
+              +-- Disks(BBBB)
+                  +-- 0000,name,size(GB),disc attach type
+                  +-- 0001,hdisk0,146.80,SCSI
+                      +-- BBBC,000,hdisk0: (BBBC)
+                      +-- 001,LV NAME               LPs     PPs     DISTRIBUTION          MOUNT POINT
+                      +-- 002,lg_dumplv             96      96      96..00..00..00..00    N/A
+                      +-- 003,oraclelv              160     160     00..00..00..109..51   /oracle
+                      +-- 004,hd10opt               20      20      00..20..00..00..00    /opt
+                      +-- 005,hd2                   40      40      00..00..40..00..00    /usr
+                      +-- 006,hd9var                20      20      00..00..20..00..00    /var
+                      +-- 007,hd3                   32      32      00..24..08..00..00    /tmp
+                      +-- 008,hd1                   20      20      00..00..20..00..00    /home
+                      +-- 009,hd5                   1       1       01..00..00..00..00    N/A
+                      +-- 010,hd6                   40      40      00..40..00..00..00    N/A
+                      +-- 011,hd8                   1       1       00..00..01..00..00    N/A
+                      +-- 012,hd4                   20      20      00..00..20..00..00    /
+                  +-- 0002,hdisk1,146.80,SCSI
+                      +-- 013,hdisk1: (BBBC)
+                      +-- 014,LV NAME               LPs     PPs     DISTRIBUTION          MOUNT POINT
+                      +-- 015,oraclelv              160     160     00..00..08..109..43   /oracle
+                      +-- 016,hd10opt               20      20      00..20..00..00..00    /opt
+                      +-- 017,hd2                   40      40      00..00..40..00..00    /usr
+                      +-- 018,hd9var                20      20      00..00..20..00..00    /var
+                      +-- 019,hd3                   32      32      00..32..00..00..00    /tmp
+                      +-- 020,hd1                   20      20      00..00..20..00..00    /home
+                      +-- 021,hd5                   1       1       01..00..00..00..00    N/A
+                      +-- 022,hd6                   40      40      00..40..00..00..00    N/A
+                      +-- 023,hd8                   1       1       00..00..01..00..00    N/A
+                      +-- 024,hd4                   20      20      00..00..20..00..00    /
+                   /* Storage Attached volumes. 
+                    * In this case, Logical Volumes are managed by Veritas Storage Foundation 
+                    */
+                  +-- 0003,hdisk301,unknown,DS8000 series
+                  +-- 0004,hdisk303,unknown,DS8000 series
+                  +-- 0005,hdisk298,unknown,DS8000 series
+                  ...
+                  +-- 1146,hdisk778,unknown,DS8000 series
+              +-- Disk UIDs (Below BBBC section)
+                  +-- 025,hdisk0          00cf47110beb8154                    rootvg          active
+                  +-- 026,hdisk1          00cf50910efb570b                    rootvg          active
+                  +-- 027,hdisk470        none                                VeritasVolumes
+                  +-- 028,hdisk471        none                                VeritasVolumes
+                  ...
+                  +-- 1169,hdisk1144       none                                VeritasVolumes
+                  +-- 1170,hdisk1145       none                                VeritasVolumes
+              +-- Volume Groups ( BBBV )
+                  +-- 000,VOLUME GROUP:       rootvg                   VG IDENTIFIER:  00cf509100004c000000012d78f296ef
+                  +-- 001,VG STATE:           active                   PP SIZE:        256 megabyte(s)
+                  +-- 002,VG PERMISSION:      read/write               TOTAL PPs:      1092 (279552 megabytes)
+                  +-- 003,MAX LVs:            256                      FREE PPs:       288 (73728 megabytes)
+                  +-- 004,LVs:                11                       USED PPs:       804 (205824 megabytes)
+                  +-- 005,OPEN LVs:           10                       QUORUM:         1 (Disabled)
+                  +-- 006,TOTAL PVs:          2                        VG DESCRIPTORS: 3
+                  +-- 007,STALE PVs:          0                        STALE PPs:      0
+                  +-- 008,ACTIVE PVs:         2                        AUTO ON:        no
+                  +-- 009,MAX PPs per VG:     32512
+                  +-- 010,MAX PPs per PV:     1016                     MAX PVs:        32
+                  +-- 011,LTG size (Dynamic): 256 kilobyte(s)          AUTO SYNC:      no
+                  +-- 012,HOT SPARE:          no                       BB POLICY:      relocatable
+              +-- CPUs
+                  +-- CPU_ALL,CPU Total aix-db2,User%,Sys%,Wait%,Idle%,Busy,PhysicalCPUs
+                  +-- CPU01,CPU 1 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU02,CPU 2 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU03,CPU 3 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU04,CPU 4 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU05,CPU 5 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU06,CPU 6 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU07,CPU 7 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU08,CPU 8 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU09,CPU 9 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU10,CPU 10 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU11,CPU 11 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU12,CPU 12 aix-db2,User%,Sys%,Wait%,Idle%
+                  ...
+                  +-- CPU58,CPU 58 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU59,CPU 59 aix-db2,User%,Sys%,Wait%,Idle%
+                  +-- CPU60,CPU 60 aix-db2,User%,Sys%,Wait%,Idle%                  
+
+                  +-- CPU001,CPU 1 nmon-tokyo,User%,Sys%,Wait%,Idle%
+                  +-- CPU002,CPU 2 nmon-tokyo,User%,Sys%,Wait%,Idle%
+                  +-- CPU003,CPU 3 nmon-tokyo,User%,Sys%,Wait%,Idle%
+                  +-- CPU004,CPU 4 nmon-tokyo,User%,Sys%,Wait%,Idle%
+                  +-- CPU_ALL,CPU Total nmon-tokyo,User%,Sys%,Wait%,Idle%,Busy,CPUs
+              +-- MEM,Memory aix-db2,Real Free %,Virtual free %,Real free(MB),Virtual free(MB),Real total(MB),Virtual total(MB)
+              +-- MEMNEW,Memory New aix-db2,Process%,FScache%,System%,Free%,Pinned%,User%
+              +-- MEMUSE,Memory Use aix-db2,%numperm,%minperm,%maxperm,minfree,maxfree,%numclient,%maxclient
+              +-- PAGE,Paging aix-db2,faults,pgin,pgout,pgsin,pgsout,reclaims,scans,cycles
+              +-- LARGEPAGE,Large Page Use aix-db2,Freepages,Usedpages,Pages,HighWater,SizeMB
+              +-- PROC,Processes aix-db2,Runnable,Swap-in,pswitch,syscall,read,write,fork,exec,sem,msg
+              +-- FILE,File I/O aix-db2,iget,namei,dirblk,readch,writech,ttyrawch,ttycanch,ttyoutch
+              +-- PROCAIO,Asynchronous I/O aix-db2,aioprocs,aiorunning,aiocpu
+              +-- BBBN,000,NetworkName,MTU,Mbits,Name
+                  +-- 001,en7,1500,1024,Standard Ethernet Network Interface
+                  +-- 002,en8,1500,1024,Standard Ethernet Network Interface
+                  +-- 003,lo0,16896,0,Loopback Network Interface
+              +-- NET,Network I/O aix-db2,en7-read-KB/s,en8-read-KB/s,lo0-read-KB/s,en7-write-KB/s,en8-write-KB/s,lo0-write-KB/s
+              +-- NETPACKET,Network Packets aix-db2,en7-reads/s,en8-reads/s,lo0-reads/s,en7-writes/s,en8-writes/s,lo0-writes/s
+              +-- NETSIZE,Network Size aix-db2,en7-readsize,en8-readsize,lo0-readsize,en7-writesize,en8-writesize,lo0-writesize
+              +-- NETERROR,Network Errors aix-db2,en7-ierrs,en8-ierrs,lo0-ierrs,en7-oerrs,en8-oerrs,lo0-oerrs,en7-collisions,en8-collisions,lo0-collisions
+              +-- DISKBUSYs,
+                  +-- DISKBUSY,Disk %Busy aix-db2,hdisk0,hdisk1,hdisk301,hdisk303,hdisk298,hdisk304,hdisk302,hdisk306,hdisk307,hdisk308,hdisk305,hdisk309,hdisk310,hdisk312,hdisk311,hdisk314,hdisk313,hdisk315,hdisk955,hdisk846,hdisk956,hdisk1136,hdisk1026,hdisk1137,hdisk1053,hdisk1138,hdisk317,hdisk319,hdisk316,hdisk318,hdisk320,hdisk321,hdisk296,hdisk297,hdisk299,hdisk300,hdisk322,hdisk323,hdisk847,hdisk957,hdisk958,hdisk1027,hdisk1064,hdisk1140,hdisk324,hdisk326,hdisk327,hdisk1139,hdisk331,hdisk330,hdisk329,hdisk848,hdisk960,hdisk328,hdisk1141,hdisk332,hdisk335,hdisk1065,hdisk333,hdisk338,hdisk1028,hdisk336,hdisk337,hdisk339,hdisk1029,hdisk961,hdisk1143,hdisk340,hdisk341,hdisk962,hdisk1096,hdisk342,hdisk325,hdisk344,hdisk347,hdisk963,hdisk959,hdisk348,hdisk334,hdisk964,hdisk849,hdisk1030,hdisk343,hdisk1142,hdisk346,hdisk1097,hdisk965,hdisk1098,hdisk350,hdisk352,hdisk345,hdisk349,hdisk1144,hdisk354,hdisk966,hdisk1031,hdisk353,hdisk357,hdisk967,hdisk358,hdisk360,hdisk361,hdisk969,hdisk359,hdisk355,hdisk971,hdisk970,hdisk968,hdisk1099,hdisk1100,hdisk362,hdisk364,hdisk367,hdisk1145,hdisk365,hdisk972,hdisk368,hdisk351,hdisk356,hdisk973,hdisk363,hdisk372,hdisk370,hdisk373,hdisk371,hdisk976,hdisk975,hdisk369,hdisk1101,hdisk977,hdisk375,hdisk974,hdisk378,hdisk376,hdisk379,hdisk366,hdisk978,hdisk380,hdisk381,hdisk1102,hdisk374,hdisk382,hdisk979,hdisk383,hdisk385,hdisk386,hdisk980,hdisk1033,hdisk1103,hdisk388
+                  +-- DISKBUSY1,Disk %Busy aix-db2,hdisk387,hdisk390,hdisk1032,hdisk393,hdisk384,hdisk392,hdisk391,hdisk982,hdisk1034,hdisk440,hdisk1104,hdisk1054,hdisk441,hdisk442,hdisk983,hdisk443,hdisk445,hdisk984,hdisk446,hdisk377,hdisk447,hdisk1105,hdisk1055,hdisk439,hdisk444,hdisk449,hdisk451,hdisk450,hdisk389,hdisk981,hdisk986,hdisk1036,hdisk448,hdisk987,hdisk452,hdisk453,hdisk1056,hdisk985,hdisk1035,hdisk466,hdisk989,hdisk467,hdisk468,hdisk1057,hdisk482,hdisk484,hdisk485,hdisk583,hdisk585,hdisk483,hdisk587,hdisk588,hdisk1037,hdisk584,hdisk469,hdisk780,hdisk784,hdisk783,hdisk781,hdisk785,hdisk786,hdisk586,hdisk787,hdisk788,hdisk790,hdisk589,hdisk590,hdisk593,hdisk591,hdisk792,hdisk789,hdisk595,hdisk793,hdisk594,hdisk796,hdisk791,hdisk797,hdisk782,hdisk582,hdisk795,hdisk799,hdisk794,hdisk801,hdisk598,hdisk798,hdisk596,hdisk599,hdisk988,hdisk597,hdisk600,hdisk800,hdisk601,hdisk802,hdisk803,hdisk807,hdisk617,hdisk805,hdisk808,hdisk810,hdisk592,hdisk603,hdisk806,hdisk606,hdisk811,hdisk809,hdisk607,hdisk814,hdisk602,hdisk804,hdisk816,hdisk817,hdisk818,hdisk821,hdisk820,hdisk819,hdisk822,hdisk604,hdisk608,hdisk605,hdisk609,hdisk611,hdisk613,hdisk610,hdisk823,hdisk612,hdisk825,hdisk813,hdisk815,hdisk826,hdisk198,hdisk199,hdisk830,hdisk831,hdisk828,hdisk829,hdisk827,hdisk201,hdisk200,hdisk812,hdisk833,hdisk202,hdisk203,hdisk824,hdisk832,hdisk204,hdisk205,hdisk208,hdisk209,hdisk206,hdisk210
+                  ...
+                  +-- DISKBUSY7,Disk %Busy aix-db2,hdisk953,hdisk950,hdisk1052,hdisk190,hdisk191,hdisk195,hdisk197,hdisk196,hdisk550,hdisk551,hdisk552,hdisk553,hdisk555,hdisk438,hdisk727,hdisk728,hdisk731,hdisk556,hdisk729,hdisk726,hdisk733,hdisk734,hdisk730,hdisk736,hdisk558,hdisk735,hdisk557,hdisk560,hdisk562,hdisk554,hdisk563,hdisk559,hdisk732,hdisk737,hdisk561,hdisk738,hdisk742,hdisk741,hdisk744,hdisk739,hdisk743,hdisk740,hdisk747,hdisk565,hdisk746,hdisk616,hdisk569,hdisk745,hdisk567,hdisk748,hdisk752,hdisk753,hdisk564,hdisk756,hdisk749,hdisk754,hdisk755,hdisk570,hdisk750,hdisk573,hdisk572,hdisk571,hdisk566,hdisk575,hdisk757,hdisk751,hdisk761,hdisk759,hdisk760,hdisk758,hdisk763,hdisk574,hdisk764,hdisk765,hdisk766,hdisk762,hdisk578,hdisk768,hdisk767,hdisk577,hdisk581,hdisk769,hdisk579,hdisk580,hdisk773,hdisk771,hdisk770,hdisk774,hdisk776,hdisk777,hdisk568,hdisk576,hdisk772,hdisk779,hdisk775,hdisk778
+              +-- DISKREADs
+                  +-- DISKREAD,Disk Read KB/s aix-db2,hdisk0,hdisk1,hdisk301,hdisk303,hdisk298,hdisk304,hdisk302,hdisk306,hdisk307,hdisk308,hdisk305,hdisk309,hdisk310,hdisk312,hdisk311,hdisk314,hdisk313,hdisk315,hdisk955,hdisk846,hdisk956,hdisk1136,hdisk1026,hdisk1137,hdisk1053,hdisk1138,hdisk317,hdisk319,hdisk316,hdisk318,hdisk320,hdisk321,hdisk296,hdisk297,hdisk299,hdisk300,hdisk322,hdisk323,hdisk847,hdisk957,hdisk958,hdisk1027,hdisk1064,hdisk1140,hdisk324,hdisk326,hdisk327,hdisk1139,hdisk331,hdisk330,hdisk329,hdisk848,hdisk960,hdisk328,hdisk1141,hdisk332,hdisk335,hdisk1065,hdisk333,hdisk338,hdisk1028,hdisk336,hdisk337,hdisk339,hdisk1029,hdisk961,hdisk1143,hdisk340,hdisk341,hdisk962,hdisk1096,hdisk342,hdisk325,hdisk344,hdisk347,hdisk963,hdisk959,hdisk348,hdisk334,hdisk964,hdisk849,hdisk1030,hdisk343,hdisk1142,hdisk346,hdisk1097,hdisk965,hdisk1098,hdisk350,hdisk352,hdisk345,hdisk349,hdisk1144,hdisk354,hdisk966,hdisk1031,hdisk353,hdisk357,hdisk967,hdisk358,hdisk360,hdisk361,hdisk969,hdisk359,hdisk355,hdisk971,hdisk970,hdisk968,hdisk1099,hdisk1100,hdisk362,hdisk364,hdisk367,hdisk1145,hdisk365,hdisk972,hdisk368,hdisk351,hdisk356,hdisk973,hdisk363,hdisk372,hdisk370,hdisk373,hdisk371,hdisk976,hdisk975,hdisk369,hdisk1101,hdisk977,hdisk375,hdisk974,hdisk378,hdisk376,hdisk379,hdisk366,hdisk978,hdisk380,hdisk381,hdisk1102,hdisk374,hdisk382,hdisk979,hdisk383,hdisk385,hdisk386,hdisk980,hdisk1033,hdisk1103,hdisk388
+                  +-- DISKREAD1,Disk Read KB/s aix-db2,hdisk387,hdisk390,hdisk1032,hdisk393,hdisk384,hdisk392,hdisk391,hdisk982,hdisk1034,hdisk440,hdisk1104,hdisk1054,hdisk441,hdisk442,hdisk983,hdisk443,hdisk445,hdisk984,hdisk446,hdisk377,hdisk447,hdisk1105,hdisk1055,hdisk439,hdisk444,hdisk449,hdisk451,hdisk450,hdisk389,hdisk981,hdisk986,hdisk1036,hdisk448,hdisk987,hdisk452,hdisk453,hdisk1056,hdisk985,hdisk1035,hdisk466,hdisk989,hdisk467,hdisk468,hdisk1057,hdisk482,hdisk484,hdisk485,hdisk583,hdisk585,hdisk483,hdisk587,hdisk588,hdisk1037,hdisk584,hdisk469,hdisk780,hdisk784,hdisk783,hdisk781,hdisk785,hdisk786,hdisk586,hdisk787,hdisk788,hdisk790,hdisk589,hdisk590,hdisk593,hdisk591,hdisk792,hdisk789,hdisk595,hdisk793,hdisk594,hdisk796,hdisk791,hdisk797,hdisk782,hdisk582,hdisk795,hdisk799,hdisk794,hdisk801,hdisk598,hdisk798,hdisk596,hdisk599,hdisk988,hdisk597,hdisk600,hdisk800,hdisk601,hdisk802,hdisk803,hdisk807,hdisk617,hdisk805,hdisk808,hdisk810,hdisk592,hdisk603,hdisk806,hdisk606,hdisk811,hdisk809,hdisk607,hdisk814,hdisk602,hdisk804,hdisk816,hdisk817,hdisk818,hdisk821,hdisk820,hdisk819,hdisk822,hdisk604,hdisk608,hdisk605,hdisk609,hdisk611,hdisk613,hdisk610,hdisk823,hdisk612,hdisk825,hdisk813,hdisk815,hdisk826,hdisk198,hdisk199,hdisk830,hdisk831,hdisk828,hdisk829,hdisk827,hdisk201,hdisk200,hdisk812,hdisk833,hdisk202,hdisk203,hdisk824,hdisk832,hdisk204,hdisk205,hdisk208,hdisk209,hdisk206,hdisk210
+                  ...
+                  +-- DISKREAD7,Disk Read KB/s aix-db2,hdisk953,hdisk950,hdisk1052,hdisk190,hdisk191,hdisk195,hdisk197,hdisk196,hdisk550,hdisk551,hdisk552,hdisk553,hdisk555,hdisk438,hdisk727,hdisk728,hdisk731,hdisk556,hdisk729,hdisk726,hdisk733,hdisk734,hdisk730,hdisk736,hdisk558,hdisk735,hdisk557,hdisk560,hdisk562,hdisk554,hdisk563,hdisk559,hdisk732,hdisk737,hdisk561,hdisk738,hdisk742,hdisk741,hdisk744,hdisk739,hdisk743,hdisk740,hdisk747,hdisk565,hdisk746,hdisk616,hdisk569,hdisk745,hdisk567,hdisk748,hdisk752,hdisk753,hdisk564,hdisk756,hdisk749,hdisk754,hdisk755,hdisk570,hdisk750,hdisk573,hdisk572,hdisk571,hdisk566,hdisk575,hdisk757,hdisk751,hdisk761,hdisk759,hdisk760,hdisk758,hdisk763,hdisk574,hdisk764,hdisk765,hdisk766,hdisk762,hdisk578,hdisk768,hdisk767,hdisk577,hdisk581,hdisk769,hdisk579,hdisk580,hdisk773,hdisk771,hdisk770,hdisk774,hdisk776,hdisk777,hdisk568,hdisk576,hdisk772,hdisk779,hdisk775,hdisk778
+              +-- DISKWRITEs
+                  +-- DISKWRITE,Disk Read KB/s aix-db2,hdisk0,hdisk1,hdisk301,hdisk303,hdisk298,hdisk304,hdisk302,hdisk306,hdisk307,hdisk308,hdisk305,hdisk309,hdisk310,hdisk312,hdisk311,hdisk314,hdisk313,hdisk315,hdisk955,hdisk846,hdisk956,hdisk1136,hdisk1026,hdisk1137,hdisk1053,hdisk1138,hdisk317,hdisk319,hdisk316,hdisk318,hdisk320,hdisk321,hdisk296,hdisk297,hdisk299,hdisk300,hdisk322,hdisk323,hdisk847,hdisk957,hdisk958,hdisk1027,hdisk1064,hdisk1140,hdisk324,hdisk326,hdisk327,hdisk1139,hdisk331,hdisk330,hdisk329,hdisk848,hdisk960,hdisk328,hdisk1141,hdisk332,hdisk335,hdisk1065,hdisk333,hdisk338,hdisk1028,hdisk336,hdisk337,hdisk339,hdisk1029,hdisk961,hdisk1143,hdisk340,hdisk341,hdisk962,hdisk1096,hdisk342,hdisk325,hdisk344,hdisk347,hdisk963,hdisk959,hdisk348,hdisk334,hdisk964,hdisk849,hdisk1030,hdisk343,hdisk1142,hdisk346,hdisk1097,hdisk965,hdisk1098,hdisk350,hdisk352,hdisk345,hdisk349,hdisk1144,hdisk354,hdisk966,hdisk1031,hdisk353,hdisk357,hdisk967,hdisk358,hdisk360,hdisk361,hdisk969,hdisk359,hdisk355,hdisk971,hdisk970,hdisk968,hdisk1099,hdisk1100,hdisk362,hdisk364,hdisk367,hdisk1145,hdisk365,hdisk972,hdisk368,hdisk351,hdisk356,hdisk973,hdisk363,hdisk372,hdisk370,hdisk373,hdisk371,hdisk976,hdisk975,hdisk369,hdisk1101,hdisk977,hdisk375,hdisk974,hdisk378,hdisk376,hdisk379,hdisk366,hdisk978,hdisk380,hdisk381,hdisk1102,hdisk374,hdisk382,hdisk979,hdisk383,hdisk385,hdisk386,hdisk980,hdisk1033,hdisk1103,hdisk388
+                  +-- DISKWRITE1,Disk Read KB/s aix-db2,hdisk387,hdisk390,hdisk1032,hdisk393,hdisk384,hdisk392,hdisk391,hdisk982,hdisk1034,hdisk440,hdisk1104,hdisk1054,hdisk441,hdisk442,hdisk983,hdisk443,hdisk445,hdisk984,hdisk446,hdisk377,hdisk447,hdisk1105,hdisk1055,hdisk439,hdisk444,hdisk449,hdisk451,hdisk450,hdisk389,hdisk981,hdisk986,hdisk1036,hdisk448,hdisk987,hdisk452,hdisk453,hdisk1056,hdisk985,hdisk1035,hdisk466,hdisk989,hdisk467,hdisk468,hdisk1057,hdisk482,hdisk484,hdisk485,hdisk583,hdisk585,hdisk483,hdisk587,hdisk588,hdisk1037,hdisk584,hdisk469,hdisk780,hdisk784,hdisk783,hdisk781,hdisk785,hdisk786,hdisk586,hdisk787,hdisk788,hdisk790,hdisk589,hdisk590,hdisk593,hdisk591,hdisk792,hdisk789,hdisk595,hdisk793,hdisk594,hdisk796,hdisk791,hdisk797,hdisk782,hdisk582,hdisk795,hdisk799,hdisk794,hdisk801,hdisk598,hdisk798,hdisk596,hdisk599,hdisk988,hdisk597,hdisk600,hdisk800,hdisk601,hdisk802,hdisk803,hdisk807,hdisk617,hdisk805,hdisk808,hdisk810,hdisk592,hdisk603,hdisk806,hdisk606,hdisk811,hdisk809,hdisk607,hdisk814,hdisk602,hdisk804,hdisk816,hdisk817,hdisk818,hdisk821,hdisk820,hdisk819,hdisk822,hdisk604,hdisk608,hdisk605,hdisk609,hdisk611,hdisk613,hdisk610,hdisk823,hdisk612,hdisk825,hdisk813,hdisk815,hdisk826,hdisk198,hdisk199,hdisk830,hdisk831,hdisk828,hdisk829,hdisk827,hdisk201,hdisk200,hdisk812,hdisk833,hdisk202,hdisk203,hdisk824,hdisk832,hdisk204,hdisk205,hdisk208,hdisk209,hdisk206,hdisk210
+                  ...
+                  +-- DISKWRITE7,Disk Read KB/s aix-db2,hdisk953,hdisk950,hdisk1052,hdisk190,hdisk191,hdisk195,hdisk197,hdisk196,hdisk550,hdisk551,hdisk552,hdisk553,hdisk555,hdisk438,hdisk727,hdisk728,hdisk731,hdisk556,hdisk729,hdisk726,hdisk733,hdisk734,hdisk730,hdisk736,hdisk558,hdisk735,hdisk557,hdisk560,hdisk562,hdisk554,hdisk563,hdisk559,hdisk732,hdisk737,hdisk561,hdisk738,hdisk742,hdisk741,hdisk744,hdisk739,hdisk743,hdisk740,hdisk747,hdisk565,hdisk746,hdisk616,hdisk569,hdisk745,hdisk567,hdisk748,hdisk752,hdisk753,hdisk564,hdisk756,hdisk749,hdisk754,hdisk755,hdisk570,hdisk750,hdisk573,hdisk572,hdisk571,hdisk566,hdisk575,hdisk757,hdisk751,hdisk761,hdisk759,hdisk760,hdisk758,hdisk763,hdisk574,hdisk764,hdisk765,hdisk766,hdisk762,hdisk578,hdisk768,hdisk767,hdisk577,hdisk581,hdisk769,hdisk579,hdisk580,hdisk773,hdisk771,hdisk770,hdisk774,hdisk776,hdisk777,hdisk568,hdisk576,hdisk772,hdisk779,hdisk775,hdisk778
+              +-- DISKXFERs
+                  +-- DISKXFER,Disk Read KB/s aix-db2,hdisk0,hdisk1,hdisk301,hdisk303,hdisk298,hdisk304,hdisk302,hdisk306,hdisk307,hdisk308,hdisk305,hdisk309,hdisk310,hdisk312,hdisk311,hdisk314,hdisk313,hdisk315,hdisk955,hdisk846,hdisk956,hdisk1136,hdisk1026,hdisk1137,hdisk1053,hdisk1138,hdisk317,hdisk319,hdisk316,hdisk318,hdisk320,hdisk321,hdisk296,hdisk297,hdisk299,hdisk300,hdisk322,hdisk323,hdisk847,hdisk957,hdisk958,hdisk1027,hdisk1064,hdisk1140,hdisk324,hdisk326,hdisk327,hdisk1139,hdisk331,hdisk330,hdisk329,hdisk848,hdisk960,hdisk328,hdisk1141,hdisk332,hdisk335,hdisk1065,hdisk333,hdisk338,hdisk1028,hdisk336,hdisk337,hdisk339,hdisk1029,hdisk961,hdisk1143,hdisk340,hdisk341,hdisk962,hdisk1096,hdisk342,hdisk325,hdisk344,hdisk347,hdisk963,hdisk959,hdisk348,hdisk334,hdisk964,hdisk849,hdisk1030,hdisk343,hdisk1142,hdisk346,hdisk1097,hdisk965,hdisk1098,hdisk350,hdisk352,hdisk345,hdisk349,hdisk1144,hdisk354,hdisk966,hdisk1031,hdisk353,hdisk357,hdisk967,hdisk358,hdisk360,hdisk361,hdisk969,hdisk359,hdisk355,hdisk971,hdisk970,hdisk968,hdisk1099,hdisk1100,hdisk362,hdisk364,hdisk367,hdisk1145,hdisk365,hdisk972,hdisk368,hdisk351,hdisk356,hdisk973,hdisk363,hdisk372,hdisk370,hdisk373,hdisk371,hdisk976,hdisk975,hdisk369,hdisk1101,hdisk977,hdisk375,hdisk974,hdisk378,hdisk376,hdisk379,hdisk366,hdisk978,hdisk380,hdisk381,hdisk1102,hdisk374,hdisk382,hdisk979,hdisk383,hdisk385,hdisk386,hdisk980,hdisk1033,hdisk1103,hdisk388
+                  +-- DISKXFER1,Disk Read KB/s aix-db2,hdisk387,hdisk390,hdisk1032,hdisk393,hdisk384,hdisk392,hdisk391,hdisk982,hdisk1034,hdisk440,hdisk1104,hdisk1054,hdisk441,hdisk442,hdisk983,hdisk443,hdisk445,hdisk984,hdisk446,hdisk377,hdisk447,hdisk1105,hdisk1055,hdisk439,hdisk444,hdisk449,hdisk451,hdisk450,hdisk389,hdisk981,hdisk986,hdisk1036,hdisk448,hdisk987,hdisk452,hdisk453,hdisk1056,hdisk985,hdisk1035,hdisk466,hdisk989,hdisk467,hdisk468,hdisk1057,hdisk482,hdisk484,hdisk485,hdisk583,hdisk585,hdisk483,hdisk587,hdisk588,hdisk1037,hdisk584,hdisk469,hdisk780,hdisk784,hdisk783,hdisk781,hdisk785,hdisk786,hdisk586,hdisk787,hdisk788,hdisk790,hdisk589,hdisk590,hdisk593,hdisk591,hdisk792,hdisk789,hdisk595,hdisk793,hdisk594,hdisk796,hdisk791,hdisk797,hdisk782,hdisk582,hdisk795,hdisk799,hdisk794,hdisk801,hdisk598,hdisk798,hdisk596,hdisk599,hdisk988,hdisk597,hdisk600,hdisk800,hdisk601,hdisk802,hdisk803,hdisk807,hdisk617,hdisk805,hdisk808,hdisk810,hdisk592,hdisk603,hdisk806,hdisk606,hdisk811,hdisk809,hdisk607,hdisk814,hdisk602,hdisk804,hdisk816,hdisk817,hdisk818,hdisk821,hdisk820,hdisk819,hdisk822,hdisk604,hdisk608,hdisk605,hdisk609,hdisk611,hdisk613,hdisk610,hdisk823,hdisk612,hdisk825,hdisk813,hdisk815,hdisk826,hdisk198,hdisk199,hdisk830,hdisk831,hdisk828,hdisk829,hdisk827,hdisk201,hdisk200,hdisk812,hdisk833,hdisk202,hdisk203,hdisk824,hdisk832,hdisk204,hdisk205,hdisk208,hdisk209,hdisk206,hdisk210
+                  ...
+                  +-- DISKXFER7,Disk Read KB/s aix-db2,hdisk953,hdisk950,hdisk1052,hdisk190,hdisk191,hdisk195,hdisk197,hdisk196,hdisk550,hdisk551,hdisk552,hdisk553,hdisk555,hdisk438,hdisk727,hdisk728,hdisk731,hdisk556,hdisk729,hdisk726,hdisk733,hdisk734,hdisk730,hdisk736,hdisk558,hdisk735,hdisk557,hdisk560,hdisk562,hdisk554,hdisk563,hdisk559,hdisk732,hdisk737,hdisk561,hdisk738,hdisk742,hdisk741,hdisk744,hdisk739,hdisk743,hdisk740,hdisk747,hdisk565,hdisk746,hdisk616,hdisk569,hdisk745,hdisk567,hdisk748,hdisk752,hdisk753,hdisk564,hdisk756,hdisk749,hdisk754,hdisk755,hdisk570,hdisk750,hdisk573,hdisk572,hdisk571,hdisk566,hdisk575,hdisk757,hdisk751,hdisk761,hdisk759,hdisk760,hdisk758,hdisk763,hdisk574,hdisk764,hdisk765,hdisk766,hdisk762,hdisk578,hdisk768,hdisk767,hdisk577,hdisk581,hdisk769,hdisk579,hdisk580,hdisk773,hdisk771,hdisk770,hdisk774,hdisk776,hdisk777,hdisk568,hdisk576,hdisk772,hdisk779,hdisk775,hdisk778
+              +-- DISKRXFERs
+                  +-- DISKRXFER,Disk Read KB/s aix-db2,hdisk0,hdisk1,hdisk301,hdisk303,hdisk298,hdisk304,hdisk302,hdisk306,hdisk307,hdisk308,hdisk305,hdisk309,hdisk310,hdisk312,hdisk311,hdisk314,hdisk313,hdisk315,hdisk955,hdisk846,hdisk956,hdisk1136,hdisk1026,hdisk1137,hdisk1053,hdisk1138,hdisk317,hdisk319,hdisk316,hdisk318,hdisk320,hdisk321,hdisk296,hdisk297,hdisk299,hdisk300,hdisk322,hdisk323,hdisk847,hdisk957,hdisk958,hdisk1027,hdisk1064,hdisk1140,hdisk324,hdisk326,hdisk327,hdisk1139,hdisk331,hdisk330,hdisk329,hdisk848,hdisk960,hdisk328,hdisk1141,hdisk332,hdisk335,hdisk1065,hdisk333,hdisk338,hdisk1028,hdisk336,hdisk337,hdisk339,hdisk1029,hdisk961,hdisk1143,hdisk340,hdisk341,hdisk962,hdisk1096,hdisk342,hdisk325,hdisk344,hdisk347,hdisk963,hdisk959,hdisk348,hdisk334,hdisk964,hdisk849,hdisk1030,hdisk343,hdisk1142,hdisk346,hdisk1097,hdisk965,hdisk1098,hdisk350,hdisk352,hdisk345,hdisk349,hdisk1144,hdisk354,hdisk966,hdisk1031,hdisk353,hdisk357,hdisk967,hdisk358,hdisk360,hdisk361,hdisk969,hdisk359,hdisk355,hdisk971,hdisk970,hdisk968,hdisk1099,hdisk1100,hdisk362,hdisk364,hdisk367,hdisk1145,hdisk365,hdisk972,hdisk368,hdisk351,hdisk356,hdisk973,hdisk363,hdisk372,hdisk370,hdisk373,hdisk371,hdisk976,hdisk975,hdisk369,hdisk1101,hdisk977,hdisk375,hdisk974,hdisk378,hdisk376,hdisk379,hdisk366,hdisk978,hdisk380,hdisk381,hdisk1102,hdisk374,hdisk382,hdisk979,hdisk383,hdisk385,hdisk386,hdisk980,hdisk1033,hdisk1103,hdisk388
+                  +-- DISKRXFER1,Disk Read KB/s aix-db2,hdisk387,hdisk390,hdisk1032,hdisk393,hdisk384,hdisk392,hdisk391,hdisk982,hdisk1034,hdisk440,hdisk1104,hdisk1054,hdisk441,hdisk442,hdisk983,hdisk443,hdisk445,hdisk984,hdisk446,hdisk377,hdisk447,hdisk1105,hdisk1055,hdisk439,hdisk444,hdisk449,hdisk451,hdisk450,hdisk389,hdisk981,hdisk986,hdisk1036,hdisk448,hdisk987,hdisk452,hdisk453,hdisk1056,hdisk985,hdisk1035,hdisk466,hdisk989,hdisk467,hdisk468,hdisk1057,hdisk482,hdisk484,hdisk485,hdisk583,hdisk585,hdisk483,hdisk587,hdisk588,hdisk1037,hdisk584,hdisk469,hdisk780,hdisk784,hdisk783,hdisk781,hdisk785,hdisk786,hdisk586,hdisk787,hdisk788,hdisk790,hdisk589,hdisk590,hdisk593,hdisk591,hdisk792,hdisk789,hdisk595,hdisk793,hdisk594,hdisk796,hdisk791,hdisk797,hdisk782,hdisk582,hdisk795,hdisk799,hdisk794,hdisk801,hdisk598,hdisk798,hdisk596,hdisk599,hdisk988,hdisk597,hdisk600,hdisk800,hdisk601,hdisk802,hdisk803,hdisk807,hdisk617,hdisk805,hdisk808,hdisk810,hdisk592,hdisk603,hdisk806,hdisk606,hdisk811,hdisk809,hdisk607,hdisk814,hdisk602,hdisk804,hdisk816,hdisk817,hdisk818,hdisk821,hdisk820,hdisk819,hdisk822,hdisk604,hdisk608,hdisk605,hdisk609,hdisk611,hdisk613,hdisk610,hdisk823,hdisk612,hdisk825,hdisk813,hdisk815,hdisk826,hdisk198,hdisk199,hdisk830,hdisk831,hdisk828,hdisk829,hdisk827,hdisk201,hdisk200,hdisk812,hdisk833,hdisk202,hdisk203,hdisk824,hdisk832,hdisk204,hdisk205,hdisk208,hdisk209,hdisk206,hdisk210
+                  ...
+                  +-- DISKRXFER7,Disk Read KB/s aix-db2,hdisk953,hdisk950,hdisk1052,hdisk190,hdisk191,hdisk195,hdisk197,hdisk196,hdisk550,hdisk551,hdisk552,hdisk553,hdisk555,hdisk438,hdisk727,hdisk728,hdisk731,hdisk556,hdisk729,hdisk726,hdisk733,hdisk734,hdisk730,hdisk736,hdisk558,hdisk735,hdisk557,hdisk560,hdisk562,hdisk554,hdisk563,hdisk559,hdisk732,hdisk737,hdisk561,hdisk738,hdisk742,hdisk741,hdisk744,hdisk739,hdisk743,hdisk740,hdisk747,hdisk565,hdisk746,hdisk616,hdisk569,hdisk745,hdisk567,hdisk748,hdisk752,hdisk753,hdisk564,hdisk756,hdisk749,hdisk754,hdisk755,hdisk570,hdisk750,hdisk573,hdisk572,hdisk571,hdisk566,hdisk575,hdisk757,hdisk751,hdisk761,hdisk759,hdisk760,hdisk758,hdisk763,hdisk574,hdisk764,hdisk765,hdisk766,hdisk762,hdisk578,hdisk768,hdisk767,hdisk577,hdisk581,hdisk769,hdisk579,hdisk580,hdisk773,hdisk771,hdisk770,hdisk774,hdisk776,hdisk777,hdisk568,hdisk576,hdisk772,hdisk779,hdisk775,hdisk778
+              +-- DISKBSIZEs
+                  +-- DISKBSIZE,Disk Read KB/s aix-db2,hdisk0,hdisk1,hdisk301,hdisk303,hdisk298,hdisk304,hdisk302,hdisk306,hdisk307,hdisk308,hdisk305,hdisk309,hdisk310,hdisk312,hdisk311,hdisk314,hdisk313,hdisk315,hdisk955,hdisk846,hdisk956,hdisk1136,hdisk1026,hdisk1137,hdisk1053,hdisk1138,hdisk317,hdisk319,hdisk316,hdisk318,hdisk320,hdisk321,hdisk296,hdisk297,hdisk299,hdisk300,hdisk322,hdisk323,hdisk847,hdisk957,hdisk958,hdisk1027,hdisk1064,hdisk1140,hdisk324,hdisk326,hdisk327,hdisk1139,hdisk331,hdisk330,hdisk329,hdisk848,hdisk960,hdisk328,hdisk1141,hdisk332,hdisk335,hdisk1065,hdisk333,hdisk338,hdisk1028,hdisk336,hdisk337,hdisk339,hdisk1029,hdisk961,hdisk1143,hdisk340,hdisk341,hdisk962,hdisk1096,hdisk342,hdisk325,hdisk344,hdisk347,hdisk963,hdisk959,hdisk348,hdisk334,hdisk964,hdisk849,hdisk1030,hdisk343,hdisk1142,hdisk346,hdisk1097,hdisk965,hdisk1098,hdisk350,hdisk352,hdisk345,hdisk349,hdisk1144,hdisk354,hdisk966,hdisk1031,hdisk353,hdisk357,hdisk967,hdisk358,hdisk360,hdisk361,hdisk969,hdisk359,hdisk355,hdisk971,hdisk970,hdisk968,hdisk1099,hdisk1100,hdisk362,hdisk364,hdisk367,hdisk1145,hdisk365,hdisk972,hdisk368,hdisk351,hdisk356,hdisk973,hdisk363,hdisk372,hdisk370,hdisk373,hdisk371,hdisk976,hdisk975,hdisk369,hdisk1101,hdisk977,hdisk375,hdisk974,hdisk378,hdisk376,hdisk379,hdisk366,hdisk978,hdisk380,hdisk381,hdisk1102,hdisk374,hdisk382,hdisk979,hdisk383,hdisk385,hdisk386,hdisk980,hdisk1033,hdisk1103,hdisk388
+                  +-- DISKBSIZE1,Disk Read KB/s aix-db2,hdisk387,hdisk390,hdisk1032,hdisk393,hdisk384,hdisk392,hdisk391,hdisk982,hdisk1034,hdisk440,hdisk1104,hdisk1054,hdisk441,hdisk442,hdisk983,hdisk443,hdisk445,hdisk984,hdisk446,hdisk377,hdisk447,hdisk1105,hdisk1055,hdisk439,hdisk444,hdisk449,hdisk451,hdisk450,hdisk389,hdisk981,hdisk986,hdisk1036,hdisk448,hdisk987,hdisk452,hdisk453,hdisk1056,hdisk985,hdisk1035,hdisk466,hdisk989,hdisk467,hdisk468,hdisk1057,hdisk482,hdisk484,hdisk485,hdisk583,hdisk585,hdisk483,hdisk587,hdisk588,hdisk1037,hdisk584,hdisk469,hdisk780,hdisk784,hdisk783,hdisk781,hdisk785,hdisk786,hdisk586,hdisk787,hdisk788,hdisk790,hdisk589,hdisk590,hdisk593,hdisk591,hdisk792,hdisk789,hdisk595,hdisk793,hdisk594,hdisk796,hdisk791,hdisk797,hdisk782,hdisk582,hdisk795,hdisk799,hdisk794,hdisk801,hdisk598,hdisk798,hdisk596,hdisk599,hdisk988,hdisk597,hdisk600,hdisk800,hdisk601,hdisk802,hdisk803,hdisk807,hdisk617,hdisk805,hdisk808,hdisk810,hdisk592,hdisk603,hdisk806,hdisk606,hdisk811,hdisk809,hdisk607,hdisk814,hdisk602,hdisk804,hdisk816,hdisk817,hdisk818,hdisk821,hdisk820,hdisk819,hdisk822,hdisk604,hdisk608,hdisk605,hdisk609,hdisk611,hdisk613,hdisk610,hdisk823,hdisk612,hdisk825,hdisk813,hdisk815,hdisk826,hdisk198,hdisk199,hdisk830,hdisk831,hdisk828,hdisk829,hdisk827,hdisk201,hdisk200,hdisk812,hdisk833,hdisk202,hdisk203,hdisk824,hdisk832,hdisk204,hdisk205,hdisk208,hdisk209,hdisk206,hdisk210
+                  ...
+                  +-- DISKBSIZE7,Disk Read KB/s aix-db2,hdisk953,hdisk950,hdisk1052,hdisk190,hdisk191,hdisk195,hdisk197,hdisk196,hdisk550,hdisk551,hdisk552,hdisk553,hdisk555,hdisk438,hdisk727,hdisk728,hdisk731,hdisk556,hdisk729,hdisk726,hdisk733,hdisk734,hdisk730,hdisk736,hdisk558,hdisk735,hdisk557,hdisk560,hdisk562,hdisk554,hdisk563,hdisk559,hdisk732,hdisk737,hdisk561,hdisk738,hdisk742,hdisk741,hdisk744,hdisk739,hdisk743,hdisk740,hdisk747,hdisk565,hdisk746,hdisk616,hdisk569,hdisk745,hdisk567,hdisk748,hdisk752,hdisk753,hdisk564,hdisk756,hdisk749,hdisk754,hdisk755,hdisk570,hdisk750,hdisk573,hdisk572,hdisk571,hdisk566,hdisk575,hdisk757,hdisk751,hdisk761,hdisk759,hdisk760,hdisk758,hdisk763,hdisk574,hdisk764,hdisk765,hdisk766,hdisk762,hdisk578,hdisk768,hdisk767,hdisk577,hdisk581,hdisk769,hdisk579,hdisk580,hdisk773,hdisk771,hdisk770,hdisk774,hdisk776,hdisk777,hdisk568,hdisk576,hdisk772,hdisk779,hdisk775,hdisk778
+              +-- DISKBSIZEs
+                  +-- DISKRXFER,Disk Read KB/s aix-db2,hdisk0,hdisk1,hdisk301,hdisk303,hdisk298,hdisk304,hdisk302,hdisk306,hdisk307,hdisk308,hdisk305,hdisk309,hdisk310,hdisk312,hdisk311,hdisk314,hdisk313,hdisk315,hdisk955,hdisk846,hdisk956,hdisk1136,hdisk1026,hdisk1137,hdisk1053,hdisk1138,hdisk317,hdisk319,hdisk316,hdisk318,hdisk320,hdisk321,hdisk296,hdisk297,hdisk299,hdisk300,hdisk322,hdisk323,hdisk847,hdisk957,hdisk958,hdisk1027,hdisk1064,hdisk1140,hdisk324,hdisk326,hdisk327,hdisk1139,hdisk331,hdisk330,hdisk329,hdisk848,hdisk960,hdisk328,hdisk1141,hdisk332,hdisk335,hdisk1065,hdisk333,hdisk338,hdisk1028,hdisk336,hdisk337,hdisk339,hdisk1029,hdisk961,hdisk1143,hdisk340,hdisk341,hdisk962,hdisk1096,hdisk342,hdisk325,hdisk344,hdisk347,hdisk963,hdisk959,hdisk348,hdisk334,hdisk964,hdisk849,hdisk1030,hdisk343,hdisk1142,hdisk346,hdisk1097,hdisk965,hdisk1098,hdisk350,hdisk352,hdisk345,hdisk349,hdisk1144,hdisk354,hdisk966,hdisk1031,hdisk353,hdisk357,hdisk967,hdisk358,hdisk360,hdisk361,hdisk969,hdisk359,hdisk355,hdisk971,hdisk970,hdisk968,hdisk1099,hdisk1100,hdisk362,hdisk364,hdisk367,hdisk1145,hdisk365,hdisk972,hdisk368,hdisk351,hdisk356,hdisk973,hdisk363,hdisk372,hdisk370,hdisk373,hdisk371,hdisk976,hdisk975,hdisk369,hdisk1101,hdisk977,hdisk375,hdisk974,hdisk378,hdisk376,hdisk379,hdisk366,hdisk978,hdisk380,hdisk381,hdisk1102,hdisk374,hdisk382,hdisk979,hdisk383,hdisk385,hdisk386,hdisk980,hdisk1033,hdisk1103,hdisk388
+                  +-- DISKRXFER1,Disk Read KB/s aix-db2,hdisk387,hdisk390,hdisk1032,hdisk393,hdisk384,hdisk392,hdisk391,hdisk982,hdisk1034,hdisk440,hdisk1104,hdisk1054,hdisk441,hdisk442,hdisk983,hdisk443,hdisk445,hdisk984,hdisk446,hdisk377,hdisk447,hdisk1105,hdisk1055,hdisk439,hdisk444,hdisk449,hdisk451,hdisk450,hdisk389,hdisk981,hdisk986,hdisk1036,hdisk448,hdisk987,hdisk452,hdisk453,hdisk1056,hdisk985,hdisk1035,hdisk466,hdisk989,hdisk467,hdisk468,hdisk1057,hdisk482,hdisk484,hdisk485,hdisk583,hdisk585,hdisk483,hdisk587,hdisk588,hdisk1037,hdisk584,hdisk469,hdisk780,hdisk784,hdisk783,hdisk781,hdisk785,hdisk786,hdisk586,hdisk787,hdisk788,hdisk790,hdisk589,hdisk590,hdisk593,hdisk591,hdisk792,hdisk789,hdisk595,hdisk793,hdisk594,hdisk796,hdisk791,hdisk797,hdisk782,hdisk582,hdisk795,hdisk799,hdisk794,hdisk801,hdisk598,hdisk798,hdisk596,hdisk599,hdisk988,hdisk597,hdisk600,hdisk800,hdisk601,hdisk802,hdisk803,hdisk807,hdisk617,hdisk805,hdisk808,hdisk810,hdisk592,hdisk603,hdisk806,hdisk606,hdisk811,hdisk809,hdisk607,hdisk814,hdisk602,hdisk804,hdisk816,hdisk817,hdisk818,hdisk821,hdisk820,hdisk819,hdisk822,hdisk604,hdisk608,hdisk605,hdisk609,hdisk611,hdisk613,hdisk610,hdisk823,hdisk612,hdisk825,hdisk813,hdisk815,hdisk826,hdisk198,hdisk199,hdisk830,hdisk831,hdisk828,hdisk829,hdisk827,hdisk201,hdisk200,hdisk812,hdisk833,hdisk202,hdisk203,hdisk824,hdisk832,hdisk204,hdisk205,hdisk208,hdisk209,hdisk206,hdisk210
+                  ...
+                  +-- DISKRXFER7,Disk Read KB/s aix-db2,hdisk953,hdisk950,hdisk1052,hdisk190,hdisk191,hdisk195,hdisk197,hdisk196,hdisk550,hdisk551,hdisk552,hdisk553,hdisk555,hdisk438,hdisk727,hdisk728,hdisk731,hdisk556,hdisk729,hdisk726,hdisk733,hdisk734,hdisk730,hdisk736,hdisk558,hdisk735,hdisk557,hdisk560,hdisk562,hdisk554,hdisk563,hdisk559,hdisk732,hdisk737,hdisk561,hdisk738,hdisk742,hdisk741,hdisk744,hdisk739,hdisk743,hdisk740,hdisk747,hdisk565,hdisk746,hdisk616,hdisk569,hdisk745,hdisk567,hdisk748,hdisk752,hdisk753,hdisk564,hdisk756,hdisk749,hdisk754,hdisk755,hdisk570,hdisk750,hdisk573,hdisk572,hdisk571,hdisk566,hdisk575,hdisk757,hdisk751,hdisk761,hdisk759,hdisk760,hdisk758,hdisk763,hdisk574,hdisk764,hdisk765,hdisk766,hdisk762,hdisk578,hdisk768,hdisk767,hdisk577,hdisk581,hdisk769,hdisk579,hdisk580,hdisk773,hdisk771,hdisk770,hdisk774,hdisk776,hdisk777,hdisk568,hdisk576,hdisk772,hdisk779,hdisk775,hdisk778                  
+              +-- IOADAPT,Disk Adapter aix-db2,
+                  +-- fcs3_read-KB/s,fcs3_write-KB/s,fcs3_xfer-tps,
+                  +-- fcs1_read-KB/s,fcs1_write-KB/s,fcs1_xfer-tps,
+                  +-- fcs0_read-KB/s,fcs0_write-KB/s,fcs0_xfer-tps,
+                  +-- fcs2_read-KB/s,fcs2_write-KB/s,fcs2_xfer-tps,
+                  +-- scsi0_read-KB/s,scsi0_write-KB/s,scsi0_xfer-tps
+              +-- BBBD,000,Disk Adapter Information aix-db2
+                  +-- BBBD,001,Adapter_number,Name,Disks, Description
+                  +-- BBBD,002,0,"fcs3",286,"FC Adapter"
+                  +-- BBBD,003,1,"fcs1",286,"FC Adapter"
+                  +-- BBBD,004,2,"fcs0",286,"FC Adapter"
+                  +-- BBBD,005,3,"fcs2",286,"FC Adapter"
+                  +-- BBBD,006,4,"scsi0",2,"Wide/Ultra-3 SCSI I/O Controller"
+              +-- UARG,+Time,PID,PPID,COMM,THCOUNT,USER,GROUP,FullCommand
+              +-- JFSFILE,JFS Filespace %Used aix-db2,/,/home,/usr,/var,/tmp,/opt,/oracle,/dev/odm,/lef_archive2,/ora_backup,/lef_archive1
+              +-- JFSINODE,JFS Inode %Used aix-db2,/,/home,/usr,/var,/tmp,/opt,/oracle,/dev/odm,/lef_archive2,/ora_backup,/lef_archive1
+              +-- TOP,%CPU Utilisation
+              +-- TOP,+PID,Time,%CPU,%Usr,%Sys,Threads,Size,ResText,ResData,CharIO,%RAM,Paging,Command,WLMclass
+              +-- Server Details
+                  +-- BBBP,000,lsconf
+                  +-- BBBP,001,lsconf,"System Model: IBM,9119-595"
+                  +-- BBBP,002,lsconf,"Machine Serial Number: 83F5091"
+                  +-- BBBP,003,lsconf,"Processor Type: PowerPC_POWER5"
+                  +-- BBBP,004,lsconf,"Processor Implementation Mode: POWER 5"
+                  +-- BBBP,005,lsconf,"Processor Version: PV_5_3"
+                  +-- BBBP,006,lsconf,"Number Of Processors: 30"
+                  +-- BBBP,007,lsconf,"Processor Clock Speed: 2302 MHz"
+                  +-- BBBP,008,lsconf,"CPU Type: 64-bit"
+                  +-- BBBP,009,lsconf,"Kernel Type: 64-bit"
+                  +-- BBBP,010,lsconf,"LPAR Info: 4 aix-db2"
+                  +-- BBBP,011,lsconf,"Memory Size: 65280 MB"
+                  +-- BBBP,012,lsconf,"Good Memory Size: 65280 MB"
+                  +-- BBBP,013,lsconf,"Platform Firmware level: SF240_418"
+                  +-- BBBP,014,lsconf,"Firmware Version: IBM,SF240_418"
+                  +-- BBBP,015,lsconf,"Console Login: enable"
+                  +-- BBBP,016,lsconf,"Auto Restart: true"
+                  +-- BBBP,017,lsconf,"Full Core: false"
+                  +-- BBBP,018,lsconf," "
+                  +-- BBBP,019,lsconf,"Network Information"
+                  +-- BBBP,020,lsconf,"       Host Name: aix-db2"
+                  +-- BBBP,021,lsconf,"       IP Address: 172.30.30.161"
+                  +-- BBBP,022,lsconf,"       Sub Netmask: 255.255.255.128"
+                  +-- BBBP,023,lsconf,"       Gateway: 172.30.30.129"
+                  +-- BBBP,024,lsconf,"       Name Server: "
+                  +-- BBBP,025,lsconf,"       Domain Name: "
+                  +-- BBBP,026,lsconf," "
+                  +-- BBBP,027,lsconf,"Paging Space Information"
+                  +-- BBBP,028,lsconf,"       Total Paging Space: 10240MB"
+                  +-- BBBP,029,lsconf,"       Percent Used: 62%"
+                  +-- BBBP,030,lsconf," "
+                  +-- BBBP,031,lsconf,"Volume Groups Information"
+                  +-- BBBP,032,lsconf,"e============================================================================= "
+                  +-- BBBP,033,lsconf,"rootvg:"
+                  +-- BBBP,034,lsconf,"PV_NAME           PV STATE          TOTAL PPs   FREE PPs    FREE DISTRIBUTION"
+                  +-- BBBP,035,lsconf,"hdisk0            active            546         96          13..25..00..00..58"
+                  +-- BBBP,036,lsconf,"hdisk1            active            546         192         109..17..00..00..66"
+                  +-- BBBP,037,lsconf,"e============================================================================= "
+                  +-- BBBP,038,lsconf," "
+                  +-- BBBP,039,lsconf,"INSTALLED RESOURCE LIST"
+                  +-- BBBP,040,lsconf,""
+                  +-- BBBP,041,lsconf,"The following resources are installed on the machine."
+                  +-- BBBP,042,lsconf,"p/- = Added or deleted from Resource List."
+                  +-- BBBP,043,lsconf,"m   = Diagnostic support not available."
+                  +-- BBBP,044,lsconf,"       "
+                  +-- BBBP,045,lsconf,"  Model Architecture: chrp"
+                  +-- BBBP,046,lsconf,"  Model Implementation: Multiple Processor, PCI bus"
+
+                  +-- BBBP,000,/etc/release
+                  +-- BBBP,001,/etc/release,"CentOS release 6.7 (Final)"
+                  +-- BBBP,002,/etc/release,"CentOS release 6.7 (Final)"
+                  +-- BBBP,003,/etc/release,"CentOS release 6.7 (Final)"
+                  +-- BBBP,004,lsb_release
+                  +-- BBBP,005,fdisk-l
+                  +-- BBBP,006,fdisk-l,""
+                  +-- BBBP,007,fdisk-l,"Disk /dev/vda: 161.1 GB, 161061273600 bytes"
+                  +-- BBBP,008,fdisk-l,"246 heads, 55 sectors/track, 23250 cylinders"
+                  +-- BBBP,009,fdisk-l,"Units = cylinders of 13530 * 512 = 6927360 bytes"
+                  +-- BBBP,010,fdisk-l,"Sector size (logical/physical): 512 bytes / 512 bytes"
+                  +-- BBBP,011,fdisk-l,"I/O size (minimum/optimal): 512 bytes / 512 bytes"
+                  +-- BBBP,012,fdisk-l,"Disk identifier: 0x0001ec68"
+                  +-- BBBP,013,fdisk-l,""
+                  +-- BBBP,014,fdisk-l,"   Device Boot      Start         End      Blocks   Id  System"
+                  +-- BBBP,015,fdisk-l,"ddev/vda1   *           1       23250   157285226   83  Linux"
+                  +-- BBBP,016,/proc/cpuinfo
+                  +-- BBBP,017,/proc/cpuinfo,"processor       : 0"
+                  +-- BBBP,018,/proc/cpuinfo,"vendor_id       : GenuineIntel"
+                  +-- BBBP,019,/proc/cpuinfo,"cpu family      : 6"
+                  +-- BBBP,020,/proc/cpuinfo,"model           : 60"
+                  +-- BBBP,021,/proc/cpuinfo,"model name      : Virtual CPU e7da7129d3ee"
+                  +-- BBBP,022,/proc/cpuinfo,"stepping        : 1"
+                  +-- BBBP,023,/proc/cpuinfo,"microcode       : 1"
+                  +-- BBBP,024,/proc/cpuinfo,"cpu MHz         : 2399.998"
+                  +-- BBBP,025,/proc/cpuinfo,"cache size      : 4096 KB"
+                  ...
+                  +-- BBBP,330,/etc/fstab,"tmpfs                   /dev/shm                tmpfs   defaults        0 0"
+                  +-- BBBP,331,/etc/fstab,"devpts                  /dev/pts                devpts  gid=5,mode=620  0 0"  BBBP,332,/etc/fstab,"sysfs                   /sys                    sysfs   defaults        0 0"
+                  +-- BBBP,333,/etc/fstab,"proc                    /proc                   proc    defaults        0 0"
+                  +-- BBBP,334,/etc/fstab,"d.swapfile1                swap                    swap    defaults        0 0"
+                  +-- BBBP,335,/etc/fstab,"#jira.bumil.co.kr:/DATA    /mnt/DATA_bumil         nfs4    rsize=8192,wsize=8192,timeo=14,intr     0 0"
+                  +-- BBBP,336,netstat -r
+                  +-- BBBP,337,netstat -r,"Kernel IP routing table"
+                  +-- BBBP,338,netstat -r,"Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface"
+                  +-- BBBP,339,netstat -r,"45.63.122.0     *               255.255.254.0   U         0 0          0 eth0"
+                  +-- BBBP,340,netstat -r,"link-local      *               255.255.0.0     U         0 0          0 eth0"
+                  +-- BBBP,341,netstat -r,"link-local      *               255.255.0.0     U         0 0          0 eth0"
+                  +-- BBBP,342,netstat -r,"default         45.63.122.1     0.0.0.0         UG        0 0          0 eth0"BBBP,343,uptime
+                  +-- BBBP,344,uptime," 00:00:02 up 2 days, 12:06,  2 users,  load average: 0.48, 0.73, 0.89"
+                  +-- BBBP,345,getconf PAGESIZE
+                  +-- BBBP,346,getconf PAGESIZE,"4096"
+                  ...
+                  +-- BBBP,2371,oslevel,"5300-01"
+                  +-- BBBP,2372,oslevel,"5300-00"
+                  +-- BBBP,2373,oslevel
+                  +-- BBBP,2374,oslevel,"5300-12-04-1119"
+                  +-- BBBP,2375,ps v
+                  +-- BBBP,2376,ps v,"     PID    TTY STAT  TIME PGIN  SIZE   RSS   LIM  TSIZ   TRS %CPU %MEM COMMAND"
+                  +-- BBBP,2377,ps v," 1634738        Z     0:00                                              <defunct>"
+                  +-- BBBP,2378,ps v," 4859378        Z     0:00                                              <defunct>"
+          ...
+          +-- Server Config: Sat Aug 20 20:00:00 UTC 2015
+      +-- Nmon logs
+          +-- Nmon Log Frame (ZZZZ,T0001,08:01:19,12-MAY-2015)
+              +-- CPUs              
+                  +-- CPU01,T0001,48.0,2.9,1.0,48.0
+                  +-- CPU02,T0001,0.8,0.4,0.0,98.8
+                  +-- CPU03,T0001,1.0,2.4,1.6,95.0
+                  +-- CPU04,T0001,0.0,0.1,0.0,99.9
+                  +-- CPU05,T0001,4.7,10.4,0.0,84.8
+                  +-- CPU06,T0001,0.0,0.3,0.0,99.7
+                  ...
+                  +-- CPU57,T0001,3.2,7.7,0.8,88.3
+                  +-- CPU58,T0001,0.0,0.2,0.0,99.8
+                  +-- CPU59,T0001,1.4,7.0,0.1,91.5
+                  +-- CPU60,T0001,0.0,0.1,0.0,99.9
+                  +-- CPU_ALL,T0001,17.2,3.2,3.2,76.4,,60
+              +-- MEM,T0001,0.9,38.1,564.5,3898.3,65279.9,10240.0                                                                
+              +-- MEMNEW,T0001,56.3,28.0,14.9,0.9,16.7,81.0                                                                      
+              +-- MEMUSE,T0001,28.0,2.9,76.9,1200,1328,28.0,76.9                                                                 
+              +-- PAGE,T0001,36304.4,292.0,1857.3,0.1,0.0,3241.0,3339.1,0.0                                                      
+              +-- LARGEPAGE,T0001,0,0,0,0,16.0                                                                                   
+              +-- PROC,T0001,8.19,0.05,73439,286222,43166,42543,139,179,0,0                                                      
+              +-- FILE,T0001,0,57965,0,90270566,66544549,0,0,0                                                                   
+              +-- NET,T0001,108.5,1110.6,78.2,126.5,3217.4,78.2                                                                  
+              +-- NETPACKET,T0001,293.2,2718.8,111.1,295.8,4257.0,111.1                                                          
+              +-- NETSIZE,T0001,378.9,418.3,721.2,437.9,773.9,721.2                                                              
+              +-- NETSIZE,T0001,378.9,418.3,721.2,437.9,773.9,721.2                                                              
+              +-- NETERROR,T0001,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0                                                             
+              +-- IOADAPT,T0001,10054.0,2062.7,403.0,9944.7,2103.7,409.8,9726.2,2062.7,396.2,9726.2,1994.4,396.2,133.2,141.7,26.0
+              +-- JFSFILE,T0001,83.3,68.8,67.5,37.3,9.0,25.1,84.7,0.0,57.1,60.8,55.7
+              +-- JFSINODE,T0001,5.6,0.6,8.4,0.6,0.1,1.4,9.9,0.0,0.1,0.0,0.1
+              +-- DISKBUSYs
+                  +-- DISKBUSY,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKBUSY1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKBUSY2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKBUSY7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKREADs
+                  +-- DISKREAD,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKREAD1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKREAD2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKREAD7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKWRITEs
+                  +-- DISKWRITE,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKWRITE1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKWRITE2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKWRITE7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKXFERs
+                  +-- DISKXFER,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKXFER1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKXFER2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKXFER7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKRXFERs
+                  +-- DISKRXFER,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKRXFER1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKRXFER2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKRXFER7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKBSIZEs
+                  +-- DISKBSIZE,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKBSIZE1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKBSIZE2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKBSIZE7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- PROCAIO,T0001,0,0,0.0
+          +-- Nmon Log Frame (ZZZZ,T0001,08:01:19,12-MAY-2015)
+                  +-- CPU01,T0001,48.0,2.9,1.0,48.0
+                  +-- CPU02,T0001,0.8,0.4,0.0,98.8
+                  +-- CPU03,T0001,1.0,2.4,1.6,95.0
+                  +-- CPU04,T0001,0.0,0.1,0.0,99.9
+                  +-- CPU05,T0001,4.7,10.4,0.0,84.8
+                  +-- CPU06,T0001,0.0,0.3,0.0,99.7
+                  ...
+                  +-- CPU57,T0001,3.2,7.7,0.8,88.3
+                  +-- CPU58,T0001,0.0,0.2,0.0,99.8
+                  +-- CPU59,T0001,1.4,7.0,0.1,91.5
+                  +-- CPU60,T0001,0.0,0.1,0.0,99.9
+                  +-- CPU_ALL,T0001,17.2,3.2,3.2,76.4,,60
+              +-- MEM,T0001,0.9,38.1,564.5,3898.3,65279.9,10240.0                                                                
+              +-- MEMNEW,T0001,56.3,28.0,14.9,0.9,16.7,81.0                                                                      
+              +-- MEMUSE,T0001,28.0,2.9,76.9,1200,1328,28.0,76.9                                                                 
+              +-- PAGE,T0001,36304.4,292.0,1857.3,0.1,0.0,3241.0,3339.1,0.0                                                      
+              +-- LARGEPAGE,T0001,0,0,0,0,16.0                                                                                   
+              +-- PROC,T0001,8.19,0.05,73439,286222,43166,42543,139,179,0,0                                                      
+              +-- FILE,T0001,0,57965,0,90270566,66544549,0,0,0                                                                   
+              +-- NET,T0001,108.5,1110.6,78.2,126.5,3217.4,78.2                                                                  
+              +-- NETPACKET,T0001,293.2,2718.8,111.1,295.8,4257.0,111.1                                                          
+              +-- NETSIZE,T0001,378.9,418.3,721.2,437.9,773.9,721.2                                                              
+              +-- NETSIZE,T0001,378.9,418.3,721.2,437.9,773.9,721.2                                                              
+              +-- NETERROR,T0001,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0                                                             
+              +-- IOADAPT,T0001,10054.0,2062.7,403.0,9944.7,2103.7,409.8,9726.2,2062.7,396.2,9726.2,1994.4,396.2,133.2,141.7,26.0
+              +-- JFSFILE,T0001,83.3,68.8,67.5,37.3,9.0,25.1,84.7,0.0,57.1,60.8,55.7
+              +-- JFSINODE,T0001,5.6,0.6,8.4,0.6,0.1,1.4,9.9,0.0,0.1,0.0,0.1
+              +-- DISKBUSYs
+                  +-- DISKBUSY,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKBUSY1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKBUSY2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKBUSY7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKREADs
+                  +-- DISKREAD,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKREAD1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKREAD2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKREAD7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKWRITEs
+                  +-- DISKWRITE,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKWRITE1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKWRITE2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKWRITE7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKXFERs
+                  +-- DISKXFER,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKXFER1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKXFER2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKXFER7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKRXFERs
+                  +-- DISKRXFER,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKRXFER1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKRXFER2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKRXFER7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- DISKBSIZEs
+                  +-- DISKBSIZE,T0001,5.8,4.8,0.1,0.0,0.1,0.0,0.2,0.0,0.0,0.0,0.0,0.1,0.1,0.1,0.0,0.0,0.3,0.0,0.5,0.0,0.6,0.1,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.1,0.1,0.2,0.1,0.1,0.0,0.0,0.2,0.0,0.3,0.6,0.0,0.0,0.1,0.0,0.0,0.0,0.1,0.0,0.0,0.2,0.0,0.6,0.3,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.5,0.1,0.0,0.0,0.1,0.0,0.3,0.1,0.1,0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.1,0.8,0.1,0.0,0.2,0.2,0.0,0.0,0.0,0.2,0.0,0.3,0.3,0.4,0.0,0.0,0.1,0.1,0.1,0.1,1.1,0.4,0.9,0.1,0.1,0.1,0.0,0.4,0.0,0.8,0.7,0.0,0.1,0.0,0.5,0.4,0.1,0.1,0.0,0.2,0.2,1.1,0.1,0.1,0.9,0.0,1.0,0.1,0.0,0.1,0.2,0.9,0.1,0.1,0.1,0.1,0.0,3.0,0.0,0.1,0.3,0.9,0.0,0.1,0.1
+                  +-- DISKBSIZE1,T0001,0.8,0.0,0.0,0.1,0.1,0.1,0.1,1.6,0.9,0.3,0.3,0.0,0.0,0.0,3.5,0.1,0.2,0.6,0.7,0.0,0.0,0.1,0.0,0.9,0.1,0.0,0.1,0.1,0.0,3.2,0.6,1.1,0.0,3.7,0.8,0.0,0.0,2.3,0.8,0.1,0.8,0.1,0.7,0.0,0.1,0.2,0.0,0.0,0.0,0.1,0.0,0.0,1.3,0.2,0.1,0.0,0.3,0.1,0.1,0.5,0.2,0.3,0.1,0.3,0.0,0.0,0.0,0.6,0.1,0.2,0.0,0.0,0.2,0.0,0.5,0.1,0.2,0.1,0.0,0.6,0.1,0.2,0.0,0.0,0.1,0.0,0.1,0.8,0.0,0.2,0.2,0.0,0.1,0.4,0.3,0.0,0.0,0.1,0.1,0.1,0.0,0.2,0.2,0.1,0.2,0.0,0.0,0.0,0.1,0.5,0.2,0.2,0.2,0.2,0.2,0.0,0.1,0.1,0.1,0.0,0.1,0.0,0.1,0.2,0.5,0.1,0.5,0.1,0.0,0.3,0.4,0.3,0.1,0.5,0.2,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.0,0.0
+                  +-- DISKBSIZE2,T0001,0.0,0.1,0.0,0.1,0.0,0.0,0.8,0.5,0.0,0.2,0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0,0.2,0.7,0.1,0.0,0.1,0.0,0.0,0.1,0.2,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.1,0.0,0.7,0.0,0.0,0.1,0.0,0.0,0.0,0.0,0.1,0.0,0.0,0.3,0.1,0.0,0.0,0.5,0.1,0.0,0.0,0.0,0.1,0.0,0.1,0.1,0.6,0.0,0.1,0.0,0.8,0.0,0.0,0.0,0.1,0.1,0.0,0.0,0.1,0.1,0.0,0.1,0.0,0.6,0.4,0.1,0.2,0.0,0.0,0.0,0.1,0.1,0.1,0.5,0.1,0.1,0.7,0.1,0.0,0.0,0.2,0.4,0.0,0.2,0.2,0.7,0.0,0.9,0.5,0.3,0.1,0.9,0.0,0.0,0.1,0.5,1.1,1.2,0.1,0.0,0.0,0.1,0.0,0.1,2.9,1.1,0.0,0.2,0.1,0.0,0.4,0.1,0.1,0.1,0.0,1.0,0.6,0.0,1.4,0.0,2.8,0.1,0.1,0.0,0.1,0.1,0.7,1.1,0.7,3.3,0.2,0.0
+                  ...
+                  +-- DISKBSIZE7,T0001,0.7,2.8,0.0,0.1,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.2,0.0,0.0,0.1,0.1,0.3,0.0,0.1,0.2,0.0,0.1,0.3,0.0,0.0,0.1,0.0,0.1,0.0,0.4,0.0,0.1,0.1,0.1,0.6,0.2,0.6,0.8,0.3,0.3,0.2,0.2,0.0,0.0,0.2,0.0,0.0,0.1,0.1,0.1,0.6,0.4,0.0,0.3,0.3,0.0,0.1,0.0,0.2,0.0,0.1,0.0,0.1,0.0,0.1,0.0,0.0,0.2,0.1,0.2,0.4,0.4,0.1,0.3,0.1,0.2,0.1,0.0,0.1,0.1,0.0,0.1,0.1,0.4,0.4,0.0,0.2,0.6,0.1,0.1,0.4,0.0,0.0,0.0,0.1,0.1
+              +-- PROCAIO,T0001,0,0,0.0
+              +-- TOP Processes
+                  +-- TOP,2724886,T0002,84.53,83.36,1.17,1,460,64,412,16597398,0.003,1,gzip,Unclassified                                                                                                                             
+                  +-- UARG,T0002,2724886,2860152,gzip , 1 , oracle, dba,/bin/gzip                                                                                                                                                    
+                  +-- TOP,1561216,T0002,55.51,54.07,1.44,1,17996,22876,3224,7434374,0.156,0,exp,Unclassified                                                                                                                         
+                  +-- UARG,T0002,1561216,1344386,exp , 1 , oracle, dba,/oracle/product/10.2.0/db/bin/exp parfile=/ora_backup/MGR_LEF_05.par file=/ora_backup/LEFDB2_MGRLEF_05_150512_pipe log=/ora_backup/LEFDB2_MGRLEF_05_150512.log
+                  +-- TOP,1479196,T0002,52.68,50.69,1.98,1,17996,22876,3224,11618000,0.156,0,exp,Unclassified                                                                                                                        
+                  +-- UARG,T0002,1479196,6456608,exp , 1 , oracle, dba,/oracle/product/10.2.0/db/bin/exp parfile=/ora_backup/MGR_LEF_04.par file=/ora_backup/LEFDB2_MGRLEF_04_150512_pipe log=/ora_backup/LEFDB2_MGRLEF_04_150512.log
+                  +-- TOP,1147722,T0002,48.49,47.53,0.97,1,452,64,404,9482706,0.003,1,gzip,Unclassified                                                                                                                              
+                  +-- UARG,T0002,1147722,1524418,gzip , 1 , oracle, dba,/bin/gzip                                                                                                                                                    
+                  +-- TOP,1401354,T0002,41.65,40.37,1.28,1,18740,22876,3968,12140571,0.161,0,exp,Unclassified                                                                                                                        
+                  +-- UARG,T0002,1401354,1524418,exp , 1 , oracle, dba,/oracle/product/10.2.0/db/bin/exp parfile=/ora_backup/MGR_LEF_01.par file=/ora_backup/LEFDB2_MGRLEF_01_150512_pipe log=/ora_backup/LEFDB2_MGRLEF_01_150512.log
+                  +-- TOP,2924958,T0002,41.20,40.08,1.12,1,440,64,392,9495569,0.003,1,gzip,Unclassified                                                                                                                              
+                  +-- UARG,T0002,2924958,6456608,gzip , 1 , oracle, dba,/bin/gzip                                                                                                                                                    
+                  +-- TOP,2625994,T0002,29.60,29.58,0.03,1,93768,128552,6580,17960,0.809,0,oracle,Unclassified                                                                                                                       
+                  +-- UARG,T0002,2625994, 1,oracle , 1 , oracle, dba,oracleLEFDB2 (LOCAL=NO)                                                                                                                                         
+                  +-- TOP,1369082,T0002,21.46,20.81,0.64,1,460,64,412,5946630,0.003,0,gzip,Unclassified                                                                                                                              
+                  +-- UARG,T0002,1369082,1344386,gzip , 1 , oracle, dba,/bin/gzip                                                                                                                                                    
+                  +-- TOP,1274828,T0002,20.11,16.76,3.35,1,93816,128552,6628,10925418,0.809,1,oracle,Unclassified                                                                                                                    
+                  +-- UARG,T0002,1274828,1479196,oracle , 1 , oracle, dba,oracleLEFDB2 (DESCRIPTION=(LOCAL=YES)(ADDRESS=(PROTOCOL=beq)))                                                                                             
+                  +-- TOP,2617718,T0002,17.24,14.86,2.38,1,93820,128552,6632,6955153,0.809,1,oracle,Unclassified                                                                                                                     
+                  +-- UARG,T0002,2617718,1561216,oracle , 1 , oracle, dba,oracleLEFDB2 (DESCRIPTION=(LOCAL=YES)(ADDRESS=(PROTOCOL=beq)))                                                                                             
+                  +-- TOP,2257384,T0002,15.99,12.64,3.35,1,93656,128552,6468,13788776,0.808,0,oracle,Unclassified                                                                                                                    
+                  +-- UARG,T0002,2257384,1151976,oracle , 1 , oracle, dba,oracleLEFDB2 (DESCRIPTION=(LOCAL=YES)(ADDRESS=(PROTOCOL=beq)))                                                                                             
+                  +-- TOP,2474260,T0002,15.38,13.32,2.06,1,95012,128552,7824,12578271,0.816,1,oracle,Unclassified                                                                                                                    
+                  +-- UARG,T0002,2474260,1401354,oracle , 1 , oracle, dba,oracleLEFDB2 (DESCRIPTION=(LOCAL=YES)(ADDRESS=(PROTOCOL=beq)))                                                                                             
+                  +-- TOP,1151976,T0002,6.18,3.23,2.94,1,18264,22876,3492,27008118,0.158,0,exp,Unclassified                                                                                                                          
+
+
+

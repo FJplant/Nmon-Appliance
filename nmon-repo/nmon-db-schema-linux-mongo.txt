@@ -1,0 +1,225 @@
+Collections
+  +-- nmon-tokyo
+      +-- Server configurations
+          +-- Server Config: Sat Jul 25 17:05:50 UTC 2015
+              +-- Summary (AAA)
+                  +-- progname,nmon
+                  +-- command,nmon -m /DATA/nmon-capture/nmon-tokyo.fjint.com -f -s 4 -c 3600 -T
+                  +-- version,14i
+                  +-- disks_per_line,150
+                  +-- max_disks,256,set by -d option
+                  +-- disks,2,
+                  +-- host,nmon-tokyo
+                  +-- user,root
+                  +-- OS,Linux,2.6.32-573.1.1.el6.x86_64,#1 SMP Sat Jul 25 17:05:50 UTC 2015,x86_64
+                  +-- runname,nmon-tokyo
+                  +-- time,00:00.01
+                  +-- date,20-AUG-2015
+                  +-- interval,4
+                  +-- snapshots,3600
+                  +-- cpus,4
+                  +-- x86,VendorId,GenuineIntel
+                  +-- x86,ModelName,Virtual CPU e7da7129d3ee
+                  +-- x86,MHz,2399.998
+                  +-- x86,bogomips,4799.99
+                  +-- x86,ProcessorChips,1
+                  +-- x86,Cores,1
+                  +-- x86,hyperthreads,0
+                  +-- x86,VirtualCPUs,4
+                  +-- proc_stat_variables,8
+                  +-- note0, Warning - use the UNIX sort command to order this file before loading into a spreadsheet
+                  +-- note1, The First Column is simply to get the output sorted in the right order
+                  +-- note2, The T0001-T9999 column is a snapshot number. To work out the actual time; see the ZZZ section at the end
+              +-- CPUs
+                  +-- CPU001,CPU 1 nmon-tokyo,User%,Sys%,Wait%,Idle%
+                  +-- CPU002,CPU 2 nmon-tokyo,User%,Sys%,Wait%,Idle%
+                  +-- CPU003,CPU 3 nmon-tokyo,User%,Sys%,Wait%,Idle%
+                  +-- CPU004,CPU 4 nmon-tokyo,User%,Sys%,Wait%,Idle%
+                  +-- CPU_ALL,CPU Total nmon-tokyo,User%,Sys%,Wait%,Idle%,Busy,CPUs
+              +-- MEM,Memory MB nmon-tokyo,memtotal,hightotal,lowtotal,swaptotal,memfree,highfree,lowfree,swapfree,memshared,cached,active,bigfree,buffers,swapcached,inactive
+              +-- PROC,Processes nmon-tokyo,Runnable,Blocked,pswitch,syscall,read,write,fork,exec,sem,msg
+              +-- NET,Network I/O nmon-tokyo,lo-read-KB/s,eth0-read-KB/s,lo-write-KB/s,eth0-write-KB/s,
+              +-- NETPACKET,Network Packets nmon-tokyo,lo-read/s,eth0-read/s,lo-write/s,eth0-write/s,
+              +-- DISKBUSY,Disk %Busy nmon-tokyo,vda,vda1
+              +-- DISKREAD,Disk Read KB/s nmon-tokyo,vda,vda1
+              +-- DISKWRITE,Disk Write KB/s nmon-tokyo,vda,vda1
+              +-- DISKXFER,Disk transfers per second nmon-tokyo,vda,vda1
+              +-- DISKBSIZE,Disk Block Size nmon-tokyo,vda,vda1
+              +-- JFSFILE,JFS Filespace %Used nmon-tokyo,/
+              +-- TOP,%CPU Utilisation
+              +-- TOP,+PID,Time,%CPU,%Usr,%Sys,Size,ResSet,ResText,ResData,ShdLib,MinorFault,MajorFault,Command
+              +-- Server Details (BBBP)
+                  +-- 000,/etc/release
+                  +-- 001,/etc/release,"CentOS release 6.7 (Final)"
+                  +-- 002,/etc/release,"CentOS release 6.7 (Final)"
+                  +-- 003,/etc/release,"CentOS release 6.7 (Final)"
+                  +-- 004,lsb_release
+                  +-- 005,fdisk-l
+                  +-- 006,fdisk-l,""
+                  +-- 007,fdisk-l,"Disk /dev/vda: 161.1 GB, 161061273600 bytes"
+                  +-- 008,fdisk-l,"246 heads, 55 sectors/track, 23250 cylinders"
+                  +-- 009,fdisk-l,"Units = cylinders of 13530 * 512 = 6927360 bytes"
+                  +-- 010,fdisk-l,"Sector size (logical/physical): 512 bytes / 512 bytes"
+                  +-- 011,fdisk-l,"I/O size (minimum/optimal): 512 bytes / 512 bytes"
+                  +-- 012,fdisk-l,"Disk identifier: 0x0001ec68"
+                  +-- 013,fdisk-l,""
+                  +-- 014,fdisk-l,"   Device Boot      Start         End      Blocks   Id  System"
+                  +-- 015,fdisk-l,"ddev/vda1   *           1       23250   157285226   83  Linux"
+                  +-- 016,/proc/cpuinfo
+                  +-- 017,/proc/cpuinfo,"processor       : 0"
+                  +-- 018,/proc/cpuinfo,"vendor_id       : GenuineIntel"
+                  +-- 019,/proc/cpuinfo,"cpu family      : 6"
+                  +-- 020,/proc/cpuinfo,"model           : 60"
+                  +-- 021,/proc/cpuinfo,"model name      : Virtual CPU e7da7129d3ee"
+                  +-- 022,/proc/cpuinfo,"stepping        : 1"
+                  +-- 023,/proc/cpuinfo,"microcode       : 1"
+                  +-- 024,/proc/cpuinfo,"cpu MHz         : 2399.998"
+                  +-- 025,/proc/cpuinfo,"cache size      : 4096 KB"
+                  ...
+                  +-- 330,/etc/fstab,"tmpfs                   /dev/shm                tmpfs   defaults        0 0"
+                  +-- 331,/etc/fstab,"devpts                  /dev/pts                devpts  gid=5,mode=620  0 0"  BBBP,332,/etc/fstab,"sysfs                   /sys                    sysfs   defaults        0 0"
+                  +-- 333,/etc/fstab,"proc                    /proc                   proc    defaults        0 0"
+                  +-- 334,/etc/fstab,"d.swapfile1                swap                    swap    defaults        0 0"
+                  +-- 335,/etc/fstab,"#jira.bumil.co.kr:/DATA    /mnt/DATA_bumil         nfs4    rsize=8192,wsize=8192,timeo=14,intr     0 0"
+                  +-- 336,netstat -r
+                  +-- 337,netstat -r,"Kernel IP routing table"
+                  +-- 338,netstat -r,"Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface"
+                  +-- 339,netstat -r,"45.63.122.0     *               255.255.254.0   U         0 0          0 eth0"
+                  +-- 340,netstat -r,"link-local      *               255.255.0.0     U         0 0          0 eth0"
+                  +-- 341,netstat -r,"link-local      *               255.255.0.0     U         0 0          0 eth0"
+                  +-- 342,netstat -r,"default         45.63.122.1     0.0.0.0         UG        0 0          0 eth0"BBBP,343,uptime
+                  +-- 344,uptime," 00:00:02 up 2 days, 12:06,  2 users,  load average: 0.48, 0.73, 0.89"
+                  +-- 345,getconf PAGESIZE
+                  +-- 346,getconf PAGESIZE,"4096"
+          ...
+          +-- Server Config: Sat Aug 20 20:00:00 UTC 2015
+              +-- ...
+      +-- Nmon logs
+          +-- Nmon Log Frame (ZZZZ,T0001,00:00:03,20-AUG-2015)
+              +-- CPU001,67.6,11.7,16.0,4.8
+              +-- CPU002,53.6,8.9,1.0,36.5
+              +-- CPU003,51.6,11.1,0.0,37.4
+              +-- CPU004,50.5,7.9,0.0,41.6
+              +-- CPU_ALL,55.5,10.0,4.3,30.2,,4
+              +-- MEM,7872.3,-0.0,-0.0,8192.0,168.1,-0.0,-0.0,3933.9,-0.0,559.0,5829.2,-1.0,18.4,850.8,1530.8
+              +-- VM,Paging and Virtual Memory,nr_dirty,nr_writeback,nr_unstable,nr_page_table_pages,nr_mapped,nr_slab,pgpgin,pgpgout,pswpin,pswpout,pgfree,pgactivate,pgdeactivate,pgfault,pgmajfault,pginodesteal,slabs_scanned,kswapd_steal,kswapd_inodesteal,pageoutrun,allocstall,pgrotated,pgalloc_high,pgalloc_normal,pgalloc_dma,pgrefill_high,pgrefill_normal,pgrefill_dma,pgsteal_high,pgsteal_normal,pgsteal_dma,pgscan_kswapd_high,pgscan_kswapd_normal,pgscan_kswapd_dma,pgscan_direct_high,pgscan_direct_normal,pgscan_direct_dma
+              +-- VM,3673,0,0,30778,67005,-1,45700,748,8652,0,73870,3096,2900,107994,1486,0,256,8440,0,103,0,0,0,57037,0,0,2924,0,0,5805,0,0,6720,0,0,0,0
+              +-- PROC,5,0,0.0,-1.0,-1.0,-1.0,0.0,-1.0,-1.0,-1.0
+              +-- NET,120.6,0.5,120.6,0.3,
+              +-- NETPACKET,274.0,4.6,274.0,4.1,
+              +-- JFSFILE,64.6
+              +-- DISKBUSY,31.9,31.4
+              +-- DISKREAD,23163.1,23136.8
+              +-- DISKWRITE,378.9,378.9
+              +-- DISKXFER,1149.7,1141.1
+              +-- DISKBSIZE,20.5,20.6
+              +-- TOP,0000007,301849628.32,5202748758179687424.00,5168111879208805376.00,0,0,0,0,0,0,0,migration/1
+              +-- UARG,+Time,PID,ProgName,FullCommand
+              +-- UARG,0000007,migration/1,[migration/1]
+          +-- Nmon Log Frame (ZZZZ,T0001,00:00:07,20-AUG-2015)
+              +-- CPU001,T0002,27.8,5.8,1.8,64.7
+              +-- CPU002,T0002,25.7,6.5,0.2,67.6
+              +-- CPU003,T0002,29.6,6.0,0.5,63.8
+              +-- CPU004,T0002,23.5,5.2,0.2,71.0
+              +-- CPU_ALL,T0002,26.7,5.9,0.5,66.9,,4
+              +-- MEM,T0002,7872.3,-0.0,-0.0,8192.0,184.1,-0.0,-0.0,3936.5,-0.0,500.9,5862.4,-1.0,16.8,834.7,1478.3
+              +-- VM,T0002,4354,34,0,31263,68479,-1,9372,1252,2125,0,84457,3800,9081,102463,309,0,896,22049,0,231,0,0,0,55925,0,0,5358,0,0,12185,0,0,13664,0,0,0,0
+              +-- PROC,T0002,5,0,2048.3,-1.0,-1.0,-1.0,22.6,-1.0,-1.0,-1.0
+              +-- NET,T0002,31.3,0.9,31.3,0.9,
+              +-- NETPACKET,T0002,204.3,5.5,204.3,6.0,
+              +-- JFSFILE,T0002,64.6
+              +-- DISKBUSY,T0002,5.5,5.5
+              +-- DISKREAD,T0002,2326.6,2326.6
+              +-- DISKWRITE,T0002,310.8,310.8
+              +-- DISKXFER,T0002,125.4,124.6
+              +-- DISKBSIZE,T0002,21.0,21.2
+              +-- TOP,0002230,T0002,57.10,53.62,3.48,2740248,106732,24380,2689836,8832,6294,0,splunkd
+              +-- UARG,T0002,0002230,splunkd,splunkd -p 8089 start
+              +-- TOP,0000072,T0002,2.23,0.00,2.23,0,0,0,0,0,0,0,kswapd0
+              +-- UARG,T0002,0000072,kswapd0,[kswapd0]
+              +-- TOP,0003051,T0002,1.99,1.49,0.50,5131300,914136,4,4946844,6304,104,56,java
+              +-- UARG,T0002,0003051,java,/app/atlassian/conf-yns/jre//bin/java -Djava.util.logging.config.file=/app/atlassian/conf-yns/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -XX:-UseAESIntrinsics -Xms1024m -Xmx1024m -XX:+UseG1GC -Djava.awt.headless=true -Xloggc:/app/atlassian/conf-yns/logs/gc-2015-08-17_11-54-21.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=2M -XX:-PrintGCDetails -XX:+PrintGCTimeStamps -XX:-PrintTenuringDistribution -Djava.endorsed.dirs=/app/atlassian/conf-yns/endorsed -classpath /app/atlassian/conf-yns/bin/bootstrap.jar:/app/atlassian/conf-yns/bin/tomcat-juli.jar -Dcatalina.base=/app/atlassian/conf-yns -Dcatalina.home=/app/atlassian/conf-yns -Djava.io.tmpdir=/app/atlassian/conf-yns/temp org.apache.catalina.startup.Bootstrap start
+              +-- TOP,0028330,T0002,1.49,0.50,0.99,72913040,129568,20456,1250968,50564,126,0,mongod
+              +-- UARG,T0002,0028330,mongod,/usr/bin/mongod -f /etc/mongod.conf
+              +-- TOP,0003024,T0002,0.99,0.74,0.25,5866012,1592352,4,5667224,6432,0,0,java
+              +-- UARG,T0002,0003024,java,/app/atlassian/confluence/jre//bin/java -Djava.util.logging.config.file=/app/atlassian/confluence/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -XX:-UseAESIntrinsics -Xms1024m -Xmx1536m -XX:+UseG1GC -Djava.awt.headless=true -Xloggc:/app/atlassian/confluence/logs/gc-2015-08-17_11-54-21.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=2M -XX:-PrintGCDetails -XX:+PrintGCTimeStamps -XX:-PrintTenuringDistribution -Djava.endorsed.dirs=/app/atlassian/confluence/endorsed -classpath /app/atlassian/confluence/bin/bootstrap.jar:/app/atlassian/confluence/bin/tomcat-juli.jar -Dcatalina.base=/app/atlassian/confluence -Dcatalina.home=/app/atlassian/confluence -Djava.io.tmpdir=/app/atlassian/confluence/temp org.apache.catalina.startup.Bootstrap start
+              +-- TOP,0015094,T0002,0.99,0.50,0.50,730876,56828,8972,704016,5836,16,0,node
+              +-- UARG,T0002,0015094,node,/usr/bin/node /home/nmio/nmon.io/nmon-repo/nmon-db.js
+              +-- TOP,0030136,T0002,0.99,0.74,0.25,986820,37860,160524,3864,34000,634,14,oracle
+              +-- UARG,T0002,0030136,oracle,oracleXE (LOCAL=NO)
+              +-- TOP,0030363,T0002,0.99,0.99,0.00,97304,4388,544,936,3312,106,1,sshd
+              +-- UARG,T0002,0030363,sshd,sshd: root [priv]
+              +-- TOP,0001887,T0002,0.74,0.50,0.25,217460,3296,688,133932,2316,5,0,tnslsnr
+              +-- UARG,T0002,0001887,tnslsnr,/u01/app/oracle/product/11.2.0/xe/bin/tnslsnr LISTENER -inherit
+              +-- TOP,0002202,T0002,0.50,0.25,0.25,12708,984,116,2380,464,103,0,nmon
+              +-- UARG,T0002,0002202,nmon,nmon -m /DATA/nmon-capture/nmon-tokyo.fjint.com -f -s 4 -c 3600 -T
+              +-- TOP,0002372,T0002,0.50,0.50,0.00,2148116,2468,1496,2023904,936,0,0,python
+              +-- UARG,T0002,0002372,python,/app/splunk/bin/python -O /app/splunk/lib/python2.7/site-packages/splunk/appserver/mrsparkle/root.py --proxied=127.0.0.1,8065,8001
+              +-- TOP,0015303,T0002,0.50,0.25,0.25,12704,1200,116,2376,608,122,0,nmon
+              +-- UARG,T0002,0015303,nmon,nmon -F ../nmon-data/nmon-tokyo.fjint.com_20150819_234422_954124.nmon -s 4 -c 3600 -T
+              +-- TOP,0025040,T0002,0.50,0.50,0.00,5531200,1467092,4,5436496,10496,0,0,java
+              +-- UARG,T0002,0025040,java,/app/atlassian/jira/jre//bin/java -Djava.util.logging.config.file=/app/atlassian/jira/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -XX:MaxPermSize=384m -Xms1024m -Xmx1536m -Djava.awt.headless=true -Datlassian.standalone=JIRA -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true -Dorg.dom4j.factory=com.atlassian.core.xml.InterningDocumentFactory -XX:+PrintGCDateStamps -XX:-OmitStackTraceInFastThrow -Djava.endorsed.dirs=/app/atlassian/jira/endorsed -classpath /app/atlassian/jira/bin/bootstrap.jar:/app/atlassian/jira/bin/tomcat-juli.jar -Dcatalina.base=/app/atlassian/jira -Dcatalina.home=/app/atlassian/jira -Djava.io.tmpdir=/app/atlassian/jira/temp org.apache.catalina.startup.Bootstrap start
+              +-- TOP,0030235,T0002,0.50,0.00,0.50,12564,1156,116,2236,600,104,0,nmon
+              +-- UARG,T0002,0030235,nmon,nmon -m /DATA/nmon-capture/nmon-tokyo.fjint.com -f -s 4 -c 3600 -T
+              +-- TOP,0000369,T0002,0.25,0.00,0.25,0,0,0,0,0,0,0,jbd2/vda1-8
+              +-- UARG,T0002,0000369,jbd2/vda1-8,[jbd2/vda1-8]
+              +-- TOP,0002078,T0002,0.25,0.00,0.25,983052,2340,160524,3716,2232,0,0,oracle
+              +-- UARG,T0002,0002078,oracle,xe_vkrm_XE
+              +-- TOP,0002231,T0002,0.25,0.00,0.25,52852,1016,24380,8760,428,34,0,splunkd
+              +-- UARG,T0002,0002231,splunkd,[splunkd pid=2230] splunkd -p 8089 start [process-runner]
+              +-- TOP,0003206,T0002,0.25,0.25,0.00,4641280,1009380,4,4470156,3268,0,0,java
+              +-- UARG,T0002,0003206,java,/app/atlassian/jira-dgedu/jre//bin/java -Djava.util.logging.config.file=/app/atlassian/jira-dgedu/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -XX:MaxPermSize=384m -Xms384m -Xmx768m -Djava.awt.headless=true -Datlassian.standalone=JIRA -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true -Dorg.dom4j.factory=com.atlassian.core.xml.InterningDocumentFactory -XX:+PrintGCDateStamps -XX:-OmitStackTraceInFastThrow -Djava.endorsed.dirs=/app/atlassian/jira-dgedu/endorsed -classpath /app/atlassian/jira-dgedu/bin/bootstrap.jar:/app/atlassian/jira-dgedu/bin/tomcat-juli.jar -Dcatalina.base=/app/atlassian/jira-dgedu -Dcatalina.home=/app/atlassian/jira-dgedu -Djava.io.tmpdir=/app/atlassian/jira-dgedu/temp org.apache.catalina.startup.Bootstrap start
+              +-- TOP,0003273,T0002,0.25,0.25,0.00,4633176,902348,4,4460772,1972,0,0,java
+              +-- UARG,T0002,0003273,java,/app/atlassian/jira-yns/jre//bin/java -Djava.util.logging.config.file=/app/atlassian/jira-yns/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -XX:MaxPermSize=384m -Xms384m -Xmx768m -Djava.awt.headless=true -Datlassian.standalone=JIRA -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true -Dorg.dom4j.factory=com.atlassian.core.xml.InterningDocumentFactory -XX:+PrintGCDateStamps -XX:-OmitStackTraceInFastThrow -Djava.endorsed.dirs=/app/atlassian/jira-yns/endorsed -classpath /app/atlassian/jira-yns/bin/bootstrap.jar:/app/atlassian/jira-yns/bin/tomcat-juli.jar -Dcatalina.base=/app/atlassian/jira-yns -Dcatalina.home=/app/atlassian/jira-yns -Djava.io.tmpdir=/app/atlassian/jira-yns/temp org.apache.catalina.startup.Bootstrap start
+              +-- TOP,0015293,T0002,0.25,0.25,0.00,214324,13016,4,9520,3080,0,0,python
+              +-- UARG,T0002,0015293,python,python nmon-agt.py -c ../conf/nmon-agt-4h.conf
+              +-- TOP,0030451,T0002,0.25,0.00,0.25,141752,2364,4,3716,920,112,0,python
+              +-- UARG,T0002,0030451,python,python nmon-agt-watchdog.py -c ../conf/nmon-agt-4h.conf
+          ...
+          +-- Nmon Log Frame (ZZZZ,T3600,04:02:04,20-AUG-2015)
+              +-- CPU001,T3600,26.3,8.6,1.5,63.6
+              +-- CPU002,T3600,22.1,8.0,0.5,69.4
+              +-- CPU003,T3600,18.1,4.3,0.3,77.3
+              +-- CPU004,T3600,19.3,6.3,0.5,73.9
+              +-- CPU_ALL,T3600,21.5,6.7,0.6,71.1,,4
+              +-- MEM,T3600,7872.3,-0.0,-0.0,8192.0,175.6,-0.0,-0.0,3926.2,-0.0,631.7,5986.9,-1.0,25.7,243.9,1348.0
+              +-- VM,T3600,3395,0,0,31764,70969,-1,10000,5168,0,0,86546,7186,8835,161778,13,0,2176,19696,0,188,0,0,0,35802,0,0,5881,0,0,10387,0,0,16512,0,0,0,0
+              +-- PROC,T3600,6,1,2330.4,-1.0,-1.0,-1.0,53.6,-1.0,-1.0,-1.0
+              +-- NET,T3600,86.8,0.3,86.8,0.4,
+              +-- NETPACKET,T3600,134.3,2.5,134.3,3.0,
+              +-- JFSFILE,T3600,64.9
+              +-- DISKBUSY,T3600,5.7,5.7
+              +-- DISKREAD,T3600,2491.9,2491.9
+              +-- DISKWRITE,T3600,1287.8,1287.8
+              +-- DISKXFER,T3600,109.4,107.7
+              +-- DISKBSIZE,T3600,34.6,35.1
+              +-- TOP,0002230,T3600,10.96,9.72,1.25,2740248,113248,24380,2689836,9184,1868,0,splunkd
+              +-- TOP,0000072,T3600,2.49,0.00,2.49,0,0,0,0,0,0,0,kswapd0
+              +-- TOP,0003051,T3600,1.74,1.25,0.50,5141568,1478732,4,4957124,4852,1,0,java
+              +-- TOP,0001612,T3600,1.00,0.75,0.25,734772,57264,8972,707912,2452,11,0,node
+              +-- TOP,0031937,T3600,1.00,0.75,0.25,97304,4392,544,936,3312,22,0,sshd
+              +-- UARG,T3600,0031937,sshd,sshd: root [priv]
+              +-- TOP,0028330,T3600,0.75,0.50,0.25,72913040,115068,20456,1250968,40580,6,0,mongod
+              +-- TOP,0001887,T3600,0.50,0.25,0.25,217596,3496,688,134068,2340,124,0,tnslsnr
+              +-- TOP,0002768,T3600,0.50,0.00,0.50,89696,3836,24380,45604,2144,64,0,splunkd
+              +-- TOP,0025040,T3600,0.50,0.25,0.25,5553880,1363916,4,5459048,11912,0,0,java
+              +-- TOP,0030235,T3600,0.50,0.00,0.50,12740,1328,116,2412,568,90,0,nmon
+              +-- TOP,0000015,T3600,0.25,0.00,0.25,0,0,0,0,0,0,0,migration/3
+              +-- TOP,0000022,T3600,0.25,0.00,0.25,0,0,0,0,0,0,0,events/3
+              +-- TOP,0001275,T3600,0.25,0.25,0.00,9120,604,544,604,456,0,0,dhclient
+              +-- TOP,0001344,T3600,0.25,0.25,0.00,249552,3148,356,228288,520,0,0,rsyslogd
+              +-- TOP,0001680,T3600,0.25,0.00,0.25,214328,11968,4,9524,2032,0,0,python
+              +-- TOP,0001690,T3600,0.25,0.00,0.25,12720,1216,116,2392,572,96,0,nmon
+              +-- TOP,0001999,T3600,0.25,0.00,0.25,983052,1320,160524,3716,1244,0,0,oracle
+              +-- TOP,0002001,T3600,0.25,0.25,0.00,983592,4412,160524,3744,4176,0,0,oracle
+              +-- TOP,0002003,T3600,0.25,0.25,0.00,984588,5336,160524,3716,4400,0,0,oracle
+              +-- TOP,0002019,T3600,0.25,0.25,0.00,983572,17640,160524,3724,16952,0,0,oracle
+              +-- TOP,0002021,T3600,0.25,0.25,0.00,989308,1868,160524,3992,1608,0,0,oracle
+              +-- TOP,0002231,T3600,0.25,0.00,0.25,52852,1016,24380,8760,428,24,0,splunkd
+              +-- TOP,0002372,T3600,0.25,0.00,0.25,2148116,2468,1496,2023904,936,0,0,python
+              +-- TOP,0003024,T3600,0.25,0.25,0.00,5870116,1704168,4,5671328,6836,0,0,java
+              +-- TOP,0003206,T3600,0.25,0.25,0.00,4642308,600720,4,4471184,4596,0,0,java
+              +-- TOP,0029414,T3600,0.25,0.25,0.00,985900,29592,160524,3904,27060,103,0,oracle
+              +-- TOP,0029485,T3600,0.25,0.00,0.25,12580,1296,116,2252,608,109,0,nmon
+              +-- TOP,0031946,T3600,0.25,0.00,0.25,985888,24484,160524,3892,21724,257,0,oracle
+              +-- UARG,T3600,0031946,oracle,oracleXE (LOCAL=NO)
