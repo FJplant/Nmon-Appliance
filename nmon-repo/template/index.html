@@ -65,8 +65,12 @@
             }
             data.addRows(row);
 
+            var formatter = new google.visualization.NumberFormat();
+            for(var i = 0; i < y.length; i++)
+                formatter.format(data, i+1);
+
             var options = {
-                vAxis: { title : label },
+                vAxis: { title : label},
                 isStacked: stack,
                 chartArea: {  width: "75%", height : '80%' },
             };
@@ -77,6 +81,9 @@
 
         function drawPieChart(did, data, title) {
             var data = google.visualization.arrayToDataTable(data);
+
+            var formatter = new google.visualization.NumberFormat();
+            formatter.format(data, 1);
 
             var options = {
                 title: title,
@@ -91,6 +98,10 @@
 
         function drawBubbleChart(did, data, titles) {
             var data = google.visualization.arrayToDataTable(data);
+            var formatter = new google.visualization.NumberFormat();
+            formatter.format(data, 1);
+            formatter.format(data, 2);
+            formatter.format(data, 3);
 
             var options = {
                 title: titles[0],
