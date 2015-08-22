@@ -1,7 +1,8 @@
 #!/bin/bash
-./upload-nmon-tokyo.sh > ../logs/upload-nmon-tokyo.log
-./upload-yns-tokyo.sh > ../logs/upload-yns-tokyo.log
-#./upload-aix-db1.sh > ../logs/upload-aix-db1.log
-#./upload-aix-db2.sh > ../logs/upload-aix-db2.log
-./upload-aix-db3.sh > ../logs/upload-aix-db3.log
-./upload-aix-db4.sh > ../logs/upload-aix-db4.log
+echo "Running worker 1... "
+nohup ./upload-worker1.sh > ../logs/upload-worker1.log &
+echo "To read logs: tail -f ../logs/upload-worker1.log"
+
+echo "Running worker 2... "
+nohup ./upload-worker2.sh > ../logs/upload-worker2.log &
+echo "To read logs: tail -f ../logs/upload-worker2.log"
