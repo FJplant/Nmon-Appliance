@@ -269,10 +269,15 @@ function refresh_charts() {
     else
         toDate = new Date();
 
-    if ( !isLoading("HOSTS") && !isLoading(getCurResType()) ) {
-      updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);
-      updateGraph($("#hosts").val(), getCurResType(), fromDate, toDate);
-      console.log("Refresh charts: " + (new Date()).toLocaleString());
+    if ( !isLoading("HOSTS") || !isLoading(getCurResType()) ) {
+        if ( !isLoading("HOSTS") ) {
+            updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);
+            console.log("Refresh hosts charts: " + (new Date()).toLocaleString());
+        } 
+        if ( !isLoading(getCurResType()) ) {
+            updateGraph($("#hosts").val(), getCurResType(), fromDate, toDate);
+            console.log("Refresh " + getCurResType() + " charts: " + (new Date()).toLocaleString());
+        }
     } else {
       console.log("Refresh on-going: " + (new Date()).toLocaleString());
     }
