@@ -7,8 +7,9 @@ var http = require('http'),
     swig = require('swig');
 
 db = mongojs('nmon-db', ['record']);
-// refer to https://github.com/mafintosh/mongojs
 //db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
+//db = mongojs('bumil.fjint.com/nmon-db', ['record']);
+// refer to https://github.com/mafintosh/mongojs
 
 /*
  * TODO: logging on db error status 
@@ -52,9 +53,9 @@ http.Server(function(req, res) {
             res.end(html);
             return;
         }
-        else if( pathname == '/index_tabbed' ) {
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            var html = swig.renderFile('template/index_tabbed.html', {
+        else if( pathname == '/nmon-db-client.js' ) {
+            res.writeHead(200, {'Content-Type': 'text/javascript'});
+            var html = swig.renderFile('template/nmon-db-client.js', {
             });
             res.end(html);
             return;
