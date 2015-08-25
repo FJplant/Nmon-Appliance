@@ -117,8 +117,7 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
     db.collection('categories').save({name: 'DISK_TOTAL'});
     db.collection('categories').save({name: 'NET_TOTAL'});
     db.collection('performance').ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
-    db.collection('performance').ensureIndex({TOP: 1}, {unique: true, background: true});
-
+    
     var csvToJson = csv({objectMode: true});
 
     var parser = new Transform({objectMode: true});
@@ -233,57 +232,60 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
         done();
     }
 
+    parser._flush = function(done) {
+        parser._flushSave();
+        done();
+    }
+
     var writer = new Transform({objectMode: true});
-    writer._bulkcnt = 0;
     writer._bulk = [];
+    writer._header = [];
+    writer._headerWrited = false;
     writer._flushSave = function(done) {
-        var bulks = {};
-        for(var i = 0; i < writer._bulkcnt; i++) {
-            if( !(writer._bulk[i][0] in bulks) ) {
-                bulks[writer._bulk[i][0]] = db.collection(writer._bulk[i][0]).initializeOrderedBulkOp();
+        //process.stdout.write('s');
+        if( writer._bulk.length > 0 ) {
+            var bulkop = db.collection('performance').initializeOrderedBulkOp();
+            for(var i = 0; i < writer._bulk.length; i++) {
+                bulkop.insert(writer._bulk[i]);
             }
-            bulks[writer._bulk[i][0]].insert(writer._bulk[i][1]);
-        }
-        var cnt = 0;
-        for (var c in bulks) {
-            bulks[c].execute(function(err, res) {
+            bulkop.execute(function(err, res) {
                 if (err)
                     log.error(err.toString());
-                cnt++;
-                if (cnt >= Object.keys(bulks).length) {
-                    writer._bulkcnt = 0;
-                    writer._bulk = [];
-                    if (done) {
-                        done();    
-                    }
+                //console.log('d');
+                writer._bulk = [];
+                if (done) {
+                    done();    
                 }
-            });
-        }
-    }
-    writer._transform = function(data, encoding, done) {
-        if( data[0] === 'categories' ) {
-            var collection = db.collection('categories');
-            collection.findOne(data[1], function (err, doc) {
-                if( err ) {
-                    log.error(err.toString());
-                    done();
-                }
-                if (doc == null) {
-                    collection.save(data[1], function (err) {
-                        if( err )
-                            log.error(err.toString());
-                        done();
-                    });
-                }
-                else {
-                    done();
-                }                
             });
         }
         else {
-            writer._bulkcnt ++;
-            writer._bulk.push(data);
-            if ( writer._bulkcnt >= bulk_unit ) {
+            if(done) {
+                done();
+            }
+        }
+    }
+
+    writer._transform = function(data, encoding, done) {
+        //process.stdout.write('o');
+        if( data[0] === 'categories' ) {
+            writer._header.push(data[1]);
+            done();
+        }
+        else {
+            if (!writer._headerWrited) {
+                writer._headerWrited = true;
+                var bulkop = db.collection('categories').initializeOrderedBulkOp();
+                for(var i = 0; i < writer._header.length; i++)
+                    bulkop.find(writer._header[i]).upsert().update({ $set: writer._header[i]});
+                bulkop.execute(function(err, res) {
+                    if (err)
+                        log.error(err.toString());
+                    writer._header = [];
+                });
+            }
+            writer._bulk.push(data[1]);
+            if ( writer._bulk.length >= bulk_unit ) {
+                //process.stdout.write('x');
                 writer._flushSave(done);
             }
             else {
@@ -291,16 +293,16 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
             }
         }
     };
-    
-    res.connection.setTimeout(0);
-    req.pipe(csvToJson).pipe(parser).pipe(writer);
-    req.on('end', function() {
-        parser._flushSave();
+
+    writer.on('finish', function() {
         writer._flushSave();
         process.stdout.write('\n');
         res.writeHead(200);
         res.end();
     });
+   
+    res.connection.setTimeout(0);
+    req.pipe(csvToJson).pipe(parser).pipe(writer);
 }
 
 function get_categories(url_info, req, res) {
