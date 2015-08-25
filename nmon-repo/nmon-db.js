@@ -6,7 +6,7 @@ var http = require('http'),
     csv = require('csv-streamify'),
     swig = require('swig');
 
-db = mongojs('nmon-db', ['record']);
+db = mongojs('nmon-db', ['performance']);
 //db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
 //db = mongojs('bumil.fjint.com/nmon-db', ['record']);
 // refer to https://github.com/mafintosh/mongojs
@@ -75,7 +75,7 @@ http.Server(function(req, res) {
         }
         else if ( pathname == '/nmonlog_bulk' ) {
             if( method == 'POST' ) {
-                put_nmonlog(url_info, req, res, 1000);
+                put_nmonlog(url_info, req, res, 10);
                 return;
             }
         }
@@ -113,45 +113,54 @@ http.Server(function(req, res) {
 log.info('Server running at http://localhost:6900');
 
 function put_nmonlog(url_info, req, res, bulk_unit) {
-    db.collection('categories').ensureIndex({name: 1}, {unique: true});
+    db.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
     db.collection('categories').save({name: 'DISK_TOTAL'});
     db.collection('categories').save({name: 'NET_TOTAL'});
+    db.collection('performance').ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
+    db.collection('performance').ensureIndex({TOP: 1}, {unique: true, background: true});
 
     var csvToJson = csv({objectMode: true});
 
     var parser = new Transform({objectMode: true});
     parser.header = null;
+    parser._hostname = '';
+    parser._document = {};
     parser._rawHeader = {};
-    parser._datetime = {};
     parser._cnt = 0;
     parser._diskTotal = {};
     parser._hostname = null;
-    parser._transform = function(data, encoding, done) {
-        parser._cnt++;
-        if (parser._cnt % 100 == 0) {
+
+    parser._flushSave = function() {
+        if (Object.keys(parser._document).length !== 0 ) {
+            this.push(['performance', parser._document]);
+
+            parser._cnt++;
             process.stdout.write('.');
-            if (parser._cnt % 8000 == 0)
+            if (parser._cnt % 80 == 0)
                 process.stdout.write('\n');
         }
-        if( data[0].substring(0, 3) === 'AAA' || data[0].substring(0, 3) === 'BBB' )
-            ;
+    }
+
+    parser._transform = function(data, encoding, done) {
+        if( data[0].substring(0, 3) === 'AAA' || data[0].substring(0, 3) === 'BBB' ) {
+            if (data[1] === 'host')
+                parser._hostname = data[2];
+        }
         else if (data[0].substring(0, 3) === 'ZZZ' ) {
+            parser._flushSave();
+            parser._document = {};
+            parser._document['host'] = parser._hostname;
             var ts = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
-            parser._datetime[data[1]] = (new Date(ts)).getTime();
+            parser._document['datetime'] = (new Date(ts)).getTime();
+            parser._document['DISK_TOTAL'] = {};
+            parser._document['NET_TOTAL'] = {};
+            parser._document['TOP'] = [];
         }
         else {
             if( data[0] in parser._rawHeader ) {
                 var h = parser._rawHeader[data[0]];
-                var query = { host: h[1].split(' ').pop(), datetime: parser._datetime[data[1]]};
-                if(h[0] === 'TOP') {
-                    query['host'] = parser._hostname;
-                    query['datetime'] = parser._datetime[data[2]];
-                }
-                else {
-                    parser._hostname = query['host'];
-                }
-
                 var val = 0.0, read = 0.0, write = 0.0;
+                var query = {};
                 for( var i = 2; i < h.length; i++ ) {
                     if(h[i] !== '') {
                         if (h[0] === 'MEM') {
@@ -184,6 +193,7 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                             }
                         }
                     }
+
                     if( (h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/) ) {
                         val += parseFloat(data[i]);
                     }
@@ -194,36 +204,28 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                             write += parseFloat(data[i]);
                     }
                 }
-                if (!(h[0] === 'TOP' && data[2] === 'T0001')) {
-                    this.push([h[0], query, null]);
-                }
 
+                if (!(h[0] === 'TOP' && data[2] === 'T0001')) {
+                    if (h[0] === 'TOP')
+                        parser._document[h[0]].push(query);
+                    else
+                        parser._document[h[0]] = query;
+                }
+                
                 if( h[0] === 'DISKREAD' ) {
-                    parser._diskTotal['host'] = query['host'];
-                    parser._diskTotal['datetime'] = query['datetime'];
-                    parser._diskTotal['read'] = val;
-                    if ('write' in parser._diskTotal) {
-                        this.push(['DISK_TOTAL', parser._diskTotal, null]);
-                        parser._diskTotal = {};
-                    }
+                    parser._document['DISK_TOTAL']['read'] = val;
                 }
                 else if (h[0] === 'DISKWRITE') {
-                    parser._diskTotal['host'] = query['host'];
-                    parser._diskTotal['datetime'] = query['datetime'];
-                    parser._diskTotal['write'] = val;
-                    if ('read' in parser._diskTotal) {
-                        this.push(['DISK_TOTAL', parser._diskTotal, null]);
-                        parser._diskTotal = {};
-                    }
+                    parser._document['DISK_TOTAL']['write'] = val;
                 }
                 else if (h[0] === 'NET') {
-                    var query2 = { host : query['host'], datetime: query['datetime'], read: read, write: write };
-                    this.push(['NET_TOTAL', query2, null]);
+                    parser._document['NET_TOTAL']['read'] = read;
+                    parser._document['NET_TOTAL']['write'] = write;
                 }
             }
             else {
                 if (!(data[0] === 'TOP' && data.length <= 2)) {
-                    this.push(['categories', {name: data[0]}, {name: data[0]}]);
+                    this.push(['categories', {name :data[0]}]);
                     parser._rawHeader[data[0]] = data;
                 }
             }
@@ -240,18 +242,7 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
             if( !(writer._bulk[i][0] in bulks) ) {
                 bulks[writer._bulk[i][0]] = db.collection(writer._bulk[i][0]).initializeOrderedBulkOp();
             }
-            if (writer._bulk[i][0] === 'categories') {
-                bulks[writer._bulk[i][0]].find(writer._bulk[i][1]).upsert().update({ $set: writer._bulk[i][2]});
-                var collection = db.collection(writer._bulk[i][1]['name']);
-                if ( writer._bulk[i][1]['name'] === 'TOP')
-                    collection.ensureIndex({host: 1, datetime: 1}, {unique: false, background: true});
-                else
-                    collection.ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
-
-            }
-            else {
-                bulks[writer._bulk[i][0]].insert(writer._bulk[i][1]);
-            }
+            bulks[writer._bulk[i][0]].insert(writer._bulk[i][1]);
         }
         var cnt = 0;
         for (var c in bulks) {
@@ -270,19 +261,41 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
         }
     }
     writer._transform = function(data, encoding, done) {
-        writer._bulkcnt ++;
-        writer._bulk.push(data);
-        if ( writer._bulkcnt >= bulk_unit ) {
-            writer._flushSave(done);
+        if( data[0] === 'categories' ) {
+            var collection = db.collection('categories');
+            collection.findOne(data[1], function (err, doc) {
+                if( err ) {
+                    log.error(err.toString());
+                    done();
+                }
+                if (doc == null) {
+                    collection.save(data[1], function (err) {
+                        if( err )
+                            log.error(err.toString());
+                        done();
+                    });
+                }
+                else {
+                    done();
+                }                
+            });
         }
         else {
-            done();
+            writer._bulkcnt ++;
+            writer._bulk.push(data);
+            if ( writer._bulkcnt >= bulk_unit ) {
+                writer._flushSave(done);
+            }
+            else {
+                done();
+            }
         }
     };
-
+    
     res.connection.setTimeout(0);
     req.pipe(csvToJson).pipe(parser).pipe(writer);
     req.on('end', function() {
+        parser._flushSave();
         writer._flushSave();
         process.stdout.write('\n');
         res.writeHead(200);
@@ -308,7 +321,7 @@ function get_categories(url_info, req, res) {
 
 function get_hosts(url_info, req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
-    var collection = db.collection(m[2]);
+    var collection = db.collection('performance');
     collection.distinct('host', {}, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
@@ -324,17 +337,19 @@ function get_hosts(url_info, req, res) {
 
 function get_titles(url_info, req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
-    var collection = db.collection(m[2]);
-    var query = {};
+    var collection = db.collection('performance');
+    var query = { };
     if (m[1] !== 'All') {
         query['host'] = m[1];
     }
-    collection.findOne(query, function (err, doc) {
+    var fields = { _id: 0 };
+    fields[m[2]] = 1;
+    collection.findOne(query, fields, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
         var results = [];
         if( doc ) {
-            for (key in doc)
+            for (key in doc[m[2]])
                 if (key !== 'host' && key !== 'datetime' && key !== '_id')
                     results.push(key);
         }
@@ -353,10 +368,10 @@ function get_fields(url_info, req, res) {
     var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
-    var collection = db.collection(m[2]);
+    var collection = db.collection('performance');
     var fields = {datetime:1, _id: 0};
     for (var i = 0; i < data.length; i++) {
-        fields[data[i]] = 1;
+        fields[m[2] + '.' + data[i]] = 1;
     }
     var query = {};
     if (m[1] !== 'All') {
@@ -375,14 +390,14 @@ function get_fields(url_info, req, res) {
             for (var i = 0; i < data.length; i++) {
                 average.push(0.0);
             }
-            collection.find(query, fields).sort({datetime:1}).forEach(function(err, doc) {
+            collection.find(query, fields)./*sort({datetime:1}).*/forEach(function(err, doc) {
                 if( err )
                     return error_handler(res, err, 500);
                 if( doc ) {
                     cnt++;
                     average[0] += doc['datetime'];
                     for (var i = 0; i < data.length; i++) {
-                        average[i+1] += doc[data[i]];
+                        average[i+1] += doc[m[2]][data[i]];
                     }
                     if (cnt % granularity == 0) {
                         average[0] = parseInt(average[0] /  granularity);
@@ -422,17 +437,23 @@ function get_top_fields(url_info, req, res) {
     if (typeof date !== 'undefined')
         match['datetime'] = { $gt : date[0], $lt : date[1] };
 
-    var group = { _id : { command: '$Command' } };
+    var group = { _id : { command: '$TOP.Command' } };
     if (type === 'cpu')
-        group['val'] = { $avg : "$%CPU" }
+        group['val'] = { $avg : "$TOP.%CPU" }
     else if (type === 'mem')
-        group['val'] = { $avg : { $add: ["$ResText", "$ResData"] } }
+        group['val'] = { $avg : { $add: ["$TOP.ResText", "$TOP.ResData"] } }
 
     results.push(['command', type]);
-    var collection = db.collection(m[2]);
-    collection.aggregate({'$match' : match}, {'$group': group}, function (err, doc) {
-        if( err )
+    var collection = db.collection('performance');
+    collection.aggregate(
+        {'$match' : match}, 
+        {'$project': {TOP:1}}, 
+        {'$unwind': '$TOP'}, 
+        {'$group': group}, 
+        function (err, doc) {
+        if( err ) {
             return error_handler(res, err, 500);
+        }
         if( doc ) {
             for( var i = 0; i < doc.length; i++ ) {
                 results.push([ doc[i]._id.command, doc[i].val ]);
@@ -454,9 +475,13 @@ function get_host_fields(url_info, req, res) {
         match['datetime'] = { $gt : date[0], $lt : date[1] };
 
     var group = { _id : { host: '$host' } };
-    group['val'] = { $avg : { $add: ["$User%", "$Sys%"] } };
-    group['no'] = { $avg : "$CPUs"};
-    db.collection('CPU_ALL').aggregate({'$match' : match}, {'$group': group}, function (err, doc) {
+    group['val'] = { $avg : { $add: ["$CPU_ALL.User%", "$CPU_ALL.Sys%"] } };
+    group['no'] = { $avg : "$CPU_ALL.CPUs"};
+    db.collection('performance').aggregate(
+        {'$match' : match}, 
+        {'$project': {host:1, CPU_ALL:1}}, 
+        {'$group': group}, 
+        function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
         if( doc ) {
@@ -470,8 +495,12 @@ function get_host_fields(url_info, req, res) {
                 }
             }
             var group2 = { _id: { host: '$host'} };
-            group2['val'] = { $avg : { $add: ["$read", "$write"] } };
-            db.collection('DISK_TOTAL').aggregate({'$match' : match}, {'$group': group2}, function (err, doc) {
+            group2['val'] = { $avg : { $add: ["$DISK_TOTAL.read", "$DISK_TOTAL.write"] } };
+            db.collection('performance').aggregate(
+                {'$match' : match}, 
+                {'$project': {host:1, DISK_TOTAL:1}},
+                {'$group': group2}, 
+                function (err, doc) {
                 if( err )
                     return error_handler(res, err, 500);
                 if( doc ) {
@@ -481,7 +510,13 @@ function get_host_fields(url_info, req, res) {
                         else
                             results[doc[i]._id.host] = { disk : doc[i].val };
                     }
-                    db.collection('NET_TOTAL').aggregate({'$match' : match}, {'$group': group2}, function (err, doc) {
+                    var group3 = { _id: { host: '$host'} };
+                    group3['val'] = { $avg : { $add: ["$NET_TOTAL.read", "$NET_TOTAL.write"] } };
+                    db.collection('performance').aggregate(
+                        {'$match' : match}, 
+                        {'$project': {host:1, NET_TOTAL:1}},
+                        {'$group': group3}, 
+                        function (err, doc) {
                         if( err )
                             return error_handler(res, err, 500);
                         if( doc ) {

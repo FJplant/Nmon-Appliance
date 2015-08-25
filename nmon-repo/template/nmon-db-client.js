@@ -272,6 +272,7 @@ function refresh_charts() {
     if ( !isLoading("HOSTS") || !isLoading(getCurResType()) ) {
         if ( !isLoading("HOSTS") ) {
             updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);
+            //updateGraph("All", "HOSTS", fromDate, toDate);
             console.log("Refresh hosts charts: " + (new Date()).toLocaleString());
         } 
         if ( !isLoading(getCurResType()) ) {
