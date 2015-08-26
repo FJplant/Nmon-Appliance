@@ -43,82 +43,109 @@ function getHosts(category) {
     });
 }
 
-function drawChart(did, x, y, label, row, stack) {
-    var data = new google.visualization.DataTable();
-    data.addColumn('datetime', x);
-    for (var i = 0; i < y.length; i++) {
-        data.addColumn('number', y[i]);
-    }
-    for (var i = 0; i < row.length; i++) {
-        row[i][0] = new Date(row[i][0]);
-    }
-    data.addRows(row);
+function drawChart(did, header, data) {
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
 
-    var formatter = new google.visualization.NumberFormat();
-    for (var i = 0; i < y.length; i++)
-        formatter.format(data, i + 1);
+    var d3data = [ ];
+    for(var i = 0; i < header.length; i++)
+        d3data.push({key: header[i], values:[]});
+    for(var j = 0; j < data.length; j++)
+        for(var i = 0; i < header.length; i++)
+            d3data[i].values.push([data[j][0], data[j][i+1]]);
 
-    var options = {
-        vAxis: {
-            title: label
-        },
-        isStacked: stack,
-        chartArea: {
-            width: "75%",
-            height: '80%'
-        },
-    };
+    nv.addGraph(function() {
+        var chart = nv.models.stackedAreaChart()
+                      .x(function(d) { return d[0] })   //We can modify the data accessor functions...
+                      .y(function(d) { return d[1] })   //...in case your data is formatted differently.
+                      .useInteractiveGuideline(true)    //Tooltips which show all data points. Very nice!
+                      .showControls(true)       //Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
+                      .clipEdge(true);
 
-    var chart = new google.visualization.AreaChart(document.getElementById(did));
-    chart.draw(data, options);
+        //Format x-axis labels with custom function.
+        chart.xAxis
+            .tickFormat(function(d) { 
+              return d3.time.format('%x')(new Date(d)) 
+        });
+
+        chart.yAxis
+            .tickFormat(d3.format(',.2f'));
+
+        d3.select('#' + did + ' svg')
+          .datum(d3data)
+          .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
 }
 
-function drawPieChart(did, data, title) {
-    var data = google.visualization.arrayToDataTable(data);
+function drawPieChart(did, data) {
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
 
-    var formatter = new google.visualization.NumberFormat();
-    formatter.format(data, 1);
+    var d3data = [ ];
+    for(var j = 1; j < data.length; j++)
+        d3data.push({label: data[j][0], value: data[j][1]});
 
-    var options = {
-        title: title,
-        pieSliceText: 'label',
-        pieHole: 0.4,
-        chartArea: {
-            width: "95%",
-            height: '85%'
-        }
-    };
+    nv.addGraph(function() {
+        var chart = nv.models.pieChart()
+                       .x(function(d) { return d.label })
+                       .y(function(d) { return d.value })
+                       .donut(true)
+                       .donutRatio(0.35)
+                       .showLabels(true);
 
-    var chart = new google.visualization.PieChart(document.getElementById(did));
-    chart.draw(data, options);
+        d3.select('#' + did + ' svg')
+          .datum(d3data)
+          .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
 }
 
-function drawBubbleChart(did, data, titles) {
-    var data = google.visualization.arrayToDataTable(data);
-    var formatter = new google.visualization.NumberFormat();
-    formatter.format(data, 1);
-    formatter.format(data, 2);
-    formatter.format(data, 3);
+function drawBubbleChart(did, data) {
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
 
-    var options = {
-        title: titles[0],
-        hAxis: {
-            title: titles[1]
-        },
-        vAxis: {
-            title: titles[2]
-        },
-        colorAxis: {
-            colors: ['yellow', 'red']
-        },
-        chartArea: {
-            width: "75%",
-            height: '75%'
-        }
-    };
+    var d3data = [];
+    for(var i = 1; i < data.length; i++) {
+        d3data.push({
+            key : data[i][0], 
+            values: [{x: data[i][1], y: data[i][2], size: data[i][4], network: data[i][3] }]
+        });
+    }
 
-    var chart = new google.visualization.BubbleChart(document.getElementById(did));
-    chart.draw(data, options);
+    nv.addGraph(function() {
+        var chart = nv.models.scatterChart()
+                    .showDistX(true)
+                    .showDistY(true)
+                    .color(d3.scale.category10().range());
+
+        chart.tooltip.contentGenerator(function(obj) {
+            var html = '<p><h3>' + obj.series[0].key + '</h3>';
+            html += 'CPU = ' +  (Math.round(obj.series[0].values[0].x * 100) / 100) + '%<br>';
+            html += 'Memory = ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + 'MB<br>';
+            html += 'Network = ' +  (Math.round(obj.series[0].values[0].network * 100) / 100) + 'MB<br>';
+            html += 'No. of CPU = ' + obj.series[0].values[0].size + '<br>';
+            return html;
+        });
+
+        //Axis settings
+        chart.xAxis.tickFormat(d3.format('.02f'));
+        chart.yAxis.tickFormat(d3.format('.02f'));
+
+        d3.select('#' + did + ' svg')
+          .datum(d3data)
+          .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
 }
 
 function updateGraph(hostname, restype, fromDate, toDate) {
@@ -133,7 +160,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["HOSTS"] = false;
-                drawBubbleChart("hosts_chart", data, ["Hosts", 'CPU (%)', 'Disk (KB/s)']);
+                drawBubbleChart("hosts_chart", data);
                 console.log(' HOSTS chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -149,7 +176,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["CPU"] = false;
-                drawChart("cpu_chart", "time", ['User(%)', 'Sys(%)', 'Wait(%)'], '%', result, true);
+                drawChart("cpu_chart", ['User', 'Sys', 'Wait'], result);
                 console.log('  CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -166,9 +193,9 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 var result = eval(data);
                 reqStatus["MEM"] = false;
                 for (var i = 0; i < result.length; i++) {
-                    result[i][2] = result[i][1] - result[i][2];
+                    result[i][1] = result[i][1] - result[i][2];
                 }
-                drawChart("mem_chart", "time", ['Real total(MB)', 'Real used(MB)'], 'MB', result, false);
+                drawChart("mem_chart", ['Real used', 'Real free'], result);
                 console.log('  MEM chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -185,9 +212,9 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 var result = eval(data);
                 reqStatus["SWAP"] = false;
                 for (var i = 0; i < result.length; i++) {
-                    result[i][2] = result[i][1] - result[i][2];
+                    result[i][1] = result[i][1] - result[i][2];
                 }
-                drawChart("swap_chart", "time", ['Virtual total(MB)', 'Virtual used(MB)'], 'MB', result, false);
+                drawChart("swap_chart", ['Virtual used', 'Virtual free'], result);
                 console.log('  SWAP chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -203,7 +230,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["DISK"] = false;
-                drawChart("disk_chart", "time", ['read', 'write'], 'KB/s', result, true);
+                drawChart("disk_chart", ['read', 'write'], result);
                 console.log(' DISK chart response:' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -219,7 +246,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["NET"] = false;
-                drawChart("network_chart", "time", ['read', 'write'], 'KB/s', result, true);
+                drawChart("network_chart", ['read', 'write'], result);
                 console.log(' NET chart response :' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -235,7 +262,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["PROCESS_CPU"] = false;
-                drawPieChart("process_cpu_chart", data, "Process usage by CPU");
+                drawPieChart("process_cpu_chart", data);
                 console.log(' PROCESS_CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });

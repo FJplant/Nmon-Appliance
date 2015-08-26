@@ -60,6 +60,27 @@ http.Server(function(req, res) {
             res.end(html);
             return;
         }
+        else if( pathname == '/d3.min.js' ) {
+            res.writeHead(200, {'Content-Type': 'text/javascript'});
+            var html = swig.renderFile('template/d3.min.js', {
+            });
+            res.end(html);
+            return;
+        }
+        else if( pathname == '/nv.d3.min.js' ) {
+            res.writeHead(200, {'Content-Type': 'text/javascript'});
+            var html = swig.renderFile('template/nv.d3.min.js', {
+            });
+            res.end(html);
+            return;
+        }
+        else if( pathname == '/nv.d3.css' ) {
+            res.writeHead(200, {'Content-Type': 'text/css'});
+            var html = swig.renderFile('template/nv.d3.css', {
+            });
+            res.end(html);
+            return;
+        }
         else if( pathname == '/process.json' ) {
             res.writeHead(200, {'Content-Type': 'application/json'});
             var html = swig.renderFile('template/process.json', {
@@ -168,7 +189,7 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                                 query['Sys'] = parseFloat(data[i]);
                             else if (h[i] === 'Wait%')
                                 query['Wait'] = parseFloat(data[i]);
-                            else if (h[i] === 'CPUs' || h[1] === 'PhysicalCPUs')
+                            else if (h[i] === 'CPUs' || h[i] === 'PhysicalCPUs')
                                 query['CPUs'] = parseFloat(data[i])
                         }
                         else if (h[0] === 'MEM') {

@@ -1,7 +1,7 @@
 <!DOCTYPE=html>
 <html lang="en_US">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="title" content="Nmon.io Dashboard - Dashboard, Report and Analyze service for your nmon data">
     <meta name="description" content="nmon. website providing nmon dashboard, report and analyze service in cloud">
     <meta name="keywords" content="Nmon.io,Nmon Dashboard,nmon-repo,nmon-db,nmon-agt,nmon-jira,nmon-conf,Nmon,nmon analyzer,nmon report,Linux,AIX,Solaris,sarmon,topas_nmon,server,database server">
@@ -9,15 +9,9 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-    <script type="text/javascript"
-            src="https://www.google.com/jsapi?autoload={
-            'modules':[{
-              'name':'visualization',
-              'version':'1',
-              'packages':['corechart']
-            }]
-          }"></script>
+    <script src="d3.min.js"></script> 
+    <link rel="stylesheet" href="nv.d3.css" type="text/css">
+    <script src="nv.d3.min.js"></script>      
     <script src="nmon-db-client.js" charset="utf-8"></script>
     <style>
         body {
@@ -150,7 +144,9 @@
         <li><a href="#process_mem_chart">Process Memory Usage</a>
         <li><a href="#bubble_chart">Bubble Chart Example</a>
     </ul>
-    <div id="cpu_chart" class="googlechart">&nbsp;</div>
+    <div id="cpu_chart" class="googlechart">
+        <svg></svg>
+    </div>
     <div id="mem_chart" class="googlechart">&nbsp;</div>
     <div id="swap_chart" class="googlechart">&nbsp;</div>
     <div id="disk_chart" class="googlechart">&nbsp;</div>
