@@ -144,12 +144,12 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["CPU"] = true;
         console.log("[Requesting CPU data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User%25', 'Sys%25', 'Wait%25']",
+            url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User', 'Sys', 'Wait']",
             data: {},
             success: function(data) {
                 var result = eval(data);
                 reqStatus["CPU"] = false;
-                drawChart("cpu_chart", "time", ['User%', 'Sys%', 'Wait%'], '%', result, true);
+                drawChart("cpu_chart", "time", ['User(%)', 'Sys(%)', 'Wait(%)'], '%', result, true);
                 console.log('  CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -160,7 +160,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["MEM"] = true;
         console.log("[Requesting MEM data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total(MB)', 'Real free(MB)']",
+            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
             data: {},
             success: function(data) {
                 var result = eval(data);
@@ -179,7 +179,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["SWAP"] = true;
         console.log("[Requesting SWAP data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total(MB)', 'Virtual free(MB)']",
+            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
             data: {},
             success: function(data) {
                 var result = eval(data);
@@ -198,7 +198,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["DISK"] = true;
         console.log("[Requesting DISK data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/DISK_TOTAL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
+            url: "/" + hostname + "/DISK_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
             data: {},
             success: function(data) {
                 var result = eval(data);
@@ -214,7 +214,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["NET"] = true;
         console.log("[Requesting NET data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/NET_TOTAL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
+            url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
             data: {},
             success: function(data) {
                 var result = eval(data);
@@ -271,8 +271,8 @@ function refresh_charts() {
 
     if ( !isLoading("HOSTS") || !isLoading(getCurResType()) ) {
         if ( !isLoading("HOSTS") ) {
-            updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);
-            //updateGraph("All", "HOSTS", fromDate, toDate);
+            //updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);
+            updateGraph("All", "HOSTS", fromDate, toDate);
             console.log("Refresh hosts charts: " + (new Date()).toLocaleString());
         } 
         if ( !isLoading(getCurResType()) ) {

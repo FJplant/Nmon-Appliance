@@ -114,8 +114,8 @@ log.info('Server running at http://localhost:6900');
 
 function put_nmonlog(url_info, req, res, bulk_unit) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
-    db.collection('categories').save({name: 'DISK_TOTAL'});
-    db.collection('categories').save({name: 'NET_TOTAL'});
+    db.collection('categories').save({name: 'DISK_ALL'});
+    db.collection('categories').save({name: 'NET_ALL'});
     db.collection('performance').ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
     
     var csvToJson = csv({objectMode: true});
@@ -132,7 +132,6 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
     parser._flushSave = function() {
         if (Object.keys(parser._document).length !== 0 ) {
             this.push(['performance', parser._document]);
-
             parser._cnt++;
             process.stdout.write('.');
             if (parser._cnt % 80 == 0)
@@ -151,8 +150,8 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
             parser._document['host'] = parser._hostname;
             var ts = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
             parser._document['datetime'] = (new Date(ts)).getTime();
-            parser._document['DISK_TOTAL'] = {};
-            parser._document['NET_TOTAL'] = {};
+            parser._document['DISK_ALL'] = {};
+            parser._document['NET_ALL'] = {};
             parser._document['TOP'] = [];
         }
         else {
@@ -162,64 +161,64 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                 var query = {};
                 for( var i = 2; i < h.length; i++ ) {
                     if(h[i] !== '') {
-                        if (h[0] === 'MEM') {
-                            if (h[i] === 'memtotal')
-                                query['Real total(MB)'] = parseFloat(data[i]);
-                            else if (h[i] === 'memfree')
-                                query['Real free(MB)'] = parseFloat(data[i]);
-                            else if (h[i] === 'swaptotal')
-                                query['Virtual total(MB)'] = parseFloat(data[i]);
-                            else if (h[i] === 'swapfree')
-                                query['Virtual free(MB)'] = parseFloat(data[i]);
-                            else
-                                query[h[i]] = parseFloat(data[i]);
+                        if (h[0] === 'CPU_ALL') {
+                            if (h[i] === 'User%')
+                                query['User'] = parseFloat(data[i]);
+                            else if (h[i] === 'Sys%')
+                                query['Sys'] = parseFloat(data[i]);
+                            else if (h[i] === 'Wait%')
+                                query['Wait'] = parseFloat(data[i]);
+                            else if (h[i] === 'CPUs' || h[1] === 'PhysicalCPUs')
+                                query['CPUs'] = parseFloat(data[i])
                         }
-                        else if (h[0] === 'CPU_ALL') {
-                            if (h[i] === 'PhysicalCPUs')
-                                query['CPUs'] = parseFloat(data[i]);
-                            else
-                                query[h[i]] = parseFloat(data[i]);
+                        else if (h[0] === 'MEM') {
+                            if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
+                                query['Real total'] = parseFloat(data[i]);
+                            else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
+                                query['Real free'] = parseFloat(data[i]);
+                            else if (h[i] === 'swaptotal' || h[i] === 'Virtual total(MB)')
+                                query['Virtual total'] = parseFloat(data[i]);
+                            else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
+                                query['Virtual free'] = parseFloat(data[i]);
                         }
-                        else {
-                            if( h[0] === 'TOP' && h[i] === 'Time' ) {
-                                // skip time
-                            }
-                            else if( h[0] === 'TOP' && h[i] === 'Command' ) {
-                                query[h[i]] = data[i];
-                            }
-                            else {
-                                query[h[i]] = parseFloat(data[i]);
+                        else if (h[0] === 'NET') {
+                            if( h[i].indexOf('read') != -1 )
+                                read += parseFloat(data[i]);
+                            else if( h[i].indexOf('write') != -1)
+                                write += parseFloat(data[i]);
+                        }
+                        else if ((h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/)) {
+                            val += parseFloat(data[i]);
+                        }
+                        else if (h[0] === 'TOP') {
+                            if (data[2] !== 'T0001') {
+                                if( h[0] === 'TOP' && h[i] === 'Command' ) {
+                                    query[h[i]] = data[i];
+                                }
+                                else if( h[0] === 'TOP' && (h[i] === '%CPU' || h[i] === 'ResText' || h[i] === 'ResData') ) {
+                                    query[h[i]] = parseFloat(data[i]);
+                                }
                             }
                         }
-                    }
-
-                    if( (h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/) ) {
-                        val += parseFloat(data[i]);
-                    }
-                    else if (h[0] === 'NET') {
-                        if( h[i].indexOf('read') != -1 )
-                            read += parseFloat(data[i]);
-                        else if( h[i].indexOf('write') != -1)
-                            write += parseFloat(data[i]);
                     }
                 }
 
-                if (!(h[0] === 'TOP' && data[2] === 'T0001')) {
+                if (Object.keys(query).length !== 0) {
                     if (h[0] === 'TOP')
                         parser._document[h[0]].push(query);
                     else
                         parser._document[h[0]] = query;
                 }
-                
+
                 if( h[0] === 'DISKREAD' ) {
-                    parser._document['DISK_TOTAL']['read'] = val;
+                    parser._document['DISK_ALL']['read'] = val;
                 }
                 else if (h[0] === 'DISKWRITE') {
-                    parser._document['DISK_TOTAL']['write'] = val;
+                    parser._document['DISK_ALL']['write'] = val;
                 }
                 else if (h[0] === 'NET') {
-                    parser._document['NET_TOTAL']['read'] = read;
-                    parser._document['NET_TOTAL']['write'] = write;
+                    parser._document['NET_ALL']['read'] = read;
+                    parser._document['NET_ALL']['write'] = write;
                 }
             }
             else {
@@ -392,7 +391,7 @@ function get_fields(url_info, req, res) {
             for (var i = 0; i < data.length; i++) {
                 average.push(0.0);
             }
-            collection.find(query, fields)./*sort({datetime:1}).*/forEach(function(err, doc) {
+            collection.find(query, fields).sort({datetime:1}).forEach(function(err, doc) {
                 if( err )
                     return error_handler(res, err, 500);
                 if( doc ) {
@@ -477,7 +476,7 @@ function get_host_fields(url_info, req, res) {
         match['datetime'] = { $gt : date[0], $lt : date[1] };
 
     var group = { _id : { host: '$host' } };
-    group['val'] = { $avg : { $add: ["$CPU_ALL.User%", "$CPU_ALL.Sys%"] } };
+    group['val'] = { $avg : { $add: ["$CPU_ALL.User", "$CPU_ALL.Sys"] } };
     group['no'] = { $avg : "$CPU_ALL.CPUs"};
     db.collection('performance').aggregate(
         {'$match' : match}, 
@@ -497,10 +496,10 @@ function get_host_fields(url_info, req, res) {
                 }
             }
             var group2 = { _id: { host: '$host'} };
-            group2['val'] = { $avg : { $add: ["$DISK_TOTAL.read", "$DISK_TOTAL.write"] } };
+            group2['val'] = { $avg : { $add: ["$DISK_ALL.read", "$DISK_ALL.write"] } };
             db.collection('performance').aggregate(
                 {'$match' : match}, 
-                {'$project': {host:1, DISK_TOTAL:1}},
+                {'$project': {host:1, DISK_ALL:1}},
                 {'$group': group2}, 
                 function (err, doc) {
                 if( err )
@@ -513,10 +512,10 @@ function get_host_fields(url_info, req, res) {
                             results[doc[i]._id.host] = { disk : doc[i].val };
                     }
                     var group3 = { _id: { host: '$host'} };
-                    group3['val'] = { $avg : { $add: ["$NET_TOTAL.read", "$NET_TOTAL.write"] } };
+                    group3['val'] = { $avg : { $add: ["$NET_ALL.read", "$NET_ALL.write"] } };
                     db.collection('performance').aggregate(
                         {'$match' : match}, 
-                        {'$project': {host:1, NET_TOTAL:1}},
+                        {'$project': {host:1, NET_ALL:1}},
                         {'$group': group3}, 
                         function (err, doc) {
                         if( err )
