@@ -1,0 +1,314 @@
+<!DOCTYPE=html>
+<html>
+  <head>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="d3.min.js"></script> 
+    <link rel="stylesheet" href="nv.d3.css" type="text/css">
+    <script src="nv.d3.min.js"></script>
+    <script type="text/javascript">
+
+function getHosts(category) {
+    $.ajax({
+        url: "/All/" + category + "/hosts",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            var html = '<option value="All">All</option>';
+            for (var i = 0; i < result.length; i++) {
+                html += '<option value="' + result[i] + '">' + result[i] + '</option>';
+            }
+            $("#hosts").html(html);
+        }
+    });
+}
+
+function drawChart(did, data, xlabel, ylabel) {
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
+
+    var d3data = [ ];
+    for(var i = 1; i < data[0].length; i++)
+        d3data.push({key: data[0][i], values:[]});
+    for(var j = i; j < data.length; j++)
+        for(var i = 1; i < data[0].length; i++)
+            d3data[i-1].values.push([data[j][0], data[j][i]]);
+
+    nv.addGraph(function() {
+        var chart = nv.models.stackedAreaChart()
+                      .x(function(d) { return d[0] })   //We can modify the data accessor functions...
+                      .y(function(d) { return d[1] })   //...in case your data is formatted differently.
+                      .useInteractiveGuideline(true)    //Tooltips which show all data points. Very nice!
+                      .showControls(true)       //Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
+                      .clipEdge(true);
+
+        //Format x-axis labels with custom function.
+        chart.xAxis
+            .axisLabel(xlabel)
+            .tickFormat(function(d) { 
+              return d3.time.format('%x')(new Date(d)) 
+        });
+
+        chart.yAxis
+            .axisLabel(ylabel)
+            .tickFormat(d3.format(',.2f'));
+
+        d3.select('#' + did + ' svg')
+          .datum(d3data)
+          .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
+}
+
+function drawPieChart(did, data) {
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
+
+    var d3data = [ ];
+    for(var j = 1; j < data.length; j++)
+        d3data.push({label: data[j][0], value: data[j][1]});
+
+    nv.addGraph(function() {
+        var chart = nv.models.pieChart()
+                       .x(function(d) { return d.label })
+                       .y(function(d) { return d.value })
+                       .donut(true)
+                       .donutRatio(0.35)
+                       .showLabels(true);
+
+        d3.select('#' + did + ' svg')
+          .datum(d3data)
+          .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
+}
+
+function drawBubbleChart(did, data, xlabel, ylabel) {
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
+
+    var d3data = [];
+    for(var i = 1; i < data.length; i++) {
+        d3data.push({
+            key : data[i][0], 
+            values: [{x: data[i][1], y: data[i][2], size: data[i][4], network: data[i][3] }]
+        });
+    }
+
+    nv.addGraph(function() {
+        var chart = nv.models.scatterChart()
+                    .showDistX(true)
+                    .showDistY(true)
+                    .color(d3.scale.category10().range());
+
+        chart.tooltip.contentGenerator(function(obj) {
+            var html = '<p><h3>' + obj.series[0].key + '</h3>';
+            html += 'CPU = ' +  (Math.round(obj.series[0].values[0].x * 100) / 100) + '%<br>';
+            html += 'Disk = ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + 'KB/s<br>';
+            html += 'Network = ' +  (Math.round(obj.series[0].values[0].network * 100) / 100) + 'KB/s<br>';
+            html += 'No. of CPU = ' + obj.series[0].values[0].size + '<br>';
+            return html;
+        });
+
+        //Axis settings
+        chart.xAxis.axisLabel(xlabel).tickFormat(d3.format('.02f'));
+        chart.yAxis.axisLabel(ylabel).tickFormat(d3.format('.02f'));
+
+        d3.select('#' + did + ' svg')
+          .datum(d3data)
+          .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
+}
+
+function updateGraph(hostname, fromDate, toDate) {
+    console.log(fromDate + " " + fromDate.getTime());
+    console.log(toDate + " " + toDate.getTime());
+
+    var start = +new Date();
+
+    // host
+    $.ajax({
+        url: "/" + hostname + "/HOST?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            drawBubbleChart("hosts_chart", data, 'CPU (%)', 'Disk (KB/s)');
+            console.log(' HOSTS chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
+        }
+    });
+
+    // cpu
+    $.ajax({
+        url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User', 'Sys', 'Wait']",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            drawChart("cpu_chart", result, 'Time', '%');
+            console.log('  CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+        }
+    });
+
+    // memory
+    $.ajax({
+        url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            result[0][1] = 'Real used';
+            for (var i = 1; i < result.length; i++) {
+                result[i][1] = result[i][1] - result[i][2];
+            }
+            drawChart("mem_chart", result, 'Time', 'MB');
+            console.log('  MEM chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+        }
+    });
+
+    // swap
+    $.ajax({
+        url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            result[0][1] = 'Virtual used';
+            for (var i = 0; i < result.length; i++) {
+                result[i][1] = result[i][1] - result[i][2];
+            }
+            drawChart("swap_chart", result, 'Time', 'MB');
+            console.log('  SWAP chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+        }
+    });
+
+    // disk
+    $.ajax({
+        url: "/" + hostname + "/DISK_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            drawChart("disk_chart", result, 'Time', 'KB/s');
+            console.log(' DISK chart response:' + ((+new Date() - +start)) / 1000 + ' secs');
+        }
+    });
+
+    // network
+    $.ajax({
+        url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            drawChart("network_chart", result, 'Time', 'KB/s');
+            console.log(' NET chart response :' + ((+new Date() - +start)) / 1000 + ' secs');
+        }
+    });
+
+    // process cpu usage
+    $.ajax({
+        url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=cpu",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            drawPieChart("process_cpu_chart", data);
+            console.log(' PROCESS_CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+        }
+    });
+
+    // process mem usage
+    $.ajax({
+        url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=mem",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            drawPieChart("process_mem_chart", data, "Process usage by MEM");
+            console.log(' PROCESS_MEM chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
+        }
+    });
+}
+
+$(function() {
+    getHosts('CPU_ALL');
+    var today = new Date();
+    $("#from").val((today.getMonth() + 1) + "/" + today.getDate() + "/" + today.getFullYear());
+    $("#to").val("now");
+    $("#view").click(function(event) {
+        var fromDate = new Date($("#from").val());
+        var toDate = new Date();
+        if ($("#to").val() !== "now")
+            toDate = new Date($("#to").val());
+        updateGraph($("#hosts").val(), fromDate, toDate)
+    });
+    var fromDate = new Date($("#from").val());
+    var toDate = new Date();
+    updateGraph('All', fromDate, toDate);
+});
+    </script>
+
+    <style>
+.chart {
+    display: inline-block;
+    width: 900px;
+}
+
+    </style>
+  </head>
+
+  <body>
+
+    <h3><font color=blue>NMONW</font></h3>
+    <div class="menu">
+        <label for="hosts">host : </label>
+        <select name="hosts" id="hosts">
+        </select>
+
+        <label for="from">from : </label>
+        <input type="text" id="from">
+
+        <label for="to">to : </label>
+        <input type="text" id="to">    
+
+        <button type="button" id="view">View</button>    
+
+        <a href="/detail" style="float: right;">Detail</a>
+    </div>
+    <div class="chart">
+        <h4><font color=blue>Active Hosts</font></h4>
+        <div id="hosts_chart"></div>
+    </div>
+    <div class="chart">
+        <h4><font color=blue>CPU</font></h4>
+        <div id="cpu_chart"></div>
+    </div>
+    <div class="chart">
+        <h4><font color=blue>Memory</font></h4>
+        <div id="mem_chart"></div>
+    </div>
+    <div class="chart">
+        <h4><font color=blue>Swap</font></h4>
+        <div id="swap_chart"></div>
+    </div>
+    <div class="chart">
+        <h4><font color=blue>Disk</font></h4>
+        <div id="disk_chart"></div>
+    </div>
+    <div class="chart">
+        <h4><font color=blue>Network</font></h4>
+        <div id="network_chart"></div>
+    </div>
+    <div class="chart">
+        <h4><font color=blue>Process (CPU)</font></h4>
+        <div id="process_cpu_chart"></div>
+    </div>
+    <div class="chart">
+        <h4><font color=blue>Process (Memory)</font></h4>
+        <div id="process_mem_chart"></div>
+    </div>
+
+  </body>
+</html>

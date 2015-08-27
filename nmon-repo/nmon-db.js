@@ -81,6 +81,13 @@ http.Server(function(req, res) {
             res.end(html);
             return;
         }
+        else if( pathname == '/test' ) {
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            var html = swig.renderFile('template/test.html', {
+            });
+            res.end(html);
+            return;
+        }
         else if( pathname == '/process.json' ) {
             res.writeHead(200, {'Content-Type': 'application/json'});
             var html = swig.renderFile('template/process.json', {
@@ -392,9 +399,12 @@ function get_fields(url_info, req, res) {
     var date = eval(url_info.query['date']);
     var collection = db.collection('performance');
     var fields = {datetime:1, _id: 0};
+    var average = ['Time'];
     for (var i = 0; i < data.length; i++) {
         fields[m[2] + '.' + data[i]] = 1;
+        average.push(data[i]);
     }
+    results.push(average);
     var query = {};
     if (m[1] !== 'All') {
         query['host'] = m[1];
@@ -408,7 +418,7 @@ function get_fields(url_info, req, res) {
         if (doc) {
             var granularity = Math.ceil(doc / graph_row_number);
             var cnt = 0;
-            var average = [0];
+            average = [0];
             for (var i = 0; i < data.length; i++) {
                 average.push(0.0);
             }
@@ -465,7 +475,7 @@ function get_top_fields(url_info, req, res) {
     else if (type === 'mem')
         group['val'] = { $avg : { $add: ["$TOP.ResText", "$TOP.ResData"] } }
 
-    results.push(['command', type]);
+    results.push(['Command', type]);
     var collection = db.collection('performance');
     collection.aggregate(
         {'$match' : match}, 
@@ -549,7 +559,7 @@ function get_host_fields(url_info, req, res) {
                                     results[doc[i]._id.host] = { net : doc[i].val };
                             }
 
-                            var data = [['HOST', 'CPU (%)', 'Disk (KB/s)', 'Network (KB/s)', 'No of CPUs']];
+                            var data = [['Host', 'CPU (%)', 'Disk (KB/s)', 'Network (KB/s)', 'No of CPUs']];
                             var hosts = Object.keys(results);
                             for(var i = 0; i < hosts.length; i++) {
                                 data.push([hosts[i], results[hosts[i]]['cpu'], results[hosts[i]]['disk'], results[hosts[i]]['net'], results[hosts[i]]['no']]);
