@@ -97,6 +97,7 @@ function drawPieChart(did, data) {
                        .y(function(d) { return d.value })
                        .donut(true)
                        .donutRatio(0.35)
+                       .legendPosition("right")
                        .showLabels(true);
 
         d3.select('#' + did + ' svg')
