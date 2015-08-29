@@ -6,7 +6,8 @@ var http = require('http'),
     csv = require('csv-streamify'),
     swig = require('swig');
 
-db = mongojs('nmon-db', ['record']);
+//db = mongojs('nmon-db', ['record']);
+db = mongojs('bumil.fjint.com/nmon-db', ['record']);
 // refer to https://github.com/mafintosh/mongojs
 //db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
 
@@ -243,9 +244,9 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                 bulks[writer._bulk[i][0]].find(writer._bulk[i][1]).upsert().update({ $set: writer._bulk[i][2]});
                 var collection = db.collection(writer._bulk[i][1]['name']);
                 if ( writer._bulk[i][1]['name'] === 'TOP')
-                    collection.ensureIndex({datetime: 1, host: 1}, {unique: false});
+                    collection.ensureIndex({datetime: 1, host: 1}, {unique: false, background: true});
                 else
-                    collection.ensureIndex({datetime: 1, host: 1}, {unique: true});
+                    collection.ensureIndex({datetime: 1, host: 1}, {unique: true, background: true});
 
             }
             else {
