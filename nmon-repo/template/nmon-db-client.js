@@ -97,6 +97,7 @@ function drawPieChart(did, data) {
                        .y(function(d) { return d.value })
                        .donut(true)
                        .donutRatio(0.35)
+                       .legendPosition("right")
                        .showLabels(true);
 
         d3.select('#' + did + ' svg')
@@ -215,7 +216,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 var result = eval(data);
                 reqStatus["SWAP"] = false;
                 result[0][1] = 'Virtual used';
-                for (var i = 0; i < result.length; i++) {
+                for (var i = 1; i < result.length; i++) {
                     result[i][1] = result[i][1] - result[i][2];
                 }
                 drawChart("swap_chart", result, 'Time', 'MB');
