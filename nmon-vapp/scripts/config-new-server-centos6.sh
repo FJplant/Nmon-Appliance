@@ -52,11 +52,14 @@ echo "nameserver 8.8.4.4" >> /etc/resolv.conf
 
 echo "[`date`] Installing base RPMs..."
 yum install -y deltarpm
-yum install -y bind-utils iptables-services sysstat nmon
+yum install -y bind-utils iptables-services sysstat nmon iptraf iotop iptop iftop
 
 echo "[`date`] Installing gcc, git, lsof..."
 yum install -y gcc python curl libcurl unzip lsof vim*
 yum install -y gcc-c++ make
+
+echo "[`date`] Installing Additional Language Environments..."
+yum install "@Korean Support" "@Chinese Support"
 
 echo "[`date`] Installing Node.js, npm..."
 curl -sL https://rpm.nodesource.com/setup | bash -
