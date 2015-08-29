@@ -60,6 +60,13 @@ http.Server(function(req, res) {
             res.end(html);
             return;
         }
+        else if( pathname == '/nmon-db-client.css' ) {
+            res.writeHead(200, {'Content-Type': 'text/css'});
+            var html = swig.renderFile('template/nmon-db-client.css', {
+            });
+            res.end(html);
+            return;
+        }
         else if( pathname == '/d3.min.js' ) {
             res.writeHead(200, {'Content-Type': 'text/javascript'});
             var html = swig.renderFile('template/d3.min.js', {
