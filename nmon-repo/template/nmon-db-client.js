@@ -43,82 +43,112 @@ function getHosts(category) {
     });
 }
 
-function drawChart(did, x, y, label, row, stack) {
-    var data = new google.visualization.DataTable();
-    data.addColumn('datetime', x);
-    for (var i = 0; i < y.length; i++) {
-        data.addColumn('number', y[i]);
-    }
-    for (var i = 0; i < row.length; i++) {
-        row[i][0] = new Date(row[i][0]);
-    }
-    data.addRows(row);
+function drawChart(did, data, xlabel, ylabel) {
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
 
-    var formatter = new google.visualization.NumberFormat();
-    for (var i = 0; i < y.length; i++)
-        formatter.format(data, i + 1);
+    var d3data = [ ];
+    for(var i = 1; i < data[0].length; i++)
+        d3data.push({key: data[0][i], values:[]});
+    for(var j = i; j < data.length; j++)
+        for(var i = 1; i < data[0].length; i++)
+            d3data[i-1].values.push([data[j][0], data[j][i]]);
 
-    var options = {
-        vAxis: {
-            title: label
-        },
-        isStacked: stack,
-        chartArea: {
-            width: "75%",
-            height: '80%'
-        },
-    };
+    nv.addGraph(function() {
+        var chart = nv.models.stackedAreaChart()
+                      .x(function(d) { return d[0] })   //We can modify the data accessor functions...
+                      .y(function(d) { return d[1] })   //...in case your data is formatted differently.
+                      .useInteractiveGuideline(true)    //Tooltips which show all data points. Very nice!
+                      .showControls(true)       //Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
+                      .clipEdge(true);
 
-    var chart = new google.visualization.AreaChart(document.getElementById(did));
-    chart.draw(data, options);
+        //Format x-axis labels with custom function.
+        chart.xAxis
+            .axisLabel(xlabel)
+            .tickFormat(function(d) { 
+              return d3.time.format('%x')(new Date(d)) 
+        });
+
+        chart.yAxis
+            .axisLabel(ylabel)
+            .tickFormat(d3.format(',.2f'));
+
+        d3.select('#' + did + ' svg')
+          .datum(d3data)
+          .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
 }
 
-function drawPieChart(did, data, title) {
-    var data = google.visualization.arrayToDataTable(data);
+function drawPieChart(did, data) {
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
 
-    var formatter = new google.visualization.NumberFormat();
-    formatter.format(data, 1);
+    var d3data = [ ];
+    for(var j = 1; j < data.length; j++)
+        d3data.push({label: data[j][0], value: data[j][1]});
 
-    var options = {
-        title: title,
-        pieSliceText: 'label',
-        pieHole: 0.4,
-        chartArea: {
-            width: "95%",
-            height: '85%'
-        }
-    };
+    nv.addGraph(function() {
+        var chart = nv.models.pieChart()
+                       .x(function(d) { return d.label })
+                       .y(function(d) { return d.value })
+                       .donut(true)
+                       .donutRatio(0.35)
+                       .legendPosition("right")
+                       .showLabels(true);
 
-    var chart = new google.visualization.PieChart(document.getElementById(did));
-    chart.draw(data, options);
+        d3.select('#' + did + ' svg')
+          .datum(d3data)
+          .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
 }
 
-function drawBubbleChart(did, data, titles) {
-    var data = google.visualization.arrayToDataTable(data);
-    var formatter = new google.visualization.NumberFormat();
-    formatter.format(data, 1);
-    formatter.format(data, 2);
-    formatter.format(data, 3);
+function drawBubbleChart(did, data, xlabel, ylabel) {
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
 
-    var options = {
-        title: titles[0],
-        hAxis: {
-            title: titles[1]
-        },
-        vAxis: {
-            title: titles[2]
-        },
-        colorAxis: {
-            colors: ['yellow', 'red']
-        },
-        chartArea: {
-            width: "75%",
-            height: '75%'
-        }
-    };
+    var d3data = [];
+    for(var i = 1; i < data.length; i++) {
+        d3data.push({
+            key : data[i][0], 
+            values: [{x: data[i][1], y: data[i][2], size: data[i][4], network: data[i][3] }]
+        });
+    }
 
-    var chart = new google.visualization.BubbleChart(document.getElementById(did));
-    chart.draw(data, options);
+    nv.addGraph(function() {
+        var chart = nv.models.scatterChart()
+                    .showDistX(true)
+                    .showDistY(true)
+                    .color(d3.scale.category10().range());
+
+        chart.tooltip.contentGenerator(function(obj) {
+            var html = '<p><h3>' + obj.series[0].key + '</h3>';
+            html += 'CPU = ' +  (Math.round(obj.series[0].values[0].x * 100) / 100) + '%<br>';
+            html += 'Disk = ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + 'KB/s<br>';
+            html += 'Network = ' +  (Math.round(obj.series[0].values[0].network * 100) / 100) + 'KB/s<br>';
+            html += 'No. of CPU = ' + obj.series[0].values[0].size + '<br>';
+            return html;
+        });
+
+        //Axis settings
+        chart.xAxis.axisLabel(xlabel).tickFormat(d3.format('.02f'));
+        chart.yAxis.axisLabel(ylabel).tickFormat(d3.format('.02f'));
+
+        d3.select('#' + did + ' svg')
+          .datum(d3data)
+          .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
 }
 
 function updateGraph(hostname, restype, fromDate, toDate) {
@@ -133,7 +163,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["HOSTS"] = false;
-                drawBubbleChart("hosts_chart", data, ["Hosts", 'CPU (%)', 'Disk (KB/s)']);
+                drawBubbleChart("hosts_chart", data, 'CPU (%)', 'Disk (KB/s)');
                 console.log(' HOSTS chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -144,12 +174,12 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["CPU"] = true;
         console.log("[Requesting CPU data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User%25', 'Sys%25', 'Wait%25']",
+            url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User', 'Sys', 'Wait']",
             data: {},
             success: function(data) {
                 var result = eval(data);
                 reqStatus["CPU"] = false;
-                drawChart("cpu_chart", "time", ['User%', 'Sys%', 'Wait%'], '%', result, true);
+                drawChart("cpu_chart", result, 'Time', '%');
                 console.log('  CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -160,15 +190,16 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["MEM"] = true;
         console.log("[Requesting MEM data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total(MB)', 'Real free(MB)']",
+            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
             data: {},
             success: function(data) {
                 var result = eval(data);
                 reqStatus["MEM"] = false;
-                for (var i = 0; i < result.length; i++) {
-                    result[i][2] = result[i][1] - result[i][2];
+                result[0][1] = 'Real used';
+                for (var i = 1; i < result.length; i++) {
+                    result[i][1] = result[i][1] - result[i][2];
                 }
-                drawChart("mem_chart", "time", ['Real total(MB)', 'Real used(MB)'], 'MB', result, false);
+                drawChart("mem_chart", result, 'Time', 'MB');
                 console.log('  MEM chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -179,15 +210,16 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["SWAP"] = true;
         console.log("[Requesting SWAP data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total(MB)', 'Virtual free(MB)']",
+            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
             data: {},
             success: function(data) {
                 var result = eval(data);
                 reqStatus["SWAP"] = false;
-                for (var i = 0; i < result.length; i++) {
-                    result[i][2] = result[i][1] - result[i][2];
+                result[0][1] = 'Virtual used';
+                for (var i = 1; i < result.length; i++) {
+                    result[i][1] = result[i][1] - result[i][2];
                 }
-                drawChart("swap_chart", "time", ['Virtual total(MB)', 'Virtual used(MB)'], 'MB', result, false);
+                drawChart("swap_chart", result, 'Time', 'MB');
                 console.log('  SWAP chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -198,12 +230,12 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["DISK"] = true;
         console.log("[Requesting DISK data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/DISK_TOTAL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
+            url: "/" + hostname + "/DISK_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
             data: {},
             success: function(data) {
                 var result = eval(data);
                 reqStatus["DISK"] = false;
-                drawChart("disk_chart", "time", ['read', 'write'], 'KB/s', result, true);
+                drawChart("disk_chart", result, 'Time', 'KB/s');
                 console.log(' DISK chart response:' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -214,12 +246,12 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["NET"] = true;
         console.log("[Requesting NET data] " + start.toLocaleString());
         $.ajax({
-            url: "/" + hostname + "/NET_TOTAL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
+            url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
             data: {},
             success: function(data) {
                 var result = eval(data);
                 reqStatus["NET"] = false;
-                drawChart("network_chart", "time", ['read', 'write'], 'KB/s', result, true);
+                drawChart("network_chart", result, 'Time', 'KB/s');
                 console.log(' NET chart response :' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -235,7 +267,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["PROCESS_CPU"] = false;
-                drawPieChart("process_cpu_chart", data, "Process usage by CPU");
+                drawPieChart("process_cpu_chart", data);
                 console.log(' PROCESS_CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -271,7 +303,8 @@ function refresh_charts() {
 
     if ( !isLoading("HOSTS") || !isLoading(getCurResType()) ) {
         if ( !isLoading("HOSTS") ) {
-            updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);
+            //updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);
+            updateGraph("All", "HOSTS", fromDate, toDate);
             console.log("Refresh hosts charts: " + (new Date()).toLocaleString());
         } 
         if ( !isLoading(getCurResType()) ) {
