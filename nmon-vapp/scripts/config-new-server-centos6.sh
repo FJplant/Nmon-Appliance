@@ -58,6 +58,9 @@ echo "[`date`] Installing gcc, git, lsof..."
 yum install -y gcc python curl libcurl unzip lsof vim*
 yum install -y gcc-c++ make
 
+echo "[`date`] Installing Additional Language Environments..."
+yum install "@Korean Support" "@Chinese Support"
+
 echo "[`date`] Installing Node.js, npm..."
 curl -sL https://rpm.nodesource.com/setup | bash -
 yum install -y nodejs
