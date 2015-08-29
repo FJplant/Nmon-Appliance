@@ -251,16 +251,9 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                 bulks[writer._bulk[i][0]].find(writer._bulk[i][1]).upsert().update({ $set: writer._bulk[i][2]});
                 var collection = db.collection(writer._bulk[i][1]['name']);
                 if ( writer._bulk[i][1]['name'] === 'TOP')
-<<<<<<< HEAD
-                    collection.ensureIndex({datetime: 1, host: 1}, {unique: false, background: true});
-                else
-                    collection.ensureIndex({datetime: 1, host: 1}, {unique: true, background: true});
-=======
                     collection.ensureIndex({host: 1, datetime: 1}, {unique: false, background: true});
                 else
                     collection.ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
->>>>>>> 1b7657a579bebd8e3f805e8900e4fb1093b18d12
-
             }
             else {
                 bulks[writer._bulk[i][0]].insert(writer._bulk[i][1]);
