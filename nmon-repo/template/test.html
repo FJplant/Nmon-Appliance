@@ -196,6 +196,17 @@ function updateGraph(hostname, fromDate, toDate) {
         }
     });
 
+    // disk
+    $.ajax({
+        url: "/" + hostname + "/DISK_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['iops']",
+        data: {},
+        success: function(data) {
+            var result = eval(data);
+            drawChart("disk_iops_chart", result, 'Time', 'IOPS');
+            console.log(' DISK chart response:' + ((+new Date() - +start)) / 1000 + ' secs');
+        }
+    });
+
     // network
     $.ajax({
         url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
@@ -294,8 +305,12 @@ $(function() {
         <div id="swap_chart"></div>
     </div>
     <div class="chart">
-        <h4><font color=blue>Disk</font></h4>
+        <h4><font color=blue>Disk (Throughput)</font></h4>
         <div id="disk_chart"></div>
+    </div>
+    <div class="chart">
+        <h4><font color=blue>Disk (IOPS)</font></h4>
+        <div id="disk_iops_chart"></div>
     </div>
     <div class="chart">
         <h4><font color=blue>Network</font></h4>

@@ -192,7 +192,7 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
         else {
             if( data[0] in parser._rawHeader ) {
                 var h = parser._rawHeader[data[0]];
-                var val = 0.0, read = 0.0, write = 0.0;
+                var val = 0.0, iops = 0.0, read = 0.0, write = 0.0;
                 var query = {};
                 for( var i = 2; i < h.length; i++ ) {
                     if(h[i] !== '') {
@@ -225,6 +225,9 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                         else if ((h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/)) {
                             val += parseFloat(data[i]);
                         }
+                        else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d+$/)) {
+                            iops += parseFloat(data[i]);
+                        }
                         else if (h[0] === 'TOP') {
                             if (data[2] !== 'T0001') {
                                 if( h[0] === 'TOP' && h[i] === 'Command' ) {
@@ -250,6 +253,9 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
                 }
                 else if (h[0] === 'DISKWRITE') {
                     parser._document['DISK_ALL']['write'] = val;
+                }
+                else if (h[0] === 'DISKXFER') {
+                    parser._document['DISK_ALL']['iops'] = iops;
                 }
                 else if (h[0] === 'NET') {
                     parser._document['NET_ALL']['read'] = read;
