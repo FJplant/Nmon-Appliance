@@ -130,8 +130,8 @@ function drawBubbleChart(did, data, xlabel, ylabel) {
 
         chart.tooltip.contentGenerator(function(obj) {
             var html = '<p><h3>' + obj.series[0].key + '</h3>';
-            html += 'CPU = ' +  (Math.round(obj.series[0].values[0].x * 100) / 100) + '%<br>';
-            html += 'Disk = ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + 'KB/s<br>';
+            html += 'CPU = ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + '%<br>';
+            html += 'Disk = ' + (Math.round(obj.series[0].values[0].x * 100) / 100) + 'KB/s<br>';
             html += 'Network = ' +  (Math.round(obj.series[0].values[0].network * 100) / 100) + 'KB/s<br>';
             html += 'No. of CPU = ' + obj.series[0].values[0].size + '<br>';
             return html;
@@ -163,7 +163,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["HOSTS"] = false;
-                drawBubbleChart("hosts_chart", data, 'CPU (%)', 'Disk (KB/s)');
+                drawBubbleChart("hosts_chart", data, 'Disk (KB/s)', 'CPU (%)');
                 console.log(' HOSTS chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });

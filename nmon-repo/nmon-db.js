@@ -572,10 +572,10 @@ function get_host_fields(url_info, req, res) {
                                     results[doc[i]._id.host] = { net : doc[i].val };
                             }
 
-                            var data = [['Host', 'CPU (%)', 'Disk (KB/s)', 'Network (KB/s)', 'No of CPUs']];
+                            var data = [['Host', 'Disk (KB/s)', 'CPU (%)', 'Network (KB/s)', 'No of CPUs']];
                             var hosts = Object.keys(results);
                             for(var i = 0; i < hosts.length; i++) {
-                                data.push([hosts[i], results[hosts[i]]['cpu'], results[hosts[i]]['disk'], results[hosts[i]]['net'], results[hosts[i]]['no']]);
+                                data.push([hosts[i], results[hosts[i]]['disk'], results[hosts[i]]['cpu'], results[hosts[i]]['net'], results[hosts[i]]['no']]);
                             }
 
                             res.writeHead(200, {'Content-Type': 'text/json'});
