@@ -37,10 +37,14 @@ text {
   border-color:black;
   font-size:12pt;
   padding:0px;
-  margin-top:0px;
+  margin-top:20px;
   margin-bottom:0px;
   margin-left:0px;
   margin-right:0px;
   width: 600px;
-  height: 720px;
+  height: 669px;
+}
+
+.nvd3 .nv-axis.nv-x path.domain {
+  stroke-opacity: 1;
 }

@@ -60,6 +60,8 @@ function drawChart(did, data, xlabel, ylabel) {
                       .y(function(d) { return d[1] })   //...in case your data is formatted differently.
                       .useInteractiveGuideline(true)    //Tooltips which show all data points. Very nice!
                       .showControls(true)       //Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
+                      .color(d3.scale.category10().range())
+                      .interpolate('cardinal-open')
                       .clipEdge(true);
 
         //Format x-axis labels with custom function.
@@ -97,7 +99,8 @@ function drawPieChart(did, data) {
                        .y(function(d) { return d.value })
                        .donut(true)
                        .donutRatio(0.35)
-                       .legendPosition("right")
+                       //.legendPosition("right") //nvd3.js v1.8.1
+                       .showLegend(false) //nvd3.js v1.8.0
                        .showLabels(true);
 
         d3.select('#' + did + ' svg')
@@ -128,12 +131,24 @@ function drawBubbleChart(did, data, xlabel, ylabel) {
                     .showDistY(true)
                     .color(d3.scale.category10().range());
 
+        /*// nvd3.js 1.8.1
         chart.tooltip.contentGenerator(function(obj) {
-            var html = '<p><h3>' + obj.series[0].key + '</h3>';
-            html += 'CPU = ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + '%<br>';
-            html += 'Disk = ' + (Math.round(obj.series[0].values[0].x * 100) / 100) + 'KB/s<br>';
-            html += 'Network = ' +  (Math.round(obj.series[0].values[0].network * 100) / 100) + 'KB/s<br>';
-            html += 'No. of CPU = ' + obj.series[0].values[0].size + '<br>';
+            var html = '<h3>' + obj.series[0].key + '</h3><p>';
+            html += 'CPU : ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + '%<br>';
+            html += 'Disk : ' + (Math.round(obj.series[0].values[0].x * 100) / 100) + 'KB/s<br>';
+            html += 'Network : ' +  (Math.round(obj.series[0].values[0].network * 100) / 100) + 'KB/s<br>';
+            html += 'No. of CPU : ' + obj.series[0].values[0].size + '<br></p>';
+            return html;
+        });
+        */
+
+        // nvd3.js 1.8.0
+        chart.tooltipContent(function (key, x, y, e, graph) {
+            var html = '<h3>' + key + '</h3><p>';
+            html += 'CPU : ' + y + '%<br>';
+            html += 'Disk : ' + x + 'KB/s<br>';
+            html += 'Network : ' +  (Math.round(graph.series.values[0].network * 100) / 100) + 'KB/s<br>';
+            html += 'No. of CPU : ' + graph.series.values[0].size + '<br></p>';
             return html;
         });
 

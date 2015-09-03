@@ -81,9 +81,9 @@ http.Server(function(req, res) {
             res.end(html);
             return;
         }
-        else if( pathname == '/nv.d3.css' ) {
+        else if( pathname == '/nv.d3.min.css' ) {
             res.writeHead(200, {'Content-Type': 'text/css'});
-            var html = swig.renderFile('template/nv.d3.css', {
+            var html = swig.renderFile('template/nv.d3.min.css', {
             });
             res.end(html);
             return;
