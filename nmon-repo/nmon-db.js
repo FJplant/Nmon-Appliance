@@ -496,17 +496,18 @@ function get_top_fields(url_info, req, res) {
         {'$unwind': '$TOP'}, 
         {'$group': group}, 
         function (err, doc) {
-        if( err ) {
-            return error_handler(res, err, 500);
-        }
-        if( doc ) {
-            for( var i = 0; i < doc.length; i++ ) {
-                results.push([ doc[i]._id.command, doc[i].val ]);
+            if( err ) {
+                return error_handler(res, err, 500);
             }
+            if( doc ) {
+                for( var i = 0; i < doc.length; i++ ) {
+                    results.push([ doc[i]._id.command, doc[i].val ]);
+                }
+            }
+            res.writeHead(200, {'Content-Type': 'text/json'});
+            res.end(JSON.stringify(results));
         }
-        res.writeHead(200, {'Content-Type': 'text/json'});
-        res.end(JSON.stringify(results));
-    });
+    );
 }
 
 function get_host_fields(url_info, req, res) {
