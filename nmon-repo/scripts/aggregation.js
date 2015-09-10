@@ -8,9 +8,9 @@ var dayMapper = function() {
 }
 
 var monthMapper = function() {
-    var dt = new Date(this.datetime);
+    var dt = new Date(this._id.datetime);
     var d = new Date(dt.getFullYear(), dt.getMonth());
-    emit({datetime: d.getTime(), host: this.host}, this);
+    emit({datetime: d.getTime(), host: this._id.host}, this.value);
 }
     
 var reducer = function(d, docs) {
