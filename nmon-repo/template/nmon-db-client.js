@@ -68,7 +68,8 @@ function drawChart(did, data, xlabel, ylabel) {
         chart.xAxis
             .axisLabel(xlabel)
             .tickFormat(function(d) { 
-              return d3.time.format('%x')(new Date(d)) 
+              //return d3.time.format('%x')(new Date(d)) 
+              return d3.time.format('%m/%d %H:%M')(new Date(d)) 
         });
 
         chart.yAxis
