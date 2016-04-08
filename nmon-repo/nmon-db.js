@@ -33,7 +33,7 @@ var log = new (winston.Logger)({
 
 var graph_row_number = 1200.0;
 
-http.Server(function(req, res) {
+function service(req, res) {
     var url_info = url.parse(req.url, true);
     var pathname = url_info.pathname;
     var method = req.method;
@@ -143,6 +143,10 @@ http.Server(function(req, res) {
     catch(e) {
         error_handler(res, e, 500);
     }
+}
+
+http.Server(function(req, res) {
+    service(req, res);
 }).listen(6900);
 
 log.info('Server running at http://localhost:6900');
