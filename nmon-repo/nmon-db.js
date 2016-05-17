@@ -180,7 +180,11 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
     db.collection('categories').save({name: 'DISK_ALL'});
     db.collection('categories').save({name: 'NET_ALL'});
     db.collection('performance').ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
-    
+
+    // create reserved index on (datetime) to assure performance and non-skewed index db.
+    // 2016.5.18. ymk
+    db.collection('performance').ensureIndex({datetime: -1, host: 1}, {unique: true, background: true});
+     
     var csvToJson = csv({objectMode: true});
 
     var parser = new Transform({objectMode: true});
