@@ -4,7 +4,9 @@ var http = require('http'),
     mongojs = require('mongojs'),
     Transform = require('stream').Transform,
     csv = require('csv-streamify'),
-    swig = require('swig');
+    swig = require('swig'),
+    os = require('os'),	                // to get CPU informations
+    cluster = require('cluster');       // to manage multi process
 
 db = mongojs('nmon-db', ['performance']);
 //db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
@@ -25,6 +27,7 @@ db.on('ready', function () {
 });
 */
 
+
 var log = new (winston.Logger)({
     transports: [
         new (winston.transports.File)({ filename: 'logs/nmon-db.log', level: 'debug' }),
@@ -32,12 +35,39 @@ var log = new (winston.Logger)({
 });
 
 var graph_row_number = 1200.0;
+var cpus = os.cpus(); // Get CPU informations 
+var worker_cnt = cpus.length * 2; // # of Worker process = 2 * CPU count 
+
+if (cluster.isMaster) {
+    log.info('CPU lists:');
+    for (var i=0; i< cpus.length; i++)
+        log.info('CPU #%d: %s', i, cpus[i].model);
+
+    log.info('Spawning %d worker process', worker_cnt);
+
+    for (var i=0; i < worker_cnt; i+=1) {
+        cluster.fork();
+    }
+    log.info('Server running at http://localhost:6900');
+
+    cluster.on('exit', function(worker) {
+        log.info('Worker %d died... respawining... ', worker.id);
+        cluster.fork();
+    });
+} else {
+    http.Server(function(req, res) {
+        service(req, res);
+    }).listen(6900);
+
+    log.info('Worker PID(%d) ready...', process.pid);
+}
+
 
 function service(req, res) {
     var url_info = url.parse(req.url, true);
     var pathname = url_info.pathname;
     var method = req.method;
-    log.info(method + ' ' + pathname);
+    log.info('Worker PID[%d]: %s', process.pid, (method + ' ' + pathname) );
     try {
         if( pathname == '/' ) {
             res.writeHead(200, {'Content-Type': 'text/html'});
@@ -144,12 +174,6 @@ function service(req, res) {
         error_handler(res, e, 500);
     }
 }
-
-http.Server(function(req, res) {
-    service(req, res);
-}).listen(6900);
-
-log.info('Server running at http://localhost:6900');
 
 function put_nmonlog(url_info, req, res, bulk_unit) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
