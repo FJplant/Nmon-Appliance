@@ -515,7 +515,7 @@ $(function() {
                     curRes = "PROCESS_MEM";
                     setLoading("process_mem_chart", curRes, "Loading Process usage by memory chart. Wait a moment...");
                     break;
-                case "Bubble Chart Example":
+                case "Process Bubble Chart":
                     draw_bubble_chart();
                     curRes = "NONE";
                     break;
