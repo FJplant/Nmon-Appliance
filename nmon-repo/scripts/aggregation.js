@@ -1,3 +1,12 @@
+/*
+ * aggregation.js is
+ *    an elastic nmon-repo component written in Node.js
+ *   and written by amoriya ( Junkoo Hea, junkoo.hea@gmail.com )
+ *
+ *      since Aug 12, 2015
+ * (c) All rights reserved to Junkoo Hea.
+ */
+
 var conn = new Mongo();
 var db = conn.getDB("nmon-db");
 
