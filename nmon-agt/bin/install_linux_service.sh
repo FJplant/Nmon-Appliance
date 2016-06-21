@@ -34,14 +34,14 @@ cd "$NMAGT_BIN"
 
 case "\$1" in
     start)
-        ./start-nmagt.sh
+        ./start-nmon-agt.sh
         ;;
     stop)
-        ./stop-nmagt.sh
+        ./stop-nmon-agt.sh
         ;;
     restart)
-        ./stop-nmagt.sh
-        ./start-nmagt.sh
+        ./stop-nmon-agt.sh
+        ./start-nmon-agt.sh
         ;;
     *)
         echo "Usage: \$0 {start|stop|restart}"
