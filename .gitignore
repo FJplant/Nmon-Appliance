@@ -2,4 +2,4 @@
 *.nmon
 *.pid
 nmon-repo/node_modules
-nmon-repo/logs
+nmon-repo/logs/*
