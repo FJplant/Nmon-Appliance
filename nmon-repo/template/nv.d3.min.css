@@ -7,16 +7,16 @@
   <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
     <meta charset='utf-8'>
 
-    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/frameworks-355fc5f5dc43030d495ea75b6bc8366695646a7566c13dd6ba2c2d358e1b5383.css" integrity="sha256-NV/F9dxDAw1JXqdba8g2ZpVkanVmwT3WuiwtNY4bU4M=" media="all" rel="stylesheet" />
-    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/github-7fae2d802a203f722465a757a5c1ecdb285d355fdcda038c10a2d20722dcf959.css" integrity="sha256-f64tgCogP3IkZadXpcHs2yhdNV/c2gOMEKLSByLc+Vk=" media="all" rel="stylesheet" />
+    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/frameworks-e53fc1ddbde2a9e5645df620f65c80ef723c741b33293b6f22a2b7f2c8145fcf.css" integrity="sha256-5T/B3b3iqeVkXfYg9lyA73I8dBszKTtvIqK38sgUX88=" media="all" rel="stylesheet" />
+    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/github-8fd3f509ca0995390abdb9f0dfe5b79d1af6ed1ac09c75ba2d68b29b82cadf8d.css" integrity="sha256-j9P1CcoJlTkKvbnw3+W3nRr27RrAnHW6LWiym4LK340=" media="all" rel="stylesheet" />
     
     
-    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/site-429acc2fc05149afec2a05196b3100560f117f753931d0afca46da6e1eeafe39.css" integrity="sha256-QprML8BRSa/sKgUZazEAVg8Rf3U5MdCvykbabh7q/jk=" media="all" rel="stylesheet" />
+    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/site-f4b3d32cffc56de06873b8a6d88ae6139de92dc0fc31574232803d68729f6fac.css" integrity="sha256-9LPTLP/FbeBoc7im2IrmE53pLcD8MVdCMoA9aHKfb6w=" media="all" rel="stylesheet" />
     
 
-    <link as="script" href="https://assets-cdn.github.com/assets/frameworks-752d672b75dd3528039ea14e78d5638b9126eeb7de38701f46091862c63d73da.js" rel="preload" />
+    <link as="script" href="https://assets-cdn.github.com/assets/frameworks-404cdd1add1f710db016a02e5e31fff8a9089d14ff0c227df862b780886db7d5.js" rel="preload" />
     
-    <link as="script" href="https://assets-cdn.github.com/assets/github-ba6a49a5b72a3b71afb5394ab11a0b1a4d15cdb5877879000bf1bca10c19e310.js" rel="preload" />
+    <link as="script" href="https://assets-cdn.github.com/assets/github-8951b8889d701a8bda73fa44510fb2d70dd306d2251977e1172a78d7459cd594.js" rel="preload" />
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Language" content="en">
@@ -55,7 +55,7 @@
 <meta name="google-site-verification" content="ZzhVyEFwb7w3e0-uOTltm8Jsck2F5StVihD0exw2fsA">
     <meta name="google-analytics" content="UA-3769691-2">
 
-<meta content="collector.githubapp.com" name="octolytics-host" /><meta content="github" name="octolytics-app-id" /><meta content="70B9B3B3:4347:E2BF54C:57691203" name="octolytics-dimension-request_id" />
+<meta content="collector.githubapp.com" name="octolytics-host" /><meta content="github" name="octolytics-app-id" /><meta content="70B9B3B3:22A8:94CDE9A:5795D52E" name="octolytics-dimension-request_id" />
 <meta content="/&lt;user-name&gt;/&lt;repo-name&gt;/blob/show" data-pjax-transient="true" name="analytics-location" />
 
 
@@ -68,16 +68,16 @@
     <meta name="user-login" content="">
 
         <meta name="expected-hostname" content="github.com">
-      <meta name="js-proxy-site-detection-payload" content="YzRjMDRlMmZmMTRhYTM4ODQ1YjZjZGI5ZTZmNmU2NzlmZGE0M2E2OWY2MDMxM2U1YWNjYmI4MTkzNzIxNGFmN3x7InJlbW90ZV9hZGRyZXNzIjoiMTEyLjE4NS4xNzkuMTc5IiwicmVxdWVzdF9pZCI6IjcwQjlCM0IzOjQzNDc6RTJCRjU0Qzo1NzY5MTIwMyIsInRpbWVzdGFtcCI6MTQ2NjUwMzY5MH0=">
+      <meta name="js-proxy-site-detection-payload" content="OGM4MGE5YTYyNDQ4ZDcwNWNkMjJiNjE2NGVmZjE1ZjI5YTM2Y2UwYmFkNDQ3NDBjNDQ2YzM0ZTFlZjM3M2NjZnx7InJlbW90ZV9hZGRyZXNzIjoiMTEyLjE4NS4xNzkuMTc5IiwicmVxdWVzdF9pZCI6IjcwQjlCM0IzOjIyQTg6OTRDREU5QTo1Nzk1RDUyRSIsInRpbWVzdGFtcCI6MTQ2OTQzNzI0Mn0=">
 
 
       <link rel="mask-icon" href="https://assets-cdn.github.com/pinned-octocat.svg" color="#4078c0">
       <link rel="icon" type="image/x-icon" href="https://assets-cdn.github.com/favicon.ico">
 
-    <meta name="html-safe-nonce" content="75240c7c94b3e1d82165ecf0a9937acd1693ca5e">
-    <meta content="80d6bf5302a965daca6f1559efd1158d505b4f1b" name="form-nonce" />
+    <meta name="html-safe-nonce" content="3ce64ee4589dc86ca65622e8d75829526e20d350">
+    <meta content="d3c3369cd19ba22b7e5e597a43cc558eafb98fa9" name="form-nonce" />
 
-    <meta http-equiv="x-pjax-version" content="b466760c03426873ff9b6b5cc1735510">
+    <meta http-equiv="x-pjax-version" content="1618c80d2baf02b4a412a41d56280c0a">
     
 
       
@@ -92,7 +92,7 @@
   </head>
 
 
-  <body class="logged-out   env-production windows vis-public page-blob">
+  <body class="logged-out  env-production windows vis-public page-blob">
     <div id="js-pjax-loader-bar" class="pjax-loader-bar"></div>
     <a href="#start-of-content" tabindex="1" class="accessibility-aid js-skip-to-content">Skip to content</a>
 
@@ -164,7 +164,7 @@
 </div>
 
 
-    <div role="main" class="main-content">
+    <div role="main">
         <div itemscope itemtype="http://schema.org/SoftwareSourceCode">
     <div id="js-repo-pjax-container" data-pjax-container>
       
@@ -183,7 +183,7 @@
     Watch
   </a>
   <a class="social-count" href="/novus/nvd3/watchers">
-    330
+    329
   </a>
 
   </li>
@@ -197,7 +197,7 @@
   </a>
 
     <a class="social-count js-social-count" href="/novus/nvd3/stargazers">
-      5,173
+      5,284
     </a>
 
   </li>
@@ -211,7 +211,7 @@
       </a>
 
     <a href="/novus/nvd3/network" class="social-count">
-      1,810
+      1,851
     </a>
   </li>
 </ul>
@@ -244,7 +244,7 @@
       <a href="/novus/nvd3/issues" class="js-selected-navigation-item reponav-item" data-hotkey="g i" data-selected-links="repo_issues repo_labels repo_milestones /novus/nvd3/issues" itemprop="url">
         <svg aria-hidden="true" class="octicon octicon-issue-opened" height="16" version="1.1" viewBox="0 0 14 16" width="14"><path d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg>
         <span itemprop="name">Issues</span>
-        <span class="counter">290</span>
+        <span class="counter">304</span>
         <meta itemprop="position" content="2">
 </a>    </span>
 
@@ -252,7 +252,7 @@
     <a href="/novus/nvd3/pulls" class="js-selected-navigation-item reponav-item" data-hotkey="g p" data-selected-links="repo_pulls /novus/nvd3/pulls" itemprop="url">
       <svg aria-hidden="true" class="octicon octicon-git-pull-request" height="16" version="1.1" viewBox="0 0 12 16" width="12"><path d="M11 11.28V5c-.03-.78-.34-1.47-.94-2.06C9.46 2.35 8.78 2.03 8 2H7V0L4 3l3 3V4h1c.27.02.48.11.69.31.21.2.3.42.31.69v6.28A1.993 1.993 0 0 0 10 15a1.993 1.993 0 0 0 1-3.72zm-1 2.92c-.66 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2zM4 3c0-1.11-.89-2-2-2a1.993 1.993 0 0 0-1 3.72v6.56A1.993 1.993 0 0 0 2 15a1.993 1.993 0 0 0 1-3.72V4.72c.59-.34 1-.98 1-1.72zm-.8 10c0 .66-.55 1.2-1.2 1.2-.65 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2zM2 4.2C1.34 4.2.8 3.65.8 3c0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2z"></path></svg>
       <span itemprop="name">Pull requests</span>
-      <span class="counter">38</span>
+      <span class="counter">35</span>
       <meta itemprop="position" content="3">
 </a>  </span>
 
@@ -280,9 +280,9 @@
 
     
 
-<a href="/novus/nvd3/blob/36bb81821984449c6854978eebaee0caa05b1a19/build/nv.d3.min.css" class="hidden js-permalink-shortcut" data-hotkey="y">Permalink</a>
+<a href="/novus/nvd3/blob/becd77248a88b831850b657c40b28c4e05550fa7/build/nv.d3.min.css" class="hidden js-permalink-shortcut" data-hotkey="y">Permalink</a>
 
-<!-- blob contrib key: blob_contributors:v21:597e8e78bbb30ee42cd0acc6420b9fa7 -->
+<!-- blob contrib key: blob_contributors:v21:325a639701505db2554cdaa28ee6a9a3 -->
 
 <div class="file-navigation js-zeroclipboard-container">
   
@@ -422,6 +422,16 @@
         <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
 
 
+            <a class="select-menu-item js-navigation-item js-navigation-open "
+              href="/novus/nvd3/tree/v1.8.4/build/nv.d3.min.css"
+              data-name="v1.8.4"
+              data-skip-pjax="true"
+              rel="nofollow">
+              <svg aria-hidden="true" class="octicon octicon-check select-menu-item-icon" height="16" version="1.1" viewBox="0 0 12 16" width="12"><path d="M12 5l-8 8-4-4 1.5-1.5L4 10l6.5-6.5z"></path></svg>
+              <span class="select-menu-item-text css-truncate-target" title="v1.8.4">
+                v1.8.4
+              </span>
+            </a>
             <a class="select-menu-item js-navigation-item js-navigation-open "
               href="/novus/nvd3/tree/v1.8.3/build/nv.d3.min.css"
               data-name="v1.8.3"
@@ -608,15 +618,15 @@
 
   <div class="commit-tease">
       <span class="right">
-        <a class="commit-tease-sha" href="/novus/nvd3/commit/8ceb270fb3c1a1ad2524c778280f545841fdabde" data-pjax>
-          8ceb270
+        <a class="commit-tease-sha" href="/novus/nvd3/commit/6a175ab255b050fbc0952c3ef603ecb85e90bbda" data-pjax>
+          6a175ab
         </a>
-        <relative-time datetime="2016-04-26T23:23:21Z">Apr 26, 2016</relative-time>
+        <relative-time datetime="2016-07-03T17:31:00Z">Jul 3, 2016</relative-time>
       </span>
       <div>
         <img alt="@liquidpele" class="avatar" height="20" src="https://avatars1.githubusercontent.com/u/1065913?v=3&amp;s=40" width="20" />
         <a href="/liquidpele" class="user-mention" rel="contributor">liquidpele</a>
-          <a href="/novus/nvd3/commit/8ceb270fb3c1a1ad2524c778280f545841fdabde" class="message" data-pjax="true" title="build latest">build latest</a>
+          <a href="/novus/nvd3/commit/6a175ab255b050fbc0952c3ef603ecb85e90bbda" class="message" data-pjax="true" title="Build latest">Build latest</a>
       </div>
 
     <div class="commit-tease-contributors">
@@ -680,7 +690,7 @@
   <div class="file-info">
       2 lines (2 sloc)
       <span class="file-info-divider"></span>
-    9.36 KB
+    9.42 KB
   </div>
 </div>
 
@@ -690,7 +700,7 @@
       <table class="highlight tab-size js-file-line-container" data-tab-size="8">
       <tr>
         <td id="L1" class="blob-num js-line-number" data-line-number="1"></td>
-        <td id="LC1" class="blob-code blob-code-inner js-file-line">.nvd3 .nv-axis line,.nvd3 .nv-axis path{fill:none;shape-rendering:crispEdges}.nv-brush .extent,.nvd3 .background path,.nvd3 .nv-axis line,.nvd3 .nv-axis path{shape-rendering:crispEdges}.nv-distx,.nv-disty,.nv-noninteractive,.nvd3 .nv-axis,.nvd3.nv-pie .nv-label,.nvd3.nv-sparklineplus g.nv-hoverValue{pointer-events:none}.nvtooltip,svg.nvd3-svg{display:block;-webkit-touch-callout:none;-khtml-user-select:none}.nvd3 .nv-axis{opacity:1}.nvd3 .nv-axis.nv-disabled,.nvd3 .nv-controlsWrap .nv-legend .nv-check-box .nv-check{opacity:0}.nvd3 .nv-axis path{stroke:#000;stroke-opacity:.75}.nvd3 .nv-axis path.domain{stroke-opacity:.75}.nvd3 .nv-axis.nv-x path.domain{stroke-opacity:0}.nvd3 .nv-axis line{stroke:#e5e5e5}.nvd3 .nv-axis .zero line, .nvd3 .nv-axis line.zero{stroke-opacity:.75}.nvd3 .nv-axis .nv-axisMaxMin text{font-weight:700}.nvd3 .x .nv-axis .nv-axisMaxMin text,.nvd3 .x2 .nv-axis .nv-axisMaxMin text,.nvd3 .x3 .nv-axis .nv-axisMaxMin text{text-anchor:middle}.nvd3 .nv-bars rect{fill-opacity:.75;transition:fill-opacity 250ms linear;-moz-transition:fill-opacity 250ms linear;-webkit-transition:fill-opacity 250ms linear}.nvd3 .nv-bars rect.hover{fill-opacity:1}.nvd3 .nv-bars .hover rect{fill:#add8e6}.nvd3 .nv-bars text{fill:transparent}.nvd3 .nv-bars .hover text{fill:rgba(0,0,0,1)}.nvd3 .nv-discretebar .nv-groups rect,.nvd3 .nv-multibar .nv-groups rect,.nvd3 .nv-multibarHorizontal .nv-groups rect{stroke-opacity:0;transition:fill-opacity 250ms linear;-moz-transition:fill-opacity 250ms linear;-webkit-transition:fill-opacity 250ms linear}.nvd3 .nv-candlestickBar .nv-ticks rect:hover,.nvd3 .nv-discretebar .nv-groups rect:hover,.nvd3 .nv-multibar .nv-groups rect:hover,.nvd3 .nv-multibarHorizontal .nv-groups rect:hover{fill-opacity:1}.nvd3 .nv-discretebar .nv-groups text,.nvd3 .nv-multibarHorizontal .nv-groups text{font-weight:700;fill:rgba(0,0,0,1);stroke:transparent}.nvd3 .nv-boxplot circle{fill-opacity:.5}.nvd3 .nv-boxplot circle:hover,.nvd3 .nv-boxplot rect:hover{fill-opacity:1}.nvd3 line.nv-boxplot-median{stroke:#000}.nv-boxplot-tick:hover{stroke-width:2.5px}.nvd3.nv-bullet{font:10px sans-serif}.nvd3.nv-bullet .nv-measure{fill-opacity:.8}.nvd3.nv-bullet .nv-measure:hover{fill-opacity:1}.nvd3.nv-bullet .nv-marker{stroke:#000;stroke-width:2px}.nvd3.nv-bullet .nv-markerTriangle{stroke:#000;fill:#fff;stroke-width:1.5px}.nvd3.nv-bullet .nv-tick line{stroke:#666;stroke-width:.5px}.nvd3.nv-bullet .nv-range.nv-s0{fill:#eee}.nvd3.nv-bullet .nv-range.nv-s1{fill:#ddd}.nvd3.nv-bullet .nv-range.nv-s2{fill:#ccc}.nvd3.nv-bullet .nv-title{font-size:14px;font-weight:700}.nvd3.nv-bullet .nv-subtitle{fill:#999}.nvd3.nv-bullet .nv-range{fill:#bababa;fill-opacity:.4}.nvd3.nv-bullet .nv-range:hover{fill-opacity:.7}.nvd3.nv-candlestickBar .nv-ticks .nv-tick{stroke-width:1px}.nvd3.nv-candlestickBar .nv-ticks .nv-tick.hover{stroke-width:2px}.nvd3.nv-candlestickBar .nv-ticks .nv-tick.positive rect{stroke:#2ca02c;fill:#2ca02c}.nvd3.nv-candlestickBar .nv-ticks .nv-tick.negative rect{stroke:#d62728;fill:#d62728}.with-transitions .nv-candlestickBar .nv-ticks .nv-tick{transition:stroke-width 250ms linear,stroke-opacity 250ms linear;-moz-transition:stroke-width 250ms linear,stroke-opacity 250ms linear;-webkit-transition:stroke-width 250ms linear,stroke-opacity 250ms linear}.nvd3.nv-candlestickBar .nv-ticks line{stroke:#333}.nv-force-node{stroke:#fff;stroke-width:1.5px}.nv-force-link{stroke:#999;stroke-opacity:.6}.nv-force-node text{stroke-width:0}.nvd3 .nv-check-box .nv-box{fill-opacity:0;stroke-width:2}.nvd3 .nv-check-box .nv-check{fill-opacity:0;stroke-width:4}.nvd3 .nv-series.nv-disabled .nv-check-box .nv-check{fill-opacity:0;stroke-opacity:0}.nvd3.nv-linePlusBar .nv-bar rect{fill-opacity:.75}.nvd3.nv-linePlusBar .nv-bar rect:hover{fill-opacity:1}.nvd3 .nv-groups path.nv-line{fill:none}.nvd3 .nv-groups path.nv-area{stroke:none}.nvd3.nv-line .nvd3.nv-scatter .nv-groups .nv-point{fill-opacity:0;stroke-opacity:0}.nvd3.nv-scatter.nv-single-point .nv-groups .nv-point{fill-opacity:.5!important;stroke-opacity:.5!important}.with-transitions .nvd3 .nv-groups .nv-point{transition:stroke-width 250ms linear,stroke-opacity 250ms linear;-moz-transition:stroke-width 250ms linear,stroke-opacity 250ms linear;-webkit-transition:stroke-width 250ms linear,stroke-opacity 250ms linear}.nvd3 .nv-groups .nv-point.hover,.nvd3.nv-scatter .nv-groups .nv-point.hover{stroke-width:7px;fill-opacity:.95!important;stroke-opacity:.95!important}.nvd3 .nv-point-paths path{stroke:#aaa;stroke-opacity:0;fill:#eee;fill-opacity:0}.nvd3 .nv-indexLine{cursor:ew-resize}svg.nvd3-svg{-webkit-user-select:none;-ms-user-select:none;-moz-user-select:none;user-select:none;width:100%;height:100%}.nvtooltip.with-3d-shadow,.with-3d-shadow .nvtooltip{-moz-box-shadow:0 5px 10px rgba(0,0,0,.2);-webkit-box-shadow:0 5px 10px rgba(0,0,0,.2);box-shadow:0 5px 10px rgba(0,0,0,.2);-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px}.nvd3 text{font:400 12px Arial}.nvd3 .title{font:700 14px Arial}.nvd3 .nv-background{fill:#fff;fill-opacity:0}.nvd3.nv-noData{font-size:18px;font-weight:700}.nv-brush .extent{fill-opacity:.125}.nv-brush .resize path{fill:#eee;stroke:#666}.nvd3 .nv-legend .nv-series{cursor:pointer}.nvd3 .nv-legend .nv-disabled circle{fill-opacity:0}.nvd3 .nv-brush .extent{fill-opacity:0!important}.nvd3 .nv-brushBackground rect{stroke:#000;stroke-width:.4;fill:#fff;fill-opacity:.7}@media print{.nvd3 text{stroke-width:0;fill-opacity:1}}.nvd3.nv-ohlcBar .nv-ticks .nv-tick{stroke-width:1px}.nvd3.nv-ohlcBar .nv-ticks .nv-tick.hover{stroke-width:2px}.nvd3.nv-ohlcBar .nv-ticks .nv-tick.positive{stroke:#2ca02c}.nvd3.nv-ohlcBar .nv-ticks .nv-tick.negative{stroke:#d62728}.nvd3 .background path{fill:none;stroke:#EEE;stroke-opacity:.4}.nvd3 .foreground path{fill:none;stroke-opacity:.7}.nvd3 .nv-parallelCoordinates-brush .extent{fill:#fff;fill-opacity:.6;stroke:gray;shape-rendering:crispEdges}.nvd3 .nv-parallelCoordinates .hover{fill-opacity:1;stroke-width:3px}.nvd3 .missingValuesline line{fill:none;stroke:#000;stroke-width:1;stroke-opacity:1;stroke-dasharray:5,5}.nvd3.nv-pie .nv-pie-title{font-size:24px;fill:rgba(19,196,249,.59)}.nvd3.nv-pie .nv-slice text{stroke:#000;stroke-width:0}.nvd3.nv-pie path{transition:fill-opacity 250ms linear,stroke-width 250ms linear,stroke-opacity 250ms linear;-moz-transition:fill-opacity 250ms linear,stroke-width 250ms linear,stroke-opacity 250ms linear;-webkit-transition:fill-opacity 250ms linear,stroke-width 250ms linear,stroke-opacity 250ms linear;stroke:#fff;stroke-width:1px;stroke-opacity:1;fill-opacity:.7}.nvd3.nv-pie .hover path{fill-opacity:1}.nvd3.nv-pie .nv-label rect{fill-opacity:0;stroke-opacity:0}.nvd3 .nv-groups .nv-point.hover{stroke-width:20px;stroke-opacity:.5}.nvd3 .nv-scatter .nv-point.hover{fill-opacity:1}.nvd3.nv-sparkline path{fill:none}.nvd3.nv-sparklineplus .nv-hoverValue line{stroke:#333;stroke-width:1.5px}.nvd3.nv-sparklineplus,.nvd3.nv-sparklineplus g{pointer-events:all}.nvd3 .nv-interactiveGuideLine,.nvtooltip{pointer-events:none}.nvd3 .nv-hoverArea{fill-opacity:0;stroke-opacity:0}.nvd3.nv-sparklineplus .nv-xValue,.nvd3.nv-sparklineplus .nv-yValue{stroke-width:0;font-size:.9em;font-weight:400}.nvd3.nv-sparklineplus .nv-yValue{stroke:#f66}.nvd3.nv-sparklineplus .nv-maxValue{stroke:#2ca02c;fill:#2ca02c}.nvd3.nv-sparklineplus .nv-minValue{stroke:#d62728;fill:#d62728}.nvd3.nv-sparklineplus .nv-currentValue{font-weight:700;font-size:1.1em}.nvtooltip h3,.nvtooltip table td.key{font-weight:400}.nvd3.nv-stackedarea path.nv-area{fill-opacity:.7;stroke-opacity:0;transition:fill-opacity 250ms linear,stroke-opacity 250ms linear;-moz-transition:fill-opacity 250ms linear,stroke-opacity 250ms linear;-webkit-transition:fill-opacity 250ms linear,stroke-opacity 250ms linear}.nvd3.nv-stackedarea path.nv-area.hover{fill-opacity:.9}.nvd3.nv-stackedarea .nv-groups .nv-point{stroke-opacity:0;fill-opacity:0}.nvtooltip{position:absolute;color:rgba(0,0,0,1);padding:1px;z-index:10000;font-family:Arial;font-size:13px;text-align:left;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.5);border-radius:4px}.nvtooltip h3,.nvtooltip p{margin:0;text-align:center}.nvtooltip.with-transitions,.with-transitions .nvtooltip{transition:opacity 50ms linear;-moz-transition:opacity 50ms linear;-webkit-transition:opacity 50ms linear;transition-delay:200ms;-moz-transition-delay:200ms;-webkit-transition-delay:200ms}.nvtooltip.x-nvtooltip,.nvtooltip.y-nvtooltip{padding:8px}.nvtooltip h3{padding:4px 14px;line-height:18px;background-color:rgba(247,247,247,.75);color:rgba(0,0,0,1);border-bottom:1px solid #ebebeb;-webkit-border-radius:5px 5px 0 0;-moz-border-radius:5px 5px 0 0;border-radius:5px 5px 0 0}.nvtooltip p{padding:5px 14px}.nvtooltip span{display:inline-block;margin:2px 0}.nvtooltip table{margin:6px;border-spacing:0}.nvtooltip table td{padding:2px 9px 2px 0;vertical-align:middle}.nvtooltip table td.key.total{font-weight:700}.nvtooltip table td.value{text-align:right;font-weight:700}.nvtooltip table td.percent{color:#a9a9a9}.nvtooltip table tr.highlight td{padding:1px 9px 1px 0;border-bottom-style:solid;border-bottom-width:1px;border-top-style:solid;border-top-width:1px}.nvtooltip table td.legend-color-guide div{vertical-align:middle;width:12px;height:12px;border:1px solid #999}.nvtooltip .footer{padding:3px;text-align:center}.nvtooltip-pending-removal{pointer-events:none;display:none}.nvd3 line.nv-guideline{stroke:#ccc}</td>
+        <td id="LC1" class="blob-code blob-code-inner js-file-line">.nvd3 .nv-axis line,.nvd3 .nv-axis path{fill:none;shape-rendering:crispEdges}.nv-brush .extent,.nvd3 .background path,.nvd3 .nv-axis line,.nvd3 .nv-axis path{shape-rendering:crispEdges}.nv-distx,.nv-disty,.nv-noninteractive,.nvd3 .nv-axis,.nvd3.nv-pie .nv-label,.nvd3.nv-sparklineplus g.nv-hoverValue{pointer-events:none}.nvtooltip,svg.nvd3-svg{display:block;-webkit-touch-callout:none;-khtml-user-select:none}.nvd3 .nv-axis{opacity:1}.nvd3 .nv-axis.nv-disabled,.nvd3 .nv-controlsWrap .nv-legend .nv-check-box .nv-check{opacity:0}.nvd3 .nv-axis path{stroke:#000;stroke-opacity:.75}.nvd3 .nv-axis path.domain{stroke-opacity:.75}.nvd3 .nv-axis.nv-x path.domain{stroke-opacity:0}.nvd3 .nv-axis line{stroke:#e5e5e5}.nvd3 .nv-axis .zero line, .nvd3 .nv-axis line.zero{stroke-opacity:.75}.nvd3 .nv-axis .nv-axisMaxMin text{font-weight:700}.nvd3 .x .nv-axis .nv-axisMaxMin text,.nvd3 .x2 .nv-axis .nv-axisMaxMin text,.nvd3 .x3 .nv-axis .nv-axisMaxMin text{text-anchor:middle}.nvd3 .nv-bars rect{fill-opacity:.75;transition:fill-opacity 250ms linear;-moz-transition:fill-opacity 250ms linear;-webkit-transition:fill-opacity 250ms linear}.nvd3 .nv-bars rect.hover{fill-opacity:1}.nvd3 .nv-bars .hover rect{fill:#add8e6}.nvd3 .nv-bars text{fill:transparent}.nvd3 .nv-bars .hover text{fill:rgba(0,0,0,1)}.nvd3 .nv-discretebar .nv-groups rect,.nvd3 .nv-multibar .nv-groups rect,.nvd3 .nv-multibarHorizontal .nv-groups rect{stroke-opacity:0;transition:fill-opacity 250ms linear;-moz-transition:fill-opacity 250ms linear;-webkit-transition:fill-opacity 250ms linear}.nvd3 .nv-candlestickBar .nv-ticks rect:hover,.nvd3 .nv-discretebar .nv-groups rect:hover,.nvd3 .nv-multibar .nv-groups rect:hover,.nvd3 .nv-multibarHorizontal .nv-groups rect:hover{fill-opacity:1}.nvd3 .nv-discretebar .nv-groups text,.nvd3 .nv-multibarHorizontal .nv-groups text{font-weight:700;fill:rgba(0,0,0,1);stroke:transparent}.nvd3 .nv-boxplot circle{fill-opacity:.5}.nvd3 .nv-boxplot circle:hover,.nvd3 .nv-boxplot rect:hover{fill-opacity:1}.nvd3 line.nv-boxplot-median{stroke:#000}.nv-boxplot-tick:hover{stroke-width:2.5px}.nvd3.nv-bullet{font:10px sans-serif}.nvd3.nv-bullet .nv-measure{fill-opacity:.8}.nvd3.nv-bullet .nv-measure:hover{fill-opacity:1}.nvd3.nv-bullet .nv-marker{stroke:#000;stroke-width:2px}.nvd3.nv-bullet .nv-markerTriangle{stroke:#000;fill:#fff;stroke-width:1.5px}.nvd3.nv-bullet .nv-markerLine{stroke:#000;stroke-width:1.5px}.nvd3.nv-bullet .nv-tick line{stroke:#666;stroke-width:.5px}.nvd3.nv-bullet .nv-range.nv-s0{fill:#eee}.nvd3.nv-bullet .nv-range.nv-s1{fill:#ddd}.nvd3.nv-bullet .nv-range.nv-s2{fill:#ccc}.nvd3.nv-bullet .nv-title{font-size:14px;font-weight:700}.nvd3.nv-bullet .nv-subtitle{fill:#999}.nvd3.nv-bullet .nv-range{fill:#bababa;fill-opacity:.4}.nvd3.nv-bullet .nv-range:hover{fill-opacity:.7}.nvd3.nv-candlestickBar .nv-ticks .nv-tick{stroke-width:1px}.nvd3.nv-candlestickBar .nv-ticks .nv-tick.hover{stroke-width:2px}.nvd3.nv-candlestickBar .nv-ticks .nv-tick.positive rect{stroke:#2ca02c;fill:#2ca02c}.nvd3.nv-candlestickBar .nv-ticks .nv-tick.negative rect{stroke:#d62728;fill:#d62728}.with-transitions .nv-candlestickBar .nv-ticks .nv-tick{transition:stroke-width 250ms linear,stroke-opacity 250ms linear;-moz-transition:stroke-width 250ms linear,stroke-opacity 250ms linear;-webkit-transition:stroke-width 250ms linear,stroke-opacity 250ms linear}.nvd3.nv-candlestickBar .nv-ticks line{stroke:#333}.nv-force-node{stroke:#fff;stroke-width:1.5px}.nv-force-link{stroke:#999;stroke-opacity:.6}.nv-force-node text{stroke-width:0}.nvd3 .nv-check-box .nv-box{fill-opacity:0;stroke-width:2}.nvd3 .nv-check-box .nv-check{fill-opacity:0;stroke-width:4}.nvd3 .nv-series.nv-disabled .nv-check-box .nv-check{fill-opacity:0;stroke-opacity:0}.nvd3.nv-linePlusBar .nv-bar rect{fill-opacity:.75}.nvd3.nv-linePlusBar .nv-bar rect:hover{fill-opacity:1}.nvd3 .nv-groups path.nv-line{fill:none}.nvd3 .nv-groups path.nv-area{stroke:none}.nvd3.nv-line .nvd3.nv-scatter .nv-groups .nv-point{fill-opacity:0;stroke-opacity:0}.nvd3.nv-scatter.nv-single-point .nv-groups .nv-point{fill-opacity:.5!important;stroke-opacity:.5!important}.with-transitions .nvd3 .nv-groups .nv-point{transition:stroke-width 250ms linear,stroke-opacity 250ms linear;-moz-transition:stroke-width 250ms linear,stroke-opacity 250ms linear;-webkit-transition:stroke-width 250ms linear,stroke-opacity 250ms linear}.nvd3 .nv-groups .nv-point.hover,.nvd3.nv-scatter .nv-groups .nv-point.hover{stroke-width:7px;fill-opacity:.95!important;stroke-opacity:.95!important}.nvd3 .nv-point-paths path{stroke:#aaa;stroke-opacity:0;fill:#eee;fill-opacity:0}.nvd3 .nv-indexLine{cursor:ew-resize}svg.nvd3-svg{-webkit-user-select:none;-ms-user-select:none;-moz-user-select:none;user-select:none;width:100%;height:100%}.nvtooltip.with-3d-shadow,.with-3d-shadow .nvtooltip{-moz-box-shadow:0 5px 10px rgba(0,0,0,.2);-webkit-box-shadow:0 5px 10px rgba(0,0,0,.2);box-shadow:0 5px 10px rgba(0,0,0,.2);-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px}.nvd3 text{font:400 12px Arial}.nvd3 .title{font:700 14px Arial}.nvd3 .nv-background{fill:#fff;fill-opacity:0}.nvd3.nv-noData{font-size:18px;font-weight:700}.nv-brush .extent{fill-opacity:.125}.nv-brush .resize path{fill:#eee;stroke:#666}.nvd3 .nv-legend .nv-series{cursor:pointer}.nvd3 .nv-legend .nv-disabled circle{fill-opacity:0}.nvd3 .nv-brush .extent{fill-opacity:0!important}.nvd3 .nv-brushBackground rect{stroke:#000;stroke-width:.4;fill:#fff;fill-opacity:.7}@media print{.nvd3 text{stroke-width:0;fill-opacity:1}}.nvd3.nv-ohlcBar .nv-ticks .nv-tick{stroke-width:1px}.nvd3.nv-ohlcBar .nv-ticks .nv-tick.hover{stroke-width:2px}.nvd3.nv-ohlcBar .nv-ticks .nv-tick.positive{stroke:#2ca02c}.nvd3.nv-ohlcBar .nv-ticks .nv-tick.negative{stroke:#d62728}.nvd3 .background path{fill:none;stroke:#EEE;stroke-opacity:.4}.nvd3 .foreground path{fill:none;stroke-opacity:.7}.nvd3 .nv-parallelCoordinates-brush .extent{fill:#fff;fill-opacity:.6;stroke:gray;shape-rendering:crispEdges}.nvd3 .nv-parallelCoordinates .hover{fill-opacity:1;stroke-width:3px}.nvd3 .missingValuesline line{fill:none;stroke:#000;stroke-width:1;stroke-opacity:1;stroke-dasharray:5,5}.nvd3.nv-pie .nv-pie-title{font-size:24px;fill:rgba(19,196,249,.59)}.nvd3.nv-pie .nv-slice text{stroke:#000;stroke-width:0}.nvd3.nv-pie path{transition:fill-opacity 250ms linear,stroke-width 250ms linear,stroke-opacity 250ms linear;-moz-transition:fill-opacity 250ms linear,stroke-width 250ms linear,stroke-opacity 250ms linear;-webkit-transition:fill-opacity 250ms linear,stroke-width 250ms linear,stroke-opacity 250ms linear;stroke:#fff;stroke-width:1px;stroke-opacity:1;fill-opacity:.7}.nvd3.nv-pie .hover path{fill-opacity:1}.nvd3.nv-pie .nv-label rect{fill-opacity:0;stroke-opacity:0}.nvd3 .nv-groups .nv-point.hover{stroke-width:20px;stroke-opacity:.5}.nvd3 .nv-scatter .nv-point.hover{fill-opacity:1}.nvd3.nv-sparkline path{fill:none}.nvd3.nv-sparklineplus .nv-hoverValue line{stroke:#333;stroke-width:1.5px}.nvd3.nv-sparklineplus,.nvd3.nv-sparklineplus g{pointer-events:all}.nvd3 .nv-interactiveGuideLine,.nvtooltip{pointer-events:none}.nvd3 .nv-hoverArea{fill-opacity:0;stroke-opacity:0}.nvd3.nv-sparklineplus .nv-xValue,.nvd3.nv-sparklineplus .nv-yValue{stroke-width:0;font-size:.9em;font-weight:400}.nvd3.nv-sparklineplus .nv-yValue{stroke:#f66}.nvd3.nv-sparklineplus .nv-maxValue{stroke:#2ca02c;fill:#2ca02c}.nvd3.nv-sparklineplus .nv-minValue{stroke:#d62728;fill:#d62728}.nvd3.nv-sparklineplus .nv-currentValue{font-weight:700;font-size:1.1em}.nvtooltip h3,.nvtooltip table td.key{font-weight:400}.nvd3.nv-stackedarea path.nv-area{fill-opacity:.7;stroke-opacity:0;transition:fill-opacity 250ms linear,stroke-opacity 250ms linear;-moz-transition:fill-opacity 250ms linear,stroke-opacity 250ms linear;-webkit-transition:fill-opacity 250ms linear,stroke-opacity 250ms linear}.nvd3.nv-stackedarea path.nv-area.hover{fill-opacity:.9}.nvd3.nv-stackedarea .nv-groups .nv-point{stroke-opacity:0;fill-opacity:0}.nvtooltip{position:absolute;color:rgba(0,0,0,1);padding:1px;z-index:10000;font-family:Arial;font-size:13px;text-align:left;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.5);border-radius:4px}.nvtooltip h3,.nvtooltip p{margin:0;text-align:center}.nvtooltip.with-transitions,.with-transitions .nvtooltip{transition:opacity 50ms linear;-moz-transition:opacity 50ms linear;-webkit-transition:opacity 50ms linear;transition-delay:200ms;-moz-transition-delay:200ms;-webkit-transition-delay:200ms}.nvtooltip.x-nvtooltip,.nvtooltip.y-nvtooltip{padding:8px}.nvtooltip h3{padding:4px 14px;line-height:18px;background-color:rgba(247,247,247,.75);color:rgba(0,0,0,1);border-bottom:1px solid #ebebeb;-webkit-border-radius:5px 5px 0 0;-moz-border-radius:5px 5px 0 0;border-radius:5px 5px 0 0}.nvtooltip p{padding:5px 14px}.nvtooltip span{display:inline-block;margin:2px 0}.nvtooltip table{margin:6px;border-spacing:0}.nvtooltip table td{padding:2px 9px 2px 0;vertical-align:middle}.nvtooltip table td.key.total{font-weight:700}.nvtooltip table td.value{text-align:right;font-weight:700}.nvtooltip table td.percent{color:#a9a9a9}.nvtooltip table tr.highlight td{padding:1px 9px 1px 0;border-bottom-style:solid;border-bottom-width:1px;border-top-style:solid;border-top-width:1px}.nvtooltip table td.legend-color-guide div{vertical-align:middle;width:12px;height:12px;border:1px solid #999}.nvtooltip .footer{padding:3px;text-align:center}.nvtooltip-pending-removal{pointer-events:none;display:none}.nvd3 line.nv-guideline{stroke:#ccc}</td>
       </tr>
       <tr>
         <td id="L2" class="blob-num js-line-number" data-line-number="2"></td>
@@ -722,7 +732,7 @@
         <div class="container site-footer-container">
   <div class="site-footer" role="contentinfo">
     <ul class="site-footer-links right">
-        <li><a href="https://status.github.com/" data-ga-click="Footer, go to status, text:status">Status</a></li>
+        <li><a href="https://github.com/contact" data-ga-click="Footer, go to contact, text:contact">Contact GitHub</a></li>
       <li><a href="https://developer.github.com" data-ga-click="Footer, go to api, text:api">API</a></li>
       <li><a href="https://training.github.com" data-ga-click="Footer, go to training, text:training">Training</a></li>
       <li><a href="https://shop.github.com" data-ga-click="Footer, go to shop, text:shop">Shop</a></li>
@@ -735,11 +745,11 @@
       <svg aria-hidden="true" class="octicon octicon-mark-github" height="24" version="1.1" viewBox="0 0 16 16" width="24"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
 </a>
     <ul class="site-footer-links">
-      <li>&copy; 2016 <span title="0.08697s from github-fe123-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+      <li>&copy; 2016 <span title="0.08711s from github-fe136-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
         <li><a href="https://github.com/site/terms" data-ga-click="Footer, go to terms, text:terms">Terms</a></li>
         <li><a href="https://github.com/site/privacy" data-ga-click="Footer, go to privacy, text:privacy">Privacy</a></li>
         <li><a href="https://github.com/security" data-ga-click="Footer, go to security, text:security">Security</a></li>
-        <li><a href="https://github.com/contact" data-ga-click="Footer, go to contact, text:contact">Contact</a></li>
+        <li><a href="https://status.github.com/" data-ga-click="Footer, go to status, text:status">Status</a></li>
         <li><a href="https://help.github.com" data-ga-click="Footer, go to help, text:help">Help</a></li>
     </ul>
   </div>
@@ -759,8 +769,8 @@
 
 
       
-      <script crossorigin="anonymous" integrity="sha256-dS1nK3XdNSgDnqFOeNVji5Em7rfeOHAfRgkYYsY9c9o=" src="https://assets-cdn.github.com/assets/frameworks-752d672b75dd3528039ea14e78d5638b9126eeb7de38701f46091862c63d73da.js"></script>
-      <script async="async" crossorigin="anonymous" integrity="sha256-umpJpbcqO3GvtTlKsRoLGk0VzbWHeHkAC/G8oQwZ4xA=" src="https://assets-cdn.github.com/assets/github-ba6a49a5b72a3b71afb5394ab11a0b1a4d15cdb5877879000bf1bca10c19e310.js"></script>
+      <script crossorigin="anonymous" integrity="sha256-QEzdGt0fcQ2wFqAuXjH/+KkInRT/DCJ9+GK3gIhtt9U=" src="https://assets-cdn.github.com/assets/frameworks-404cdd1add1f710db016a02e5e31fff8a9089d14ff0c227df862b780886db7d5.js"></script>
+      <script async="async" crossorigin="anonymous" integrity="sha256-iVG4iJ1wGovac/pEUQ+y1w3TBtIlGXfhFyp410Wc1ZQ=" src="https://assets-cdn.github.com/assets/github-8951b8889d701a8bda73fa44510fb2d70dd306d2251977e1172a78d7459cd594.js"></script>
       
       
       
