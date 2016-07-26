@@ -132,7 +132,7 @@ function drawBubbleChart(did, data, xlabel, ylabel) {
                     .showDistY(true)
                     .color(d3.scale.category10().range());
 
-        /*// nvd3.js 1.8.1
+        // nvd3.js 1.8.1
         chart.tooltip.contentGenerator(function(obj) {
             var html = '<h3>' + obj.series[0].key + '</h3><p>';
             html += 'CPU : ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + '%<br>';
@@ -141,8 +141,8 @@ function drawBubbleChart(did, data, xlabel, ylabel) {
             html += 'No. of CPU : ' + obj.series[0].values[0].size + '<br></p>';
             return html;
         });
-        */
 
+        /*
         // nvd3.js 1.8.0
         chart.tooltipContent(function (key, x, y, e, graph) {
             var html = '<h3>' + key + '</h3><p>';
@@ -152,6 +152,7 @@ function drawBubbleChart(did, data, xlabel, ylabel) {
             html += 'No. of CPU : ' + graph.series.values[0].size + '<br></p>';
             return html;
         });
+        */
 
         //Axis settings
         chart.xAxis.axisLabel(xlabel).tickFormat(d3.format('.02f'));
@@ -560,7 +561,8 @@ function setLoading(areaid, reqResType, message) {
     setCurResType(reqResType);
 
     function loading() {
-        var val = progressBar.progressbar("value") || 0;
+        var val = $("#" + areaid + "_progressbar").progressbar("value") || 0;
+        //var val = progressBar.progressbar("value") || 0;
 
         if (isLoading(reqResType) == true || val < 100) {
             setTimeout(loading, 100);
