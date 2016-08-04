@@ -1,8 +1,9 @@
 #!/bin/bash
-npm install mongojs
-npm install winston
-npm install csv-streamify
-npm install JSONStream
-npm install swig
 npm install forever
+npm install swig
+npm install JSONStream
+npm install csv-streamify
+npm install winston
+npm install mongojs
+npm install cluster
 mkdir logs
