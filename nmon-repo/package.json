@@ -1,5 +1,5 @@
 {
-  "name": "nmon repository",
+  "name": "nmon-repo",
   "main": "server.js",
   "dependencies" : {
     "express" : "~3.4.4", 			
@@ -11,13 +11,13 @@
     "passport-twitter" : "~1.0.2", 	
     "passport-google-oauth" : "~0.1.5",
     "connect-flash" : "~0.1.1", 	
-    "bcrypt-nodejs" : "latest" 		
-    "forever" : "latest"
-    "swig" : "latest"
-    "JSONStream" : "latest"
-    "csv-streamify" : "latest"
-    "winston" : "latest"
-    "mongojs" : "latest"
+    "bcrypt-nodejs" : "latest",
+    "forever" : "latest",
+    "swig" : "latest",
+    "JSONStream" : "latest",
+    "csv-streamify" : "latest",
+    "winston" : "latest",
+    "mongojs" : "latest",
     "cluster" : "latest"
   }
 }
