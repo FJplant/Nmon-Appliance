@@ -1,8 +1,8 @@
 /*
  * Constants first
  */
-var HOSTS_BACK_TIME = 30000;
-var REFRESH_INTERVAL = 5000;
+var HOSTS_BACK_TIME = 30000;  // in milli seconds
+var REFRESH_INTERVAL = 2000;  // in milli seconds
 
 var curResType = "CPU";
 var reqStatus = {
@@ -320,8 +320,8 @@ function refresh_charts() {
 
     if ( !isLoading("HOSTS") || !isLoading(getCurResType()) ) {
         if ( !isLoading("HOSTS") ) {
-            //updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);
-            updateGraph("All", "HOSTS", fromDate, toDate);
+            updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate); // Draw last HOST_BACK_TIME
+            //updateGraph("All", "HOSTS", fromDate, toDate);
             console.log("Refresh hosts charts: " + (new Date()).toLocaleString());
         } 
         if ( !isLoading(getCurResType()) ) {
@@ -354,7 +354,7 @@ $(function() {
     var fromDate = new Date($("#from").val());
     var toDate = new Date();
     // First Tab is "HOSTS" and CPU so just call both of them
-    updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);
+    updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);	// Draw last HOST_BACK_TIME
     updateGraph("All", "CPU", fromDate, toDate);
 
     // Refresh every REFRESH_INTERVAL milli seconds
