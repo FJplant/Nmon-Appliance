@@ -536,7 +536,11 @@ $(function() {
 
 function setLoading(areaid, reqResType, message) {
     var areaelem = document.getElementById(areaid);
-    var proghtml = '<div id="' + areaid + '_progressbar' + '" style="position: relative;">' + '  <div class="' + areaid + '_progresslabel' + '" style="position: absolute; left: 15%; top: 4px; font-weight: bold; text-shadow: 1px 1px 0 #fff;"></div>' + '</div>';
+    var proghtml = '<div id="' + areaid + '_progressbar' + '" style="position: relative;">'
+                 + '  <div class="'
+                 + areaid + '_progresslabel' 
+                 + '" style="position: absolute; left: 15%; top: 4px; font-weight: bold; text-shadow: 1px 1px 0 #fff;"></div>'
+                 + '</div>';
     areaelem.innerHTML = proghtml;
 
     var progressBar = $("#" + areaid + "_progressbar"),
