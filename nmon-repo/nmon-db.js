@@ -18,14 +18,12 @@ var http = require('http'),
 
 db = mongojs('nmon-db', ['performance']);
 //db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
-//db = mongojs('bumil.fjint.com/nmon-db', ['record']);
 // refer to https://github.com/mafintosh/mongojs
 
 /*
- * TODO: logging on db error status 
+ * logging on db error status 
  *
  */
-/*
 db.on('error', function (err) {
     console.log('database error', err);
 });
@@ -33,19 +31,32 @@ db.on('error', function (err) {
 db.on('ready', function () {
     console.log('database connected');
 });
-*/
 
 
+/*
+ * Initialize winston logger 
+ */
 var log = new (winston.Logger)({
     transports: [
         new (winston.transports.File)({ filename: 'logs/nmon-db.log', level: 'debug' }),
     ]
 });
 
-var graph_row_number = 1200.0;
+/*
+ * Calculate cluster parameter
+ */
 var cpus = os.cpus(); // Get CPU informations 
 var worker_cnt = cpus.length * 2; // # of Worker process = 2 * CPU count 
 
+
+/*
+ * Graph row number
+ */
+var graph_row_number = 1200.0;
+
+/*
+ * Fork worker process and listen service
+ */
 if (cluster.isMaster) {
     log.info('CPU lists:');
     for (var i=0; i< cpus.length; i++)
@@ -70,7 +81,9 @@ if (cluster.isMaster) {
     log.info('Worker PID(%d) ready...', process.pid);
 }
 
-
+/*
+ * service funtion
+ */
 function service(req, res) {
     var url_info = url.parse(req.url, true);
     var pathname = url_info.pathname;
@@ -183,6 +196,9 @@ function service(req, res) {
     }
 }
 
+/*
+ * Put nmonlog 
+ */
 function put_nmonlog(url_info, req, res, bulk_unit) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
     db.collection('categories').save({name: 'DISK_ALL'});
@@ -385,6 +401,11 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
     req.pipe(csvToJson).pipe(parser).pipe(writer);
 }
 
+/*
+ * Get categories
+ *
+ * TODO: change to restful API
+ */
 function get_categories(url_info, req, res) {
     var result = [];
     var categories = db.collection('categories');
@@ -401,6 +422,11 @@ function get_categories(url_info, req, res) {
     });
 }
 
+/*
+ * Get hosts
+ *
+ * TODO: change to restful API
+ */
 function get_hosts(url_info, req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
     var collection = db.collection('performance');
@@ -417,6 +443,11 @@ function get_hosts(url_info, req, res) {
     });
 }
 
+/*
+ * Get titles
+ *
+ * TODO: change to restful API
+ */
 function get_titles(url_info, req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
     var collection = db.collection('performance');
@@ -440,6 +471,11 @@ function get_titles(url_info, req, res) {
     });
 }
 
+/*
+ * Get fields
+ *
+ * TODO: change to restful API
+ */
 function get_fields(url_info, req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
     if (m[2] === 'TOP' )
@@ -509,6 +545,11 @@ function get_fields(url_info, req, res) {
     });
 }
 
+/*
+ * Get top fields
+ *
+ * TODO: change to restful API
+ */
 function get_top_fields(url_info, req, res) {
     var results = [];
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
@@ -550,6 +591,11 @@ function get_top_fields(url_info, req, res) {
     );
 }
 
+/*
+ * Get host fields
+ *
+ * TODO: change to restful API
+ */
 function get_host_fields(url_info, req, res) {
     var results = {};
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
@@ -629,12 +675,18 @@ function get_host_fields(url_info, req, res) {
     });
 }
 
+/*
+ * Not found helper funtion
+ */
 function not_found(url_info, req, res) {
     log.warn('bad request');
     res.writeHead(404);
     res.end();
 }
 
+/*
+ * Callback: error_handler 
+ */
 function error_handler(res, err, code) {
     log.error(err.toString());
     res.writeHead(code);
