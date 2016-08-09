@@ -21,25 +21,24 @@ db = mongojs('nmon-db', ['performance']);
 // refer to https://github.com/mafintosh/mongojs
 
 /*
- * logging on db error status 
- *
- */
-db.on('error', function (err) {
-    console.log('database error', err);
-});
-
-db.on('ready', function () {
-    console.log('database connected');
-});
-
-
-/*
  * Initialize winston logger 
  */
 var log = new (winston.Logger)({
     transports: [
         new (winston.transports.File)({ filename: 'logs/nmon-db.log', level: 'debug' }),
     ]
+});
+
+/*
+ * logging on db error status 
+ *
+ */
+db.on('error', function (err) {
+    log.info('database error.', err);
+});
+
+db.on('ready', function () {
+    log.info('database connected.');
 });
 
 /*
