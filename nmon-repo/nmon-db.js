@@ -46,7 +46,7 @@ db.on('ready', function () {
  */
 var cpus = os.cpus(); // Get CPU informations 
 var worker_cnt = cpus.length * 2; // # of Worker process = 2 * CPU count 
-
+//var worker_cnt = cpus.length;     // # of Worker process = CPU count, for development purpose
 
 /*
  * Graph row number

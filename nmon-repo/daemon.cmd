@@ -5,9 +5,6 @@ rem TODO: change below script to windows
 
 set FOREVER_OPTS="--minUptime 5000 --spinSleepTime 5000"
 
-node node_modules/forever/bin/forever start \
-    %FOREVER_OPTS% nmon-db.js
-
 function start {
     node_modules/forever/bin/forever start \
     $FOREVER_OPTS nmon-db.js 
