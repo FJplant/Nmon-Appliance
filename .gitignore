@@ -3,3 +3,4 @@
 *.pid
 nmon-repo/node_modules
 nmon-repo/logs/*
+nmon-agt/nmon-data/*

@@ -598,7 +598,7 @@ function draw_bubble_chart() {
 
     console.log("Drawing bubble chart");
     // get process.json file
-    d3.json("process.json", function(error, root) {
+    d3.json("json/process.json", function(error, root) {
         if (error) throw error;
 
         var node = svg.selectAll(".node")

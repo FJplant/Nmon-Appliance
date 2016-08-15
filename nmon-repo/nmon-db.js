@@ -46,7 +46,7 @@ db.on('ready', function () {
  */
 var cpus = os.cpus(); // Get CPU informations 
 var worker_cnt = cpus.length * 2; // # of Worker process = 2 * CPU count 
-
+//var worker_cnt = cpus.length;     // # of Worker process = CPU count, for development purpose
 
 /*
  * Graph row number
@@ -103,37 +103,37 @@ function service(req, res) {
             res.end(html);
             return;
         }
-        else if( pathname == '/nmon-db-client.js' ) {
+        else if( pathname == '/js/nmon-db-client.js' ) {
             res.writeHead(200, {'Content-Type': 'text/javascript'});
-            var html = swig.renderFile('template/nmon-db-client.js', {
+            var html = swig.renderFile('template/js/nmon-db-client.js', {
             });
             res.end(html);
             return;
         }
-        else if( pathname == '/nmon-db-client.css' ) {
+        else if( pathname == '/css/nmon-db-client.css' ) {
             res.writeHead(200, {'Content-Type': 'text/css'});
-            var html = swig.renderFile('template/nmon-db-client.css', {
+            var html = swig.renderFile('template/css/nmon-db-client.css', {
             });
             res.end(html);
             return;
         }
-        else if( pathname == '/d3.min.js' ) {
+        else if( pathname == '/lib/d3.min.js' ) {
             res.writeHead(200, {'Content-Type': 'text/javascript'});
-            var html = swig.renderFile('template/d3.min.js', {
+            var html = swig.renderFile('template/lib/d3.min.js', {
             });
             res.end(html);
             return;
         }
-        else if( pathname == '/nv.d3.min.js' ) {
+        else if( pathname == '/lib/nv.d3.min.js' ) {
             res.writeHead(200, {'Content-Type': 'text/javascript'});
-            var html = swig.renderFile('template/nv.d3.min.js', {
+            var html = swig.renderFile('template/lib/nv.d3.min.js', {
             });
             res.end(html);
             return;
         }
-        else if( pathname == '/nv.d3.min.css' ) {
+        else if( pathname == '/lib/nv.d3.min.css' ) {
             res.writeHead(200, {'Content-Type': 'text/css'});
-            var html = swig.renderFile('template/nv.d3.min.css', {
+            var html = swig.renderFile('template/lib/nv.d3.min.css', {
             });
             res.end(html);
             return;
@@ -145,9 +145,9 @@ function service(req, res) {
             res.end(html);
             return;
         }
-        else if( pathname == '/process.json' ) {
+        else if( pathname == '/json/process.json' ) {
             res.writeHead(200, {'Content-Type': 'application/json'});
-            var html = swig.renderFile('template/process.json', {
+            var html = swig.renderFile('template/json/process.json', {
             });
             res.end(html);
             return;
@@ -197,6 +197,9 @@ function service(req, res) {
 
 /*
  * Put nmonlog 
+ *
+ * 1. parse nmon log
+ * 2. store parsed nmon data to mongodb
  */
 function put_nmonlog(url_info, req, res, bulk_unit) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
