@@ -7,81 +7,54 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
-var cluster = require('cluster'),       // to manage multi process
-    os = require('os'),	                // to get CPU informations
-    winston = require('winston');
+
+// expose this function to our app using module.exports
+
+var url = require('url'),
+    mongojs = require('mongojs'),
+    Transform = require('stream').Transform,
+    csv = require('csv-streamify'),
+    swig = require('swig'),
+    db = mongojs('nmon-db', ['performance']),
+    log = null;
+//db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
+// refer to https://github.com/mafintosh/mongojs
 
 /*
- * Initialize winston logger 
+ * logging on db error status 
+ *
  */
-var log = new (winston.Logger)({
-    transports: [
-        new (winston.transports.File)({ filename: 'logs/nmon-db.log', level: 'debug' }),
-    ]
+db.on('error', function(err) {
+    log.info('database error.', err);
+});
+
+db.on('ready', function() {
+    log.info('database connected.');
 });
 
 /*
- * Calculate cluster parameter
+ * Graph row number
  */
-var cpus = os.cpus(); // Get CPU informations 
-var worker_cnt = cpus.length * 2; // # of Worker process = 2 * CPU count 
-//var worker_cnt = cpus.length;     // # of Worker process = CPU count, for development purpose
+var graph_row_number = 1200.0;
 
-/*
- * Fork worker process and listen service
- */
-if (cluster.isMaster) {
-    log.info('CPU lists:');
-    for (var i=0; i< cpus.length; i++)
-        log.info('CPU #%d: %s', i, cpus[i].model);
 
-    log.info('Spawning %d worker process', worker_cnt);
-
-    for (var i=0; i < worker_cnt; i+=1) {
-        cluster.fork();
-    }
-    log.info('Server running at http://localhost:6900');
-
-    // Listen for dying workers
-    cluster.on('exit', function(worker) {
-        // Replace the dead worker
-        log.info('Worker %d died... :( respawining... ', worker.id);
-        cluster.fork();
-    });
-} else {
-    // using express.js
-    // Include Express
-    var express = require('express');
- 
-    // Create a new Express application
-    var app = express();
-    
-    // Call service mapping funtion
-    service_mapping(app);
-
-    // TODO: configurable listen port
-    app.listen(6900);
-    log.info('Worker PID(%d) ready...', process.pid);
-}
-
-/*
- * Express service mapping
- */
-function service_mapping(app) {
-    // Add static page directory
-    app.use(express.static('template'));
+module.exports = function(app, passport, logger) {
+    // assign logger
+    log = logger;
 
     // Add url -> file mappings 
-    app.get('/', function(req, res) {
-        res.sendfile('template/index.html');
+    app.get('/nmon-db', isLoggedIn, function(req, res) {
+        res.render('nmon-db.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
     });
 
     app.get('/detail', function(req, res) {
-        res.sendfile('template/detail.html');
+        res.render('detail.html');
     });
 
     app.get('/test', function(req, res) {
-        res.sendfile('template/test.html');
+        res.render('test.html');
     });
 
     // Add dynamic handlers
@@ -109,32 +82,6 @@ function service_mapping(app) {
         service(req, res);
     });
 }
-
-var url = require('url'),
-    mongojs = require('mongojs'),
-    Transform = require('stream').Transform,
-    csv = require('csv-streamify'),
-    swig = require('swig'),
-    db = mongojs('nmon-db', ['performance']);
-//db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
-// refer to https://github.com/mafintosh/mongojs
-
-/*
- * logging on db error status 
- *
- */
-db.on('error', function(err) {
-    log.info('database error.', err);
-});
-
-db.on('ready', function() {
-    log.info('database connected.');
-});
-
-/*
- * Graph row number
- */
-var graph_row_number = 1200.0;
 
 /*
  * service funtion
@@ -689,3 +636,17 @@ function error_handler(res, err, code) {
     res.writeHead(code);
     res.end();
 }
+
+/*
+ * Authentication checker
+ * route middleware to make sure
+ */
+function isLoggedIn(req, res, next) {
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated())
+        return next();
+
+
+    // if they aren't redirect them to the home page
+    res.redirect('/login');
+};
