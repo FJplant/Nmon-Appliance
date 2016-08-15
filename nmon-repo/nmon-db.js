@@ -6,19 +6,9 @@
  *      since Aug 12, 2015
  * (c) All rights reserved to Junkoo Hea.
  */
-var http = require('http'),
-    url = require('url'),
-    winston = require('winston'),
-    mongojs = require('mongojs'),
-    Transform = require('stream').Transform,
-    csv = require('csv-streamify'),
-    swig = require('swig'),
+var cluster = require('cluster'),       // to manage multi process
     os = require('os'),	                // to get CPU informations
-    cluster = require('cluster');       // to manage multi process
-
-db = mongojs('nmon-db', ['performance']);
-//db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
-// refer to https://github.com/mafintosh/mongojs
+    winston = require('winston');
 
 /*
  * Initialize winston logger 
@@ -30,28 +20,11 @@ var log = new (winston.Logger)({
 });
 
 /*
- * logging on db error status 
- *
- */
-db.on('error', function (err) {
-    log.info('database error.', err);
-});
-
-db.on('ready', function () {
-    log.info('database connected.');
-});
-
-/*
  * Calculate cluster parameter
  */
 var cpus = os.cpus(); // Get CPU informations 
 var worker_cnt = cpus.length * 2; // # of Worker process = 2 * CPU count 
 //var worker_cnt = cpus.length;     // # of Worker process = CPU count, for development purpose
-
-/*
- * Graph row number
- */
-var graph_row_number = 1200.0;
 
 /*
  * Fork worker process and listen service
@@ -71,16 +44,84 @@ if (cluster.isMaster) {
     // Listen for dying workers
     cluster.on('exit', function(worker) {
         // Replace the dead worker
-        log.info('Worker %d died... respawining... :(', worker.id);
+        log.info('Worker %d died... :( respawining... ', worker.id);
         cluster.fork();
     });
 } else {
-    http.Server(function(req, res) {
-        service(req, res);
-    }).listen(6900);
+    // using express.js
+    // Include Express
+    var express = require('express');
+ 
+    // Create a new Express application
+    var app = express();
 
+    // Add static pages
+    app.use(express.static('template'));
+
+    // add url file mappings 
+    app.get('/detail', function(req, res) {
+        res.sendfile('template/detail.html');
+    });
+
+    app.get('/test', function(req, res) {
+        res.sendfile('template/test.html');
+    });
+
+    // Add dynamic handlers
+    app.post('/nmonlog', function(req, res) {
+        service(req, res);
+    });
+
+    app.post('/nmonlog_bulk', function(req, res) {
+        service(req, res);
+    });
+
+    app.get('/categories', function(req, res) {
+        service(req, res);
+    });
+
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/, function(req, res) {
+        service(req, res);
+    });
+
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/, function(req, res) {
+        service(req, res);
+    });
+
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, function(req, res) {
+        service(req, res);
+    });
+
+    // TODO: configurable listen port
+    app.listen(6900);
     log.info('Worker PID(%d) ready...', process.pid);
 }
+
+var url = require('url'),
+    mongojs = require('mongojs'),
+    Transform = require('stream').Transform,
+    csv = require('csv-streamify'),
+    swig = require('swig'),
+    db = mongojs('nmon-db', ['performance']);
+//db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
+// refer to https://github.com/mafintosh/mongojs
+
+/*
+ * logging on db error status 
+ *
+ */
+db.on('error', function(err) {
+    log.info('database error.', err);
+});
+
+db.on('ready', function() {
+    log.info('database connected.');
+});
+
+/*
+ * Graph row number
+ */
+var graph_row_number = 1200.0;
 
 /*
  * service funtion
@@ -89,53 +130,12 @@ function service(req, res) {
     var url_info = url.parse(req.url, true);
     var pathname = url_info.pathname;
     var method = req.method;
-    log.info('Worker PID[%d]: %s', process.pid, (method + ' ' + pathname) );
+    log.info('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname) );
+
     try {
-        if( pathname == '/' ) {
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            var html = swig.renderFile('template/index.html', {
-            });
-            res.end(html);
-            return;
-        }
-        else if( pathname == '/detail' ) {
+        if( pathname == '/detail' ) {
             res.writeHead(200, {'Content-Type': 'text/html'});
             var html = swig.renderFile('template/detail.html', {
-            });
-            res.end(html);
-            return;
-        }
-        else if( pathname == '/js/nmon-db-client.js' ) {
-            res.writeHead(200, {'Content-Type': 'text/javascript'});
-            var html = swig.renderFile('template/js/nmon-db-client.js', {
-            });
-            res.end(html);
-            return;
-        }
-        else if( pathname == '/css/nmon-db-client.css' ) {
-            res.writeHead(200, {'Content-Type': 'text/css'});
-            var html = swig.renderFile('template/css/nmon-db-client.css', {
-            });
-            res.end(html);
-            return;
-        }
-        else if( pathname == '/lib/d3.min.js' ) {
-            res.writeHead(200, {'Content-Type': 'text/javascript'});
-            var html = swig.renderFile('template/lib/d3.min.js', {
-            });
-            res.end(html);
-            return;
-        }
-        else if( pathname == '/lib/nv.d3.min.js' ) {
-            res.writeHead(200, {'Content-Type': 'text/javascript'});
-            var html = swig.renderFile('template/lib/nv.d3.min.js', {
-            });
-            res.end(html);
-            return;
-        }
-        else if( pathname == '/lib/nv.d3.min.css' ) {
-            res.writeHead(200, {'Content-Type': 'text/css'});
-            var html = swig.renderFile('template/lib/nv.d3.min.css', {
             });
             res.end(html);
             return;
@@ -143,13 +143,6 @@ function service(req, res) {
         else if( pathname == '/test' ) {
             res.writeHead(200, {'Content-Type': 'text/html'});
             var html = swig.renderFile('template/test.html', {
-            });
-            res.end(html);
-            return;
-        }
-        else if( pathname == '/json/process.json' ) {
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            var html = swig.renderFile('template/json/process.json', {
             });
             res.end(html);
             return;
@@ -190,6 +183,14 @@ function service(req, res) {
                 return;
             }
         }
+        else if( pathname == '/' ) {
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            var html = swig.renderFile('template/index.html', {
+            });
+            res.end(html);
+            return;
+        }
+
         not_found(url_info, req, res);
     }
     catch(e) {
