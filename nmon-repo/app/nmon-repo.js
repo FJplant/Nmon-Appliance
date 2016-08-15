@@ -15,9 +15,9 @@ var url = require('url'),
     Transform = require('stream').Transform,
     csv = require('csv-streamify'),
     swig = require('swig'),
-    db = mongojs('nmon-db', ['performance']),
+    //db = mongojs('nmon-db', ['performance']),
+    db = mongojs('192.168.0.12/nmon-db', ['performance']),
     log = null;
-//db = mongojs('nmon-tokyo.fjint.com/nmon-db', ['record']);
 // refer to https://github.com/mafintosh/mongojs
 
 /*

@@ -4,11 +4,11 @@ FOREVER_OPTS="--minUptime 5000 --spinSleepTime 5000"
 
 function start {
     node_modules/forever/bin/forever start \
-    $FOREVER_OPTS nmon-repo.js 
+    $FOREVER_OPTS nmon-server.js
 }
 
 function stop {
-    node_modules/forever/bin/forever stop nmon-repo.js 
+    node_modules/forever/bin/forever stop nmon-server.js
 }
 
 function restart {
