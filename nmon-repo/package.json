@@ -1,6 +1,6 @@
 {
   "name": "nmon-repo",
-  "main": "server.js",
+  "main": "nmon-server.js",
   "dependencies": {
     "JSONStream": "latest",
     "bcrypt-nodejs": "latest",
@@ -11,7 +11,7 @@
     "express": "~4.14.0",
     "forever": "latest",
     "mongojs": "latest",
-    "mongoose": "~3.8.1",
+    "mongoose": "~4.4",
     "passport": "~0.1.17",
     "passport-facebook": "~1.0.2",
     "passport-google-oauth": "~0.1.5",
