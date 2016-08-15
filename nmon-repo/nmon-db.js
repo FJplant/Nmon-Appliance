@@ -1,11 +1,10 @@
 /*
- * nmon-repo.js is
+ * nmon-db.js is
  *    an elastic nmon-repo component written in Node.js
  *   and written by amoriya ( Junkoo Hea, junkoo.hea@gmail.com )
- *                  ymk     ( Youngmo Kwon, youngmo.kwon777@gmail.com )
  * 
  *      since Aug 12, 2015
- * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
+ * (c) All rights reserved to Junkoo Hea.
  */
 var cluster = require('cluster'),       // to manage multi process
     os = require('os'),	                // to get CPU informations
