@@ -27,7 +27,8 @@ var log = new (winston.Logger)({
  * Calculate cluster parameter
  */
 var cpus = os.cpus(); // Get CPU informations
-var worker_cnt = cpus.length * 2; // # of Worker process = 2 * CPU count
+var worker_cnt = Math.trunc( cpus.length * 1.5 ); // # of Worker process = 2 * CPU count
+//var worker_cnt = 1; // test purpuse
 //var worker_cnt = cpus.length;     // # of Worker process = CPU count, for development purpose
 
 /*
