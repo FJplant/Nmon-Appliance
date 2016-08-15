@@ -68,8 +68,10 @@ if (cluster.isMaster) {
     }
     log.info('Server running at http://localhost:6900');
 
+    // Listen for dying workers
     cluster.on('exit', function(worker) {
-        log.info('Worker %d died... respawining... ', worker.id);
+        // Replace the dead worker
+        log.info('Worker %d died... respawining... :(', worker.id);
         cluster.fork();
     });
 } else {
