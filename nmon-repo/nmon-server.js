@@ -104,7 +104,7 @@ if (cluster.isMaster) {
     app.use(flash()); // use connect-flash for flash messages stored in session
 
     // Add static page directory
-    app.use(express.static(__dirname + '/template'));
+    app.use(express.static(__dirname + '/web-static'));
 
     // routes ======================================================================
     // load our routes and pass in our app and fully configured passport

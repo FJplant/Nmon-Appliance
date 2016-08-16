@@ -15,16 +15,16 @@
     <script src="lib/nv.d3.min.js"></script>      
     <script src="js/nmon-db-client.js" charset="utf-8"></script>
     <link rel="stylesheet" href="css/nmon-db-client.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="lib/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/font-awesome/4.6.3/css/font-awesome.min.css">
     <style>
-        //body            { padding-top:80px; word-wrap:break-word; }
+        body            { padding-top:20px; word-wrap:break-word; }
     </style>
 </head>
 <body>
 <center><h3></h3></center>
     <div class="page-header text-center">
-        <h1><span class="fa fa-anchor"></span><font color=blue>Nmon.io Dashboard</font></h1>
+        <h1><span class="fa fa-anchor"></span> <font color=blue>Nmon.io Dashboard</font></h1>
         <a href="/logout" class="btn btn-default btn-sm">Logout</a>
     </div>
 
@@ -152,6 +152,20 @@
                     <strong>email</strong>: <%= user.local.email %><br>
                     <strong>password</strong>: <%= user.local.password %>
                 </p>
+            </div>
+        </div>
+        <!-- FACEBOOK INFORMATION -->
+        <div class="col-sm-6">
+            <div class="well">
+                <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+
+                    <p>
+                        <strong>id</strong>: <%= user.facebook.id %><br>
+                        <strong>token</strong>: <%= user.facebook.token %><br>
+                        <strong>email</strong>: <%= user.facebook.email %><br>
+                        <strong>name</strong>: <%= user.facebook.name %>
+                    </p>
+
             </div>
         </div>
     </div>

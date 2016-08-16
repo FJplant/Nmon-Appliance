@@ -68,19 +68,19 @@ if (cluster.isMaster) {
  */
 function service_mapping(app) {
     // Add static page directory
-    app.use(express.static('template'));
+    app.use(express.static('web-static'));
 
     // Add url -> file mappings 
     app.get('/', function(req, res) {
-        res.sendfile('template/index.html');
+        res.sendfile('web-static/index.html');
     });
 
     app.get('/detail', function(req, res) {
-        res.sendfile('template/detail.html');
+        res.sendfile('web-static/detail.html');
     });
 
     app.get('/test', function(req, res) {
-        res.sendfile('template/test.html');
+        res.sendfile('web-static/test.html');
     });
 
     // Add dynamic handlers
