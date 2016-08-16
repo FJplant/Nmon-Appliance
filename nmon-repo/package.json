@@ -12,7 +12,6 @@
     "express": "latest",
     "express-session": "latest",
     "forever": "latest",
-    "minimatch": "latest",
     "mongojs": "latest",
     "mongoose": "~4.4",
     "passport": "~0.1.17",

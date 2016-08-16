@@ -4,10 +4,11 @@
 module.exports = {
 
     'facebookAuth' : {
-        'clientID'      : 'your-secret-clientID-here', // your App ID
-        'clientSecret'  : 'your-client-secret-here', // your App Secret
-        'callbackURL'   : 'http://localhost:8080/auth/facebook/callback'
-    },
+        'clientID'      : '296152677408511', // your App ID
+        'clientSecret'  : 'bc628cbefdc75c9ff2e5bf5a102d26da', // your App Secret
+        //'callbackURL'   : 'http://nmrep-dev.fjint.com:6900/auth/facebook/callback'
+        'callbackURL'   : 'http://nmdb.nmon.io/auth/facebook/callback'
+     },
 
     'twitterAuth' : {
         'consumerKey'       : 'your-consumer-key-here',
