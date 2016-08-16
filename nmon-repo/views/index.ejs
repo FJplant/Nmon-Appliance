@@ -9,8 +9,8 @@ index.ejs
 <html>
 <head>
 	<title>Nmon Dashboard Authentication</title>
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+	<link rel="stylesheet" href="lib/bootstrap/3.3.7/css/bootstrap.min.css"> <!-- load bootstrap css -->
+	<link rel="stylesheet" href="lib/font-awesome/4.6.3/css/font-awesome.min.css"> <!-- load fontawesome -->
 	<style>
 		body 		{ padding-top:80px; }
 	</style>
@@ -34,16 +34,16 @@ index.ejs
    }(document, 'script', 'facebook-jssdk'));
 </script>
 <div class="container">
-	<div class="jumbotron text-center">
-		<h1><span class="fa"></span> Nmon Dashboard</h1>
-                <h3><span class="fa fa-lock"></span>Authentication Page</h3>
+    <div class="jumbotron text-center">
+        <h1><span class="fa fa-area-chart"></span> Nmon Dashboard</h1>
+        <h3><span class="fa fa-lock"></span> Authentication Page</h3>
 
-		<p>Login or Register with:</p>
-		<a href="/login" class="btn btn-default"><span class="fa fa-user"></span> Local Login</a>
-		<a href="/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
+        <p>Login or Register with:</p>
+        <a href="/login" class="btn btn-default"><span class="fa fa-user"></span> Local Login</a>
+        <a href="/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
 
-                <a href="/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Facebook</a>
-	</div>
+        <a href="/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Facebook</a>
+    </div>
 </div>
 <div
   class="fb-like"
