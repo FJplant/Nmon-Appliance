@@ -55,18 +55,22 @@ if (cluster.isMaster) {
 } else {
     // get all the tools we need
     var express  = require('express');
-    var app      = express();
     var port     = process.env.PORT || 6900;
     var mongoose = require('mongoose');
     var passport = require('passport');
     var flash    = require('connect-flash');
 
+    var session      = require('express-session');
+    var MongoStore   = require('connect-mongo')(session);
     var morgan       = require('morgan');
     var cookieParser = require('cookie-parser');
     var bodyParser   = require('body-parser');
-    var session      = require('express-session');
 
+    // load database configuration
     var configDB = require('./config/database.js');
+
+    // instanciate express 
+    var app      = express();
 
     // configuration ===============================================================
     mongoose.connect(configDB.url); // connect to our database
@@ -75,15 +79,26 @@ if (cluster.isMaster) {
 
     // set up our express application
     app.use(morgan('dev')); // log every request to the console
-    app.use(cookieParser()); // read cookies (needed for auth)
-    app.use(bodyParser()); // get information from html forms
+    app.use(cookieParser('NMCRE7')); // read cookies (needed for auth)
+    app.use(bodyParser.urlencoded({ extended: true })); // get information from html forms
 
     app.engine('html', require('ejs').renderFile);
 
     app.set('view engine', 'ejs'); // set up ejs for templating
     app.set('view engine', 'html'); // set up tiny html viewer
     // required for passport
-    app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+    app.use(session({ 
+       key: 'app-nmdb.sess', 
+       secret: 'SekretCodeForNMdb',
+       proxy: true,
+       resave: true,
+       saveUninitialized: true,
+       store: new MongoStore({
+           // TODO: move to configuration file 
+           url: 'mongodb://mongodb.fjint.com:27017/nmon-user',
+           collection: 'user-session'
+       })
+    })); // session secret
     app.use(passport.initialize());
     app.use(passport.session()); // persistent login sessions
     app.use(flash()); // use connect-flash for flash messages stored in session
