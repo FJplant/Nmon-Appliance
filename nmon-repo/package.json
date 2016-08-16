@@ -6,9 +6,11 @@
     "bcrypt-nodejs": "latest",
     "cluster": "latest",
     "connect-flash": "~0.1.1",
+    "connect-mongo": "latest",
     "csv-streamify": "latest",
     "ejs": "~0.8.5",
-    "express": "~4.14.0",
+    "express": "latest",
+    "express-session": "latest",
     "forever": "latest",
     "mongojs": "latest",
     "mongoose": "~4.4",
@@ -20,10 +22,9 @@
     "swig": "latest",
     "winston": "latest",
 
-    "morgan": "~1.0.0",
-    "body-parser": "~1.0.0",
-    "cookie-parser": "~1.0.0",
-    "method-override": "~1.0.0",
-    "express-session": "~1.0.0"
+    "morgan": "~1.7.0",
+    "body-parser": "~1.15.2",
+    "cookie-parser": "~1.4.3",
+    "method-override": "~2.3.6"
   }
 }
