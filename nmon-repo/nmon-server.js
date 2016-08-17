@@ -106,6 +106,9 @@ if (cluster.isMaster) {
     // Add static page directory
     app.use(express.static(__dirname + '/web-static'));
 
+    // Add bower component directory
+    app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+    
     // routes ======================================================================
     // load our routes and pass in our app and fully configured passport
     require('./app/nmon-routes.js')(app, passport); 

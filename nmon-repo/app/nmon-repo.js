@@ -43,8 +43,14 @@ module.exports = function(app, passport, logger) {
     log = logger;
 
     // Add url -> file mappings 
-    app.get('/nmon-db', isLoggedIn, function(req, res) {
-        res.render('nmon-db.ejs', {
+    app.get('/v1/nmon-db', isLoggedIn, function(req, res) {
+        res.render('nmon-db-v1.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v0/nmon-db', isLoggedIn, function(req, res) {
+        res.render('nmon-db-v0.ejs', {
             user : req.user // get the user out of session and pass to template
         });
     });

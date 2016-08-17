@@ -1,7 +1,7 @@
 /*
  * Constants first
  */
-var HOSTS_BACK_TIME = 30000;  // in milli seconds
+var HOSTS_BACK_TIME = 1000*60*5;  // in milli seconds
 var REFRESH_INTERVAL = 2000;  // in milli seconds
 
 var curResType = "CPU";
@@ -309,7 +309,8 @@ function updateGraph(hostname, restype, fromDate, toDate) {
 }
 
 function refresh_charts() {
-    var fromDate, toDate;
+    var fromDate, toDate,
+        now = new Date();
 
     fromDate = new Date($("#from").val() + " " + $("#from_time").val());
 
@@ -320,7 +321,7 @@ function refresh_charts() {
 
     if ( !isLoading("HOSTS") || !isLoading(getCurResType()) ) {
         if ( !isLoading("HOSTS") ) {
-            updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate); // Draw last HOST_BACK_TIME
+            updateGraph("All", "HOSTS", new Date(now.getTime() - HOSTS_BACK_TIME ), now); // Draw last HOST_BACK_TIME
             //updateGraph("All", "HOSTS", fromDate, toDate);
             console.log("Refresh hosts charts: " + (new Date()).toLocaleString());
         } 

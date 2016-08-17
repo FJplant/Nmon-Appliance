@@ -1,5 +1,7 @@
 Social Buttons for Bootstrap
 ============================
+[![npm version](https://badge.fury.io/js/bootstrap-social.svg)](https://badge.fury.io/js/bootstrap-social)
+[![Bower version](https://badge.fury.io/bo/bootstrap-social.svg)](https://badge.fury.io/bo/bootstrap-social)
 
 Social Buttons made in pure CSS based on
 [Bootstrap](http://twbs.github.io/bootstrap/) and
@@ -24,11 +26,13 @@ Available classes
  - `btn-flickr`
  - `btn-foursquare`
  - `btn-github`
- - `btn-google-plus`
+ - `btn-google`
  - `btn-instagram`
  - `btn-linkedin`
  - `btn-microsoft`
+ - `btn-odnoklassniki`
  - `btn-openid`
+ - `btn-pinterest`
  - `btn-reddit`
  - `btn-soundcloud`
  - `btn-tumblr`
@@ -42,17 +46,17 @@ Examples
 
 ```html
 <a class="btn btn-block btn-social btn-twitter">
-  <i class="fa fa-twitter"></i>
+  <span class="fa fa-twitter"></span>
   Sign in with Twitter
 </a>
 
 <a class="btn btn-social-icon btn-twitter">
-  <i class="fa fa-twitter"></i>
+  <span class="fa fa-twitter"></span>
 </a>
 ```
 
 Pull Requests
 -------------
-If you are about to create a new **Pull Request** for adding a new button don't
-update the minified `bootstrap-social.css` file. It will be generated
-automatically after a successful merge.
+If you are about to create a new **Pull Request** for adding a new button or
+fixing something, don't update the minified `bootstrap-social.css` file. It
+will be generated automatically after a successful merge.
