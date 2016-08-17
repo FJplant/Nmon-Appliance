@@ -43,14 +43,88 @@ module.exports = function(app, passport, logger) {
     log = logger;
 
     // Add url -> file mappings 
+    // reserve old nmon-db.js as version0
+    app.get('/v0/nmon-db', isLoggedIn, function(req, res) {
+        res.render('nmon-db-v0.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    // version 1 nmon-db ejs mappings
     app.get('/v1/nmon-db', isLoggedIn, function(req, res) {
         res.render('nmon-db-v1.ejs', {
             user : req.user // get the user out of session and pass to template
         });
     });
 
-    app.get('/v0/nmon-db', isLoggedIn, function(req, res) {
-        res.render('nmon-db-v0.ejs', {
+    app.get('/v1/morris', isLoggedIn, function(req, res) {
+        res.render('morris.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/flot', isLoggedIn, function(req, res) {
+        res.render('flot.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/tables', isLoggedIn, function(req, res) {
+        res.render('tables.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/forms', isLoggedIn, function(req, res) {
+        res.render('forms.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/panels-wells', isLoggedIn, function(req, res) {
+        res.render('panels-wells.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/buttons', isLoggedIn, function(req, res) {
+        res.render('buttons.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/notifications', isLoggedIn, function(req, res) {
+        res.render('notifications.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/typography', isLoggedIn, function(req, res) {
+        res.render('typography.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/icons', isLoggedIn, function(req, res) {
+        res.render('icons.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/grid', isLoggedIn, function(req, res) {
+        res.render('grid.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/blank', isLoggedIn, function(req, res) {
+        res.render('blank.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/v1/login-sample', isLoggedIn, function(req, res) {
+        res.render('login-sample.ejs', {
             user : req.user // get the user out of session and pass to template
         });
     });
