@@ -1,0 +1,29 @@
+{
+    "name": "nmon-dashboard",
+    "description": "nmon.io - website providing nmon dashboard, report and analyze service in cloud",
+    "type": "component",
+    "homepage": "http://www.nmon.io",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Youngmo Eugene Kwon",
+            "email": "youngmo.kwon777@gmail.com"
+        }
+    ],
+    "require": {
+        "components/bootstrap": ">=3.0",
+        "datatables/datatables": ">=1.10",
+        "components/font-awesome": ">=4.0",
+        "onokumus/metismenu": ">=2.0"
+    },
+    "extra": {
+        "component": {
+            "scripts": [
+                "dist/js/sb-admin-2.js"
+            ],
+            "files": [
+                "dist/css/sb-admin-2.css"
+            ]
+        }
+    }
+}

@@ -2,7 +2,7 @@
 <html lang="en_US">
 <head>
     <meta charset="utf-8">
-    <meta name="title" content="Nmon.io Dashboard - Dashboard, Report and Analyze service for your nmon data">
+    <meta name="title" content="Nmon Dashboard - Dashboard, Report and Analyze service for your nmon data">
     <meta name="description" content="nmon. website providing nmon dashboard, report and analyze service in cloud">
     <meta name="keywords" content="Nmon.io,Nmon Dashboard,nmon-repo,nmon-db,nmon-agt,nmon-jira,nmon-conf,Nmon,nmon analyzer,nmon report,Linux,AIX,Solaris,sarmon,topas_nmon,server,database server">
     <meta name="author" content="Junkoo Hea">
@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.12.4.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <script src="lib/d3.min.js"></script> 
-    <link rel="stylesheet" href="lib/nv.d3.min.css" type="text/css">
-    <script src="lib/nv.d3.min.js"></script>      
-    <script src="js/nmon-db-client.js" charset="utf-8"></script>
-    <link rel="stylesheet" href="css/nmon-db-client.css">
-    <link rel="stylesheet" href="lib/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="lib/font-awesome/4.6.3/css/font-awesome.min.css">
+    <script src="/lib/d3.min.js"></script> 
+    <link rel="stylesheet" href="/lib/nv.d3.min.css" type="text/css">
+    <script src="/lib/nv.d3.min.js"></script>      
+    <script src="/js/nmon-db-client.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="/css/nmon-db-client.css">
+    <link rel="stylesheet" href="/lib/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/lib/font-awesome/4.6.3/css/font-awesome.min.css">
     <style>
         body            { padding-top:20px; word-wrap:break-word; }
     </style>
@@ -24,7 +24,7 @@
 <body>
 <center><h3></h3></center>
     <div class="page-header text-center">
-        <h1><span class="fa fa-anchor"></span> <font color=blue>Nmon.io Dashboard</font></h1>
+        <h1><span class="fa fa-anchor"></span> <font color=blue>Nmon Dashboard</font></h1>
         <a href="/logout" class="btn btn-default btn-sm">Logout</a>
     </div>
 
@@ -159,17 +159,31 @@
             <div class="well">
                 <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
 
-                    <p>
-                        <strong>id</strong>: <%= user.facebook.id %><br>
-                        <strong>token</strong>: <%= user.facebook.token %><br>
-                        <strong>email</strong>: <%= user.facebook.email %><br>
-                        <strong>name</strong>: <%= user.facebook.name %>
-                    </p>
+                <p>
+                    <strong>id</strong>: <%= user.facebook.id %><br>
+                    <strong>token</strong>: <%= user.facebook.token %><br>
+                    <strong>email</strong>: <%= user.facebook.email %><br>
+                    <strong>name</strong>: <%= user.facebook.name %>
+                </p>
 
             </div>
         </div>
     </div>
-</div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="well">
+                <h3 class="text-primary"><span class="fa fa-info"></span> 
+                <a href="https://blackrockdigital.github.io/startbootstrap-sb-admin-2/pages/index.html">SB Admin 2</a> </h3>
+                <p>
+                    <strong>URL</strong>: <a href="https://blackrockdigital.github.io/startbootstrap-sb-admin-2/pages/index.html" target="_new">https://blackrockdigital.github.io/startbootstrap-sb-admin-2/pages/index.html</a><br>
+                    <strong>test 1</strong>: <%= user.facebook.token %><br>
+                    <strong>test 2</strong>: <%= user.facebook.email %><br>
+                </p>
+            </div>
+        </div>
+     </div>
+ </div>
 
 <!-- Google Analytics -->
 <script>

@@ -2,5 +2,6 @@
 *.nmon
 *.pid
 nmon-repo/node_modules
+nmon-repo/bower_components
 nmon-repo/logs/*
 nmon-agt/nmon-data/*
