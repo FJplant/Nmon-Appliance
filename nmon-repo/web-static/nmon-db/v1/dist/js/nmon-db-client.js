@@ -1,8 +1,8 @@
 /*
  * Constants first
  */
-var HOSTS_BACK_TIME = 1000*60*5;  // in milli seconds
-var REFRESH_INTERVAL = 2000;  // in milli seconds
+var HOSTS_BACK_TIME = 1000*60*1;    // in milli seconds, 1 minutes
+var REFRESH_INTERVAL = 2000;        // in milli seconds
 
 var curResType = "CPU";
 var reqStatus = {
