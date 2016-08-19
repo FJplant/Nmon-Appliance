@@ -27,6 +27,10 @@
   ],
   "dependencies": {
     "bootstrap": "~3.3.7",
+    "jquery": "latest",
+    "jquery-ui": "latest",
+    "d3": "~3.5.17",
+    "nvd3": "~1.8.4",
     "datatables": "~1.10.4",
     "datatables-plugins": "~1.0.1",
     "flot": "~0.8.3",
