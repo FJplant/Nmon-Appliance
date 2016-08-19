@@ -137,55 +137,6 @@
 </script>
 </center>
 
-<div class="container">
-    <div class="page-header text-center">
-        <h1><span class="fa fa-anchor"></span> Profile Page</h1>
-        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
-    </div>
-
-    <div class="row">
-        <!-- LOCAL INFORMATION -->
-        <div class="col-sm-6">
-            <div class="well">
-                <h3><span class="fa fa-user"></span> Local</h3>
-                <p>
-                    <strong>id</strong>: <%= user._id %><br>
-                    <strong>email</strong>: <%= user.local.email %><br>
-                    <strong>password</strong>: <%= user.local.password %>
-                </p>
-            </div>
-        </div>
-        <!-- FACEBOOK INFORMATION -->
-        <div class="col-sm-6">
-            <div class="well">
-                <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
-
-                <p>
-                    <strong>id</strong>: <%= user.facebook.id %><br>
-                    <strong>token</strong>: <%= user.facebook.token %><br>
-                    <strong>email</strong>: <%= user.facebook.email %><br>
-                    <strong>name</strong>: <%= user.facebook.name %>
-                </p>
-
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-sm-6">
-            <div class="well">
-                <h3 class="text-primary"><span class="fa fa-info"></span> 
-                <a href="https://blackrockdigital.github.io/startbootstrap-sb-admin-2/pages/index.html">SB Admin 2</a> </h3>
-                <p>
-                    <strong>URL</strong>: <a href="https://blackrockdigital.github.io/startbootstrap-sb-admin-2/pages/index.html" target="_new">https://blackrockdigital.github.io/startbootstrap-sb-admin-2/pages/index.html</a><br>
-                    <strong>test 1</strong>: <%= user.facebook.token %><br>
-                    <strong>test 2</strong>: <%= user.facebook.email %><br>
-                </p>
-            </div>
-        </div>
-     </div>
- </div>
-
 <!-- Google Analytics -->
 <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
