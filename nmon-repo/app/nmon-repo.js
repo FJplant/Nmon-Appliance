@@ -42,102 +42,7 @@ module.exports = function(app, passport, logger) {
     // assign logger
     log = logger;
 
-    // Add url -> file mappings 
-    // reserve old nmon-db.js as version0
-    app.get('/nmon-db/v0', isLoggedIn, function(req, res) {
-        res.render('nmon-db-v0.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    // version 1 nmon-db ejs mappings
-    app.get('/nmon-db/v1/main', isLoggedIn, function(req, res) {
-        res.render('nmon-db-v1.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/morris', isLoggedIn, function(req, res) {
-        res.render('morris.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/flot', isLoggedIn, function(req, res) {
-        res.render('flot.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/tables', isLoggedIn, function(req, res) {
-        res.render('tables.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/forms', isLoggedIn, function(req, res) {
-        res.render('forms.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/panels-wells', isLoggedIn, function(req, res) {
-        res.render('panels-wells.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/buttons', isLoggedIn, function(req, res) {
-        res.render('buttons.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/notifications', isLoggedIn, function(req, res) {
-        res.render('notifications.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/typography', isLoggedIn, function(req, res) {
-        res.render('typography.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/icons', isLoggedIn, function(req, res) {
-        res.render('icons.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/grid', isLoggedIn, function(req, res) {
-        res.render('grid.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/blank', isLoggedIn, function(req, res) {
-        res.render('blank.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/nmon-db/v1/login-sample', isLoggedIn, function(req, res) {
-        res.render('login-sample.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    app.get('/detail', function(req, res) {
-        res.render('detail.html');
-    });
-
-    app.get('/test', function(req, res) {
-        res.render('test.html');
-    });
-
-    // Add dynamic handlers
+    // Add dynamic local handlers
     app.post('/nmonlog', function(req, res) {
         service(req, res);
     });
@@ -728,5 +633,5 @@ function isLoggedIn(req, res, next) {
 
 
     // if they aren't redirect them to the home page
-    res.redirect('/login');
+    res.redirect('/nmon-db/v1/login');
 };
