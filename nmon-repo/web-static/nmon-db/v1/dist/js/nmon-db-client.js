@@ -28,6 +28,8 @@ function setCurResType(newResType) {
     curResType = newResType;
 }
 
+//
+// Get host lists and add them to options box
 function getHosts(category) {
     $.ajax({
         url: "/All/" + category + "/hosts",
@@ -43,6 +45,8 @@ function getHosts(category) {
     });
 }
 
+//
+// Draw Stacked Area chart for CPU, Memory, Virtual Memory, Disk, Network
 function drawChart(did, data, xlabel, ylabel) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
@@ -56,10 +60,10 @@ function drawChart(did, data, xlabel, ylabel) {
 
     nv.addGraph(function() {
         var chart = nv.models.stackedAreaChart()
-                      .x(function(d) { return d[0] })   //We can modify the data accessor functions...
-                      .y(function(d) { return d[1] })   //...in case your data is formatted differently.
-                      .useInteractiveGuideline(true)    //Tooltips which show all data points. Very nice!
-                      .showControls(true)       //Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
+                      .x(function(d) { return d[0] })   // We can modify the data accessor functions...
+                      .y(function(d) { return d[1] })   // ...in case your data is formatted differently.
+                      .useInteractiveGuideline(true)    // Tooltips which show all data points. Very nice!
+                      .showControls(true)               // Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
                       .color(d3.scale.category10().range())
                       .interpolate('cardinal-open')
                       .clipEdge(true);
@@ -86,6 +90,8 @@ function drawChart(did, data, xlabel, ylabel) {
     });
 }
 
+//
+// Draw pie chart for process chart
 function drawPieChart(did, data) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
@@ -114,6 +120,8 @@ function drawPieChart(did, data) {
     });
 }
 
+// Draw scatter chart for server insight
+//
 function drawBubbleChart(did, data, xlabel, ylabel) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
@@ -134,8 +142,8 @@ function drawBubbleChart(did, data, xlabel, ylabel) {
 
         // nvd3.js 1.8.1
         chart.tooltip.contentGenerator(function(obj) {
-            var html = '<h3>' + obj.series[0].key + '</h3><p>';
-            html += 'CPU : ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + '%<br>';
+            var html = '<h3>' + obj.series[0].key + '</h3>';
+            html += '<p>CPU : ' + (Math.round(obj.series[0].values[0].y * 100) / 100) + '%<br>';
             html += 'Disk : ' + (Math.round(obj.series[0].values[0].x * 100) / 100) + 'KB/s<br>';
             html += 'Network : ' +  (Math.round(obj.series[0].values[0].network * 100) / 100) + 'KB/s<br>';
             html += 'No. of CPU : ' + obj.series[0].values[0].size + '<br></p>';
@@ -168,8 +176,11 @@ function drawBubbleChart(did, data, xlabel, ylabel) {
     });
 }
 
+// Periodic server performance data fetch
+// TODO: need to change to fetch only updated data
 function updateGraph(hostname, restype, fromDate, toDate) {
     var start = new Date();
+
     // hosts - always update this area
     if (restype == "HOSTS" || restype == "ALL" ) {
         reqStatus["HOSTS"] = true;
@@ -305,9 +316,10 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             }
         });
     }
-
 }
 
+// Issue periodic chart refresh
+//
 function refresh_charts() {
     var fromDate, toDate,
         now = new Date();
@@ -322,22 +334,25 @@ function refresh_charts() {
     if ( !isLoading("HOSTS") || !isLoading(getCurResType()) ) {
         if ( !isLoading("HOSTS") ) {
             updateGraph("All", "HOSTS", new Date(now.getTime() - HOSTS_BACK_TIME ), now); // Draw last HOST_BACK_TIME
-            //updateGraph("All", "HOSTS", fromDate, toDate);
-            console.log("Refresh hosts charts: " + (new Date()).toLocaleString());
+            console.log("[" + (new Date()).toLocaleString() + "] " + "Server insights chart refreshed." );
         } 
         if ( !isLoading(getCurResType()) ) {
             updateGraph($("#hosts").val(), getCurResType(), fromDate, toDate);
-            console.log("Refresh " + getCurResType() + " charts: " + (new Date()).toLocaleString());
+            console.log("[" + (new Date()).toLocaleString() + "] " + getCurResType() + " chart refreshed." );
         }
     } else {
-      console.log("Refresh on-going: " + (new Date()).toLocaleString());
+      console.log("[" + (new Date()).toLocaleString() + "] " + "previous refresh is on-going ");
     }
-    // Try to Refresh every 5 seconds
-    setTimeout( refresh_charts, 5000 );
+
+    // Try to Refresh every 2 seconds
+    setTimeout( refresh_charts, REFRESH_INTERVAL );
 }
 
+// Main function
+//
 $(function() {
     getHosts('CPU_ALL');
+
     var today = new Date();
     $("#from").val((today.getMonth() + 1) + "/" + today.getDate() + "/" + today.getFullYear());
     $("#to").val("now");
@@ -352,25 +367,18 @@ $(function() {
             toDate = new Date();
         updateGraph($("#hosts").val(), curResType, fromDate, toDate)
     });
-    var fromDate = new Date($("#from").val());
-    var toDate = new Date();
-    // First Tab is "HOSTS" and CPU so just call both of them
-    updateGraph("All", "HOSTS", new Date(toDate.getTime() - HOSTS_BACK_TIME ), toDate);	// Draw last HOST_BACK_TIME
-    updateGraph("All", "CPU", fromDate, toDate);
 
+    var fromDate = new Date($("#from").val());
+    var now = new Date();
+
+    // First Tab is "HOSTS" and CPU so just call both of them
+    updateGraph("All", "HOSTS", new Date(now.getTime() - HOSTS_BACK_TIME ), now);	// Draw last HOST_BACK_TIME
+    updateGraph("All", "CPU", fromDate, now);
+
+    // Initiate first refresh_charts call
     // Refresh every REFRESH_INTERVAL milli seconds
     setTimeout( refresh_charts, REFRESH_INTERVAL );
 });
-
-// Debug helper funtion
-function printObject(obj) {
-    var output = "",
-        property;
-    for (property in obj) {
-        output += property + ": " + obj[property] + "; ";
-    }
-    console.log("Print object's properties: " + output);
-}
 
 $(function() {
     $("#from").datepicker({
@@ -525,6 +533,7 @@ $(function() {
                     curRes = "NONE";
                     break;
             }
+
             console.log("[Calling updateGraph from UI-tab] " +
                 "Hosts: " + $("#hosts").val() +
                 ", Tab: " + curRes +
@@ -579,6 +588,8 @@ function setLoading(areaid, reqResType, message) {
     setTimeout(loading, 100);
 };
 
+// Draw process bubble chart
+//
 function draw_bubble_chart() {
     var diameter = 800,
         format = d3.format(",d"),
@@ -657,4 +668,14 @@ function draw_bubble_chart() {
 
     // Select where to display. modfied by youngmo
     d3.select(self.frameElement).style("height", diameter + "px");
+}
+
+// Debug helper funtion
+function printObject(obj) {
+    var output = "",
+        property;
+    for (property in obj) {
+        output += property + ": " + obj[property] + "; ";
+    }
+    console.log("Print object's properties: " + output);
 }
