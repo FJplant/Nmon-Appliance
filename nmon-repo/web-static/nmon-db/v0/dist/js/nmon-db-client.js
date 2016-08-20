@@ -491,6 +491,7 @@ $(function() {
                     break;
                 case "Memory":
                     curRes = "MEM";
+                    alert( 'call setLoading in mem');
                     setLoading("mem_chart", curRes, "Loading Memory chart. Wait a moment...");
                     break;
                 case "Swap":
@@ -542,7 +543,9 @@ function setLoading(areaid, reqResType, message) {
                  + areaid + '_progresslabel' 
                  + '" style="position: absolute; left: 15%; top: 4px; font-weight: bold; text-shadow: 1px 1px 0 #fff;"></div>'
                  + '</div>';
+    alert(proghtml)
     areaelem.innerHTML = proghtml;
+    alert(areaelem.innerHTML);
 
     var progressBar = $("#" + areaid + "_progressbar"),
         progressLabel = $("." + areaid + "_progresslabel");
