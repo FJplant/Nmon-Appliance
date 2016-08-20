@@ -8,7 +8,7 @@
     "connect-flash": "~0.1.1",
     "connect-mongo": "latest",
     "csv-streamify": "latest",
-    "ejs": "~0.8.5",
+    "ejs": "~1.0.0",
     "express": "latest",
     "express-session": "latest",
     "forever": "latest",
