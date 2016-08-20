@@ -25,11 +25,11 @@ var url = require('url'),
  *
  */
 db.on('error', function(err) {
-    log.info('database error.', err);
+    log.info('Nmon-db database error.', err);
 });
 
 db.on('ready', function() {
-    log.info('database connected.');
+    log.info('Nmon-db database connected.');
 });
 
 /*
@@ -74,48 +74,53 @@ module.exports = function(app, passport, logger) {
 function service(req, res) {
     var url_info = url.parse(req.url, true);
     var pathname = url_info.pathname;
+    var searchparam = url_info.search;
     var method = req.method;
-    log.info('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname) );
+
+    log.info('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname + searchparam) );
 
     try {
         if ( pathname == '/nmonlog' ) {
             if( method == 'POST' ) {
-                put_nmonlog(url_info, req, res, 1);
+                put_nmonlog(req, res, 1);
                 return;
             }
         }
         else if ( pathname == '/nmonlog_bulk' ) {
             if( method == 'POST' ) {
-                put_nmonlog(url_info, req, res, 10);
+                put_nmonlog(req, res, 10);
                 return;
             }
         }
         else if ( pathname == '/categories' ) {
             if( method == 'GET' ) {
-                get_categories(url_info, req, res);
+                get_categories(req, res);
                 return;
             }
         }
         else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/) ) {
             if( method == 'GET' ) {
-                get_hosts(url_info, req, res);
+                log.debug('Call get_hosts with parameters: %s', searchparam);
+                get_hosts(req, res);
                 return;
             }
         }
         else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/) ) {
             if( method == 'GET' ) {
-                get_titles(url_info, req, res);
+                log.debug('Call get_titles with parameters: %s', searchparam);
+                get_titles(req, res);
                 return;
             }
         }
         else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/) ) {
             if( method == 'GET' ) {
-                get_fields(url_info, req, res);
+                log.debug('Call get_fields with parameters: %s', searchparam);
+                get_fields(req, res);
                 return;
             }
         }
 
-        not_found(url_info, req, res);
+        not_found(req, res);
     }
     catch(e) {
         error_handler(res, e, 500);
@@ -128,7 +133,7 @@ function service(req, res) {
  * 1. parse nmon log
  * 2. store parsed nmon data to mongodb
  */
-function put_nmonlog(url_info, req, res, bulk_unit) {
+function put_nmonlog(req, res, bulk_unit) {
     db.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
     db.collection('categories').save({name: 'DISK_ALL'});
     db.collection('categories').save({name: 'NET_ALL'});
@@ -335,7 +340,7 @@ function put_nmonlog(url_info, req, res, bulk_unit) {
  *
  * TODO: change to restful API
  */
-function get_categories(url_info, req, res) {
+function get_categories(req, res) {
     var result = [];
     var categories = db.collection('categories');
     categories.find().sort({name:1}).forEach(function(err, doc) {
@@ -356,7 +361,9 @@ function get_categories(url_info, req, res) {
  *
  * TODO: change to restful API
  */
-function get_hosts(url_info, req, res) {
+function get_hosts(req, res) {
+    var url_info = url.parse(req.url, true);
+
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
     var collection = db.collection('performance');
     collection.distinct('host', {}, function (err, doc) {
@@ -377,7 +384,9 @@ function get_hosts(url_info, req, res) {
  *
  * TODO: change to restful API
  */
-function get_titles(url_info, req, res) {
+function get_titles(req, res) {
+    var url_info = url.parse(req.url, true);
+
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
     var collection = db.collection('performance');
     var query = { };
@@ -405,12 +414,14 @@ function get_titles(url_info, req, res) {
  *
  * TODO: change to restful API
  */
-function get_fields(url_info, req, res) {
+function get_fields(req, res) {
+    var url_info = url.parse(req.url, true);
+
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
     if (m[2] === 'TOP' )
-        return get_top_fields(url_info, req, res);
+        return get_top_fields(req, res);
     else if (m[2] === 'HOST')
-        return get_host_fields(url_info, req, res);
+        return get_host_fields(req, res);
 
     var results = [];
     var data = eval(url_info.query['data']);
@@ -479,8 +490,10 @@ function get_fields(url_info, req, res) {
  *
  * TODO: change to restful API
  */
-function get_top_fields(url_info, req, res) {
+function get_top_fields(req, res) {
+    var url_info = url.parse(req.url, true);
     var results = [];
+
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
 
     var date = eval(url_info.query['date']);
@@ -525,10 +538,9 @@ function get_top_fields(url_info, req, res) {
  *
  * TODO: change to restful API
  */
-function get_host_fields(url_info, req, res) {
+function get_host_fields(req, res) {
+    var url_info = url.parse(req.url, true);
     var results = {};
-    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
-
     var date = eval(url_info.query['date']);
 
     var match = {};
@@ -607,7 +619,7 @@ function get_host_fields(url_info, req, res) {
 /*
  * Not found helper funtion
  */
-function not_found(url_info, req, res) {
+function not_found(req, res) {
     log.warn('bad request');
     res.writeHead(404);
     res.end();
@@ -621,17 +633,3 @@ function error_handler(res, err, code) {
     res.writeHead(code);
     res.end();
 }
-
-/*
- * Authentication checker
- * route middleware to make sure
- */
-function isLoggedIn(req, res, next) {
-    // if user is authenticated in the session, carry on
-    if (req.isAuthenticated())
-        return next();
-
-
-    // if they aren't redirect them to the home page
-    res.redirect('/nmon-db/v1/login');
-};
