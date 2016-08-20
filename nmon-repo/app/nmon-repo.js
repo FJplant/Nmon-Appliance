@@ -438,12 +438,7 @@ function get_titles(req, res) {
  */
 function get_fields(req, res) {
     var url_info = url.parse(req.url, true);
-
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
-    if (m[2] === 'TOP' )
-        return get_top_fields(req, res);
-    else if (m[2] === 'HOST')
-        return get_host_fields(req, res);
 
     var results = [];
     var data = eval(url_info.query['data']);
