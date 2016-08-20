@@ -87,6 +87,12 @@ module.exports = function(app, passport) {
         });
     });
 
+    app.get('/detail', isLoggedIn, function(req, res) {
+        res.render('detail.html', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
     // version 1 nmon-db ejs mappings
     app.get('/nmon-db/v1/main', isLoggedIn, function(req, res) {
         res.render('nmon-db-v1.ejs', {
@@ -97,6 +103,18 @@ module.exports = function(app, passport) {
     // version 1 settings ejs mappings
     app.get('/nmon-db/v1/settings', isLoggedIn, function(req, res) {
         res.render('settings.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/nmon-db/v1/nmon-charts', isLoggedIn, function(req, res) {
+        res.render('nmon-charts.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/nmon-db/v1/nmon-reports', isLoggedIn, function(req, res) {
+        res.render('nmon-reports.ejs', {
             user : req.user // get the user out of session and pass to template
         });
     });

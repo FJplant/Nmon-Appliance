@@ -36,7 +36,9 @@ function getHosts(category) {
         data: {},
         success: function(data) {
             var result = eval(data);
-            var html = '<option value="All">All</option>';
+            var html = '<option value="aix-db1">Select host</option>';
+            // do not show all hosts flag
+            //html += '<option value="All">All</option>';
             for (var i = 0; i < result.length; i++) {
                 html += '<option value="' + result[i] + '">' + result[i] + '</option>';
             }
@@ -184,7 +186,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // hosts - always update this area
     if (restype == "HOSTS" || restype == "ALL" ) {
         reqStatus["HOSTS"] = true;
-        console.log("[Requesting HOSTS data] " + start.toLocaleString());
+        console.log("[" + start.toLocaleString() + "] Requesting HOSTS data.");
         $.ajax({
             url: "/" + hostname + "/HOST?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
             data: {},
@@ -200,7 +202,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // cpu
     if (restype == "CPU" || restype == "ALL") {
         reqStatus["CPU"] = true;
-        console.log("[Requesting CPU data] " + start.toLocaleString());
+        console.log("[" + start.toLocaleString() + "] Requesting CPU data. ");
         $.ajax({
             url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User', 'Sys', 'Wait']",
             data: {},
@@ -216,7 +218,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // memory
     if (restype == "MEM" || restype == "ALL") {
         reqStatus["MEM"] = true;
-        console.log("[Requesting MEM data] " + start.toLocaleString());
+        console.log("[" + start.toLocaleString() + "] Requesting MEM data. ");
         $.ajax({
             url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
             data: {},
@@ -236,7 +238,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // swap
     if (restype == "SWAP" || restype == "ALL") {
         reqStatus["SWAP"] = true;
-        console.log("[Requesting SWAP data] " + start.toLocaleString());
+        console.log("[" + start.toLocaleString() + "] Requesting SWAP data. ");
         $.ajax({
             url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
             data: {},
@@ -256,7 +258,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // disk
     if (restype == "DISK" || restype == "ALL") {
         reqStatus["DISK"] = true;
-        console.log("[Requesting DISK data] " + start.toLocaleString());
+        console.log("[" + start.toLocaleString() + "] Requesting DISK data. ");
         $.ajax({
             url: "/" + hostname + "/DISK_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
             data: {},
@@ -272,7 +274,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // network
     if (restype == "NET" || restype == "ALL") {
         reqStatus["NET"] = true;
-        console.log("[Requesting NET data] " + start.toLocaleString());
+        console.log("[" + start.toLocaleString() + "] Requesting NET data. ");
         $.ajax({
             url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
             data: {},
@@ -288,7 +290,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // process cpu usage
     if (restype == "PROCESS_CPU" || restype == "ALL") {
         reqStatus["PROCESS_CPU"] = true;
-        console.log("[Requesting PROCESS_MEM data] " + start.toLocaleString());
+        console.log("[" + start.toLocaleString() + "] Requesting PROCESS_CPU data. ");
         $.ajax({
             url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=cpu",
             data: {},
@@ -304,7 +306,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // process mem usage
     if (restype == "PROCESS_MEM" || restype == "ALL") {
         reqStatus["PROCESS_MEM"] = true;
-        console.log("[Requesting PROCESS_MEM data] " + start.toLocaleString());
+        console.log("[" + start.toLocaleString() + "] Requesting PROCESS_MEM data. ");
         $.ajax({
             url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=mem",
             data: {},
@@ -371,9 +373,11 @@ $(function() {
     var fromDate = new Date($("#from").val());
     var now = new Date();
 
+    // 2016.8.20. 
+    // Do not call at first time
     // First Tab is "HOSTS" and CPU so just call both of them
-    updateGraph("All", "HOSTS", new Date(now.getTime() - HOSTS_BACK_TIME ), now);	// Draw last HOST_BACK_TIME
-    updateGraph("All", "CPU", fromDate, now);
+    // updateGraph("All", "HOSTS", new Date(now.getTime() - HOSTS_BACK_TIME ), now);	// Draw last HOST_BACK_TIME
+    // updateGraph("All", "CPU", fromDate, now);
 
     // Initiate first refresh_charts call
     // Refresh every REFRESH_INTERVAL milli seconds
@@ -473,10 +477,9 @@ $(function() {
 
 $(function() {
     $("#tabs").tabs({
-        // event: "mouseover"
+        // event: "beforeActivate"
         beforeActivate: function(event, ui) {
-            var newTab = ui.newTab.context.innerText;
-
+           
             // Same code with View clicked event handler need to merge to one
             var fromDate, toDate;
 
@@ -487,8 +490,9 @@ $(function() {
             else
                 toDate = new Date();
 
-            var curRes = getCurResType();
-            switch (newTab) {
+            var curRes, newTab = ui.newTab.text();
+ 
+            switch (newTab.trim()) {
 //                case "Hosts":
 //                    curRes = "HOSTS";
 //                    setLoading("hosts_chart", curRes, "Loading hosts chart. Wait a moment...");
@@ -610,7 +614,7 @@ function draw_bubble_chart() {
 
     console.log("Drawing bubble chart");
     // get process.json file
-    d3.json("json/process.json", function(error, root) {
+    d3.json("dist/json/process.json", function(error, root) {
         if (error) throw error;
 
         var node = svg.selectAll(".node")

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en_US">
+
+<head>
+    <% include partials/nmon-db-head %>
+    <!-- nmon-db-client.js -->
+    <script src="dist/js/nmon-db-client.js" charset="utf-8"></script>
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <% include partials/nmon-db-nav %>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header"><i class="fa fa-bar-chart-o fa-fw"></i> Nmon reports - report 출력에 적절하게 변경 예정 </h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-calendar fa-fw"></i> Report period
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                        Actions
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" role="menu">
+                                        <li><a href="#">Action</a>
+                                        </li>
+                                        <li><a href="#">Another action</a>
+                                        </li>
+                                        <li><a href="#">Something else here</a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li><a href="#">Separated link</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+     <table>
+        <tr>
+            <td>&nbsp;</td>
+            <th><label for="from">From</label></th>
+            <th><label for="to"> To </label></th>
+            <th>&nbsp;&nbsp;</th>
+            <th width="300">Range</th>
+        </tr>
+        <tr>
+            <th>Date&nbsp;</th>
+            <td><input type="text" id="from" maxlength="10" size="10"></td>
+            <td><input type="text" id="to" maxlength="10" size="10"></td>
+            <td>&nbsp;&nbsp;</td>
+            <td><div id="slider-range-date"></div></td>
+        </tr>
+        <tr>
+            <th>Time&nbsp;</th>
+            <td><input type="text" id="from_time" maxlength="8" size="10"</td>
+            <td><input type="text" id="to_time" maxlength="8" size="10"</td>
+            <td>&nbsp;&nbsp;</td>
+            <td><div id="slider-range-time"></div></td>
+        </tr>
+
+    </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Nmon reports
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                        Actions
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" role="menu">
+                                        <li><a href="#">Action</a>
+                                        </li>
+                                        <li><a href="#">Another action</a>
+                                        </li>
+                                        <li><a href="#">Something else here</a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li><a href="#">Separated link</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+    <table>
+        <tr>
+            <th>
+                <label for="hosts">Hosts &nbsp;</label>
+            </th>
+            <td>
+                <select name="hosts" id="hosts">
+                </select>
+            </td>
+            <td>&nbsp;</td>
+            <td align="center">
+                <button type="button" id="view">View</button>
+            </td>
+            <td>&nbsp;</td>
+            <td align="left">
+                <a href="/detail" style="float: right;">Detailed View</a>
+            </td>
+        </tr>
+     </table>
+
+<table style="display: inline-block; height: 669px;">
+<td >
+<div id="tabs">
+    <ul>
+        <!--<li><a href="#hosts_chart">Hosts</a>-->
+        <li><a href="#cpu_chart">CPU</a>
+        <li><a href="#mem_chart">Memory</a>
+        <li><a href="#swap_chart">Swap</a>
+        <li><a href="#disk_chart">Disk</a>
+        <li><a href="#network_chart">Network</a>
+        <li><a href="#nfs_chart">NFS</a>
+        <li><a href="#process_cpu_chart">Process CPU Usage</a>
+        <li><a href="#process_mem_chart">Process Memory Usage</a>
+        <li><a href="#process_bubble_chart">Process Bubble Chart</a>
+    </ul>
+    <div id="cpu_chart" class="googlechart">
+        <svg></svg>
+    </div>
+    <div id="mem_chart" class="googlechart">&nbsp;</div>
+    <div id="swap_chart" class="googlechart">&nbsp;</div>
+    <div id="disk_chart" class="googlechart">&nbsp;</div>
+    <div id="network_chart" class="googlechart">&nbsp;</div>
+    <div id="nfs_chart" class="googlechart">&nbsp;</div>
+    <div id="process_cpu_chart" class="googlechart">&nbsp;</div>
+    <div id="process_mem_chart" class="googlechart">&nbsp;</div>
+    <div id="process_bubble_chart" class="googlechart">
+        <div id="bubble_chart_area"></div>
+        <p>Simple bubble chart test case from http://bl.ocks.org/mbostock/4063269<br>
+           - mbostock's block #4063269
+        </p>
+    </div>
+</div>
+</td></table>
+<!-- Google AdSense -->
+<p></p><p></p>
+<center>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- http://db.nmon.io -->
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:728px;height:90px"
+         data-ad-client="ca-pub-7660708060036828"
+         data-ad-slot="9822759341"></ins>
+    <script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</center>
+
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <% include partials/nmon-db-footer %>
+</body>
+
+</html>
