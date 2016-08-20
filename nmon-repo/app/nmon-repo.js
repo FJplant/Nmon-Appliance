@@ -77,24 +77,30 @@ function service(req, res) {
     var searchparam = url_info.search;
     var method = req.method;
 
-    log.info('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname + searchparam) );
+    log.debug('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname + searchparam) );
 
     try {
         if ( pathname == '/nmonlog' ) {
             if( method == 'POST' ) {
+                log.debug('Call put_nmonlog(single) with parameters: %s', searchparam);
                 put_nmonlog(req, res, 1);
+
                 return;
             }
         }
         else if ( pathname == '/nmonlog_bulk' ) {
             if( method == 'POST' ) {
+                log.debug('Call put_nmonlog(bulk) with parameters: %s', searchparam);
                 put_nmonlog(req, res, 10);
+
                 return;
             }
         }
         else if ( pathname == '/categories' ) {
             if( method == 'GET' ) {
+                log.debug('Call get_categories with parameters: %s', searchparam);
                 get_categories(req, res);
+
                 return;
             }
         }
@@ -102,6 +108,7 @@ function service(req, res) {
             if( method == 'GET' ) {
                 log.debug('Call get_hosts with parameters: %s', searchparam);
                 get_hosts(req, res);
+
                 return;
             }
         }
@@ -109,14 +116,29 @@ function service(req, res) {
             if( method == 'GET' ) {
                 log.debug('Call get_titles with parameters: %s', searchparam);
                 get_titles(req, res);
+
                 return;
             }
         }
         else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/) ) {
             if( method == 'GET' ) {
-                log.debug('Call get_fields with parameters: %s', searchparam);
-                get_fields(req, res);
-                return;
+                var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
+
+                if (m[2] === 'TOP' ) {
+                    log.debug('Call get_top_fields with parameters: %s', searchparam);
+                
+                    return get_top_fields(req, res);
+                } 
+                else if (m[2] === 'HOST') {
+                    log.debug('Call get_host_fields with parameters: %s', searchparam);
+
+                    return get_host_fields(req, res);
+                }
+                else {
+                    log.debug('Call get_fields with parameters: %s', searchparam);
+
+                    return get_fields(req, res);
+                }
             }
         }
 
