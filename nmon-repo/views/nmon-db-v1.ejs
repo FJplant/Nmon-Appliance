@@ -2,14 +2,14 @@
 <html lang="en">
 
 <head>
-    <% include partials/nmon-db-head %>
+    <% include partials/nmdb-head %>
     <!-- nmon-db-client.js -->
     <script src="dist/js/nmon-db-client.js" charset="utf-8"></script>
 </head>
 
 <body>
     <div id="wrapper">
-        <% include partials/nmon-db-nav %>
+        <% include partials/nmdb-nav %>
 
         <div id="page-wrapper">
             <div class="row">
@@ -20,22 +20,22 @@
             </div>
             <!-- /.row -->
             <div class="row">
-                <% include partials/nmon-db-summary-boxes %>
+                <% include partials/nmdb-summary-boxes %>
             </div>
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-8">
-                    <% include partials/nmon-db-server-insight-old %>
+                    <% include partials/nmdb-server-insight-old %>
                     <% include partials/example-areachart %>
                     <% include partials/example-barchart %>
-                    <% include partials/nmon-db-timeline %>
-                    <% include partials/nmon-db-server-insight %>
+                    <% include partials/nmdb-timeline %>
+                    <% include partials/nmdb-server-insight %>
                 </div>
                 <!-- /.col-lg-8 -->
                 <div class="col-lg-4">
-                    <% include partials/nmon-db-notifications %>
+                    <% include partials/nmdb-notifications %>
                     <% include partials/example-donutchart %>
-                    <% include partials/nmon-db-chat %>
+                    <% include partials/nmdb-chat %>
                 </div>
                 <!-- /.col-lg-4 -->
             </div>
@@ -50,7 +50,7 @@
     <script src="/bower_components/morrisjs/morris.min.js"></script>
     <script src="dist/js/morris-data.js"></script>
 
-    <% include partials/nmon-db-footer %>
+    <% include partials/nmdb-footer %>
 </body>
 
 </html>

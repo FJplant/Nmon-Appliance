@@ -119,6 +119,18 @@ module.exports = function(app, passport) {
         });
     });
 
+    app.get('/nmon-db/v1/nmdb-server-inventory', isLoggedIn, function(req, res) {
+        res.render('nmdb-server-inventory.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/nmon-db/v1/nmdb-agents', isLoggedIn, function(req, res) {
+        res.render('nmdb-agents.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
     app.get('/nmon-db/v1/morris', isLoggedIn, function(req, res) {
         res.render('morris.ejs', {
             user : req.user // get the user out of session and pass to template
