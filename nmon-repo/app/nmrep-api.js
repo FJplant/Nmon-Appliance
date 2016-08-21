@@ -86,8 +86,8 @@ function put_nmonlog(req, res, bulk_unit) {
         if( data[0].substring(0, 3) === 'AAA' ) {
             // Process lines which starts with 'AAA'
             //   'AAA' section is system generic information
-            process.stdout.write('\n[' + (new Date()).toLocaleTimeString() + ']-');
-            process.stdout.write('['+ parser._hostname + ':AAA] ' + data[1] + ',' + data[2] );
+            process.stdout.write('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
+            process.stdout.write('['+ parser._hostname + ':AAA]\033[m ' + data[1] + ',' + data[2] );
             if (data[1] === 'host')
                 parser._hostname = data[2];
         }
@@ -99,8 +99,8 @@ function put_nmonlog(req, res, bulk_unit) {
             //   'BBBD' line has Disk Adapter Information
             //   'BBBP' line has result of system command like lsconf, lsps, lparstat, emstat, no,
             //          mpstat, vmo, ioo and so on.
-            process.stdout.write('\n[' + (new Date()).toLocaleTimeString() + ']-');
-            process.stdout.write('['+ parser._hostname + ':' + data[0] + ':' + data[1] + '] ' + data[2] + ',' + data[3]);
+            process.stdout.write('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
+            process.stdout.write('['+ parser._hostname + ':' + data[0] + ':' + data[1] + ']\033[m ' + data[2] + ',' + data[3]);
 
             // TODO: write all BBBP contents 
         }
@@ -111,8 +111,8 @@ function put_nmonlog(req, res, bulk_unit) {
                                  // this can be a blocker not sending current data until getting next ZZZZ
 
             // Initialize new document
-            process.stdout.write('\n[' + (new Date()).toLocaleTimeString() + ']-');
-            process.stdout.write('['+ parser._hostname + ':ZZZZ:' + data[1] + '] ');
+            process.stdout.write('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
+            process.stdout.write('['+ parser._hostname + ':ZZZZ:' + data[1] + ']\033[m ');
 
             parser._document = {};
             parser._document['host'] = parser._hostname;
