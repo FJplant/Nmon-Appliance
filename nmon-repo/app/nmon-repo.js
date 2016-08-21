@@ -43,14 +43,16 @@ module.exports = function(app, passport, logger) {
     log = logger;
 
     // Add dynamic local handlers
+    // Add PUT methods for nmon-agent
     app.post('/nmonlog', function(req, res) {
-        service(req, res);
+        put_nmonlog(req, res, 1);
     });
 
     app.post('/nmonlog_bulk', function(req, res) {
-        service(req, res);
+        put_nmonlog(req, res, 10);
     });
 
+    // Add GET methods for nmon-db
     app.get('/categories', function(req, res) {
         service(req, res);
     });
@@ -80,23 +82,7 @@ function service(req, res) {
     log.debug('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname + searchparam) );
 
     try {
-        if ( pathname == '/nmonlog' ) {
-            if( method == 'POST' ) {
-                log.debug('Call put_nmonlog(single) with parameters: %s', searchparam);
-                put_nmonlog(req, res, 1);
-
-                return;
-            }
-        }
-        else if ( pathname == '/nmonlog_bulk' ) {
-            if( method == 'POST' ) {
-                log.debug('Call put_nmonlog(bulk) with parameters: %s', searchparam);
-                put_nmonlog(req, res, 10);
-
-                return;
-            }
-        }
-        else if ( pathname == '/categories' ) {
+        if ( pathname == '/categories' ) {
             if( method == 'GET' ) {
                 log.debug('Call get_categories with parameters: %s', searchparam);
                 get_categories(req, res);
