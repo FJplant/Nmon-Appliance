@@ -43,7 +43,7 @@ module.exports = function(app, passport) {
         log.info('[Process %d:/nmonlog] ' 
                + req.connection.remoteAddress 
                + ' ==> '
-               + req.url);
+               + req.url, process.pid);
         put_nmonlog(req, res, 1);
     });
 
@@ -51,7 +51,7 @@ module.exports = function(app, passport) {
          log.info('[Process %d:/nmonlog_bulk] ' 
                + req.connection.remoteAddress 
                + ' ==> '
-               + req.url);
+               + req.url, process.pid);
          put_nmonlog(req, res, 10);
     });
 }
