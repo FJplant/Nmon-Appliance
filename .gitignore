@@ -5,3 +5,5 @@ node_modules
 bower_components
 nmon-repo/logs/*
 nmon-agt/nmon-data/*
+nmon-agt/conf/nmon-agt.conf
+nmon-agt/conf/nmon-agt-4h.conf
