@@ -59,8 +59,11 @@ module.exports = function(app, passport) {
 /*
  * Put nmonlog 
  *
- * 1. parse nmon log
- * 2. store parsed nmon data to mongodb
+ *   - parse nmon log
+ *   - store parsed nmon data to mongodb
+ *
+ * TODO: 
+ *   1. Separate parser log
  */
 function put_nmonlog(req, res, bulk_unit) {
     mongodb.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
