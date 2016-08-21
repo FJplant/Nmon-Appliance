@@ -201,7 +201,7 @@ function put_nmonlog(req, res, bulk_unit) {
     writer._header = [];
     writer._headerWrited = false;
     writer._flushSave = function(done) {
-        //process.stdout.write('s');
+        process.stdout.write('s');
         if( writer._bulk.length > 0 ) {
             var bulkop = mongodb.collection('performance').initializeOrderedBulkOp();
             for(var i = 0; i < writer._bulk.length; i++) {
@@ -225,7 +225,7 @@ function put_nmonlog(req, res, bulk_unit) {
     }
 
     writer._transform = function(data, encoding, done) {
-        //process.stdout.write('o');
+        process.stdout.write('o');
         if( data[0] === 'categories' ) {
             writer._header.push(data[1]);
             done();
@@ -244,7 +244,7 @@ function put_nmonlog(req, res, bulk_unit) {
             }
             writer._bulk.push(data[1]);
             if ( writer._bulk.length >= bulk_unit ) {
-                //process.stdout.write('x');
+                process.stdout.write('x');
                 writer._flushSave(done);
             }
             else {
