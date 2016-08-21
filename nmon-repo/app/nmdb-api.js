@@ -1,6 +1,6 @@
 /*
- * nmon-repo.js is
- *    an elastic nmon-repo component written in Node.js
+ * nmdb-api.js is
+ *    an elastic nmon-db component written in Node.js
  *   and written by amoriya ( Junkoo Hea, junkoo.hea@gmail.com )
  *                  ymk     ( Youngmo Kwon, youngmo.kwon777@gmail.com )
  * 
@@ -8,27 +8,32 @@
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
 
-// expose this function to our app using module.exports
-
 var url = require('url'),
-    mongojs = require('mongojs'),
-    Transform = require('stream').Transform,
-    csv = require('csv-streamify'),
-    swig = require('swig'),
-    //db = mongojs('nmon-db', ['performance']),
-    db = mongojs('mongodb.fjint.com/nmon-db', ['performance']),
-    log = null;
-// refer to https://github.com/mafintosh/mongojs
+    winston = require('winston'),
+    mongojs = require('mongojs');
 
 /*
- * logging on db error status 
+ * Initialize winston logger
  *
+ * TODO: make log file configurable
  */
-db.on('error', function(err) {
+var log = new (winston.Logger)({
+    transports: [
+        new (winston.transports.File)({ filename: 'logs/nmdb-api.log', level: 'debug' }),
+    ]
+});
+
+/*
+ * Initialize mongodb connection
+ *
+ * TODO: make db connection configurable 
+ */
+var  mongodb = mongojs('mongodb.fjint.com/nmon-db', ['performance']);
+mongodb.on('error', function(err) {
     log.info('Nmon-db database error.', err);
 });
 
-db.on('ready', function() {
+mongodb.on('ready', function() {
     log.info('Nmon-db database connected.');
 });
 
@@ -37,21 +42,8 @@ db.on('ready', function() {
  */
 var graph_row_number = 1200.0;
 
-
-module.exports = function(app, passport, logger) {
-    // assign logger
-    log = logger;
-
-    // Add dynamic local handlers
-    // Add PUT methods for nmon-agent
-    app.post('/nmonlog', function(req, res) {
-        put_nmonlog(req, res, 1);
-    });
-
-    app.post('/nmonlog_bulk', function(req, res) {
-        put_nmonlog(req, res, 10);
-    });
-
+// expose this function to our app using module.exports
+module.exports = function(app, passport) {
     // Add GET methods for nmon-db
     app.get('/categories', function(req, res) {
         service(req, res);
@@ -127,220 +119,10 @@ function service(req, res) {
                 }
             }
         }
-
-        not_found(req, res);
     }
     catch(e) {
         error_handler(res, e, 500);
     }
-}
-
-/*
- * Put nmonlog 
- *
- * 1. parse nmon log
- * 2. store parsed nmon data to mongodb
- */
-function put_nmonlog(req, res, bulk_unit) {
-    db.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
-    db.collection('categories').save({name: 'DISK_ALL'});
-    db.collection('categories').save({name: 'NET_ALL'});
-    db.collection('performance').ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
-
-    // create reserved index on (datetime) to assure performance and non-skewed index db.
-    // 2016.5.18. ymk
-    db.collection('performance').ensureIndex({datetime: -1, host: 1}, {unique: true, background: true});
-     
-    var csvToJson = csv({objectMode: true});
-
-    var parser = new Transform({objectMode: true});
-    parser.header = null;
-    parser._hostname = '';
-    parser._document = {};
-    parser._rawHeader = {};
-    parser._cnt = 0;
-    parser._diskTotal = {};
-    parser._hostname = null;
-
-    parser._flushSave = function() {
-        if (Object.keys(parser._document).length !== 0 ) {
-            this.push(['performance', parser._document]);
-            parser._cnt++;
-            process.stdout.write('.');
-            if (parser._cnt % 80 == 0)
-                process.stdout.write('\n');
-        }
-    }
-
-    parser._transform = function(data, encoding, done) {
-        if( data[0].substring(0, 3) === 'AAA' || data[0].substring(0, 3) === 'BBB' ) {
-            if (data[1] === 'host')
-                parser._hostname = data[2];
-        }
-        else if (data[0].substring(0, 3) === 'ZZZ' ) {
-            parser._flushSave();
-            parser._document = {};
-            parser._document['host'] = parser._hostname;
-            var ts = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
-            parser._document['datetime'] = (new Date(ts)).getTime();
-            parser._document['DISK_ALL'] = {};
-            parser._document['NET_ALL'] = {};
-            parser._document['TOP'] = [];
-        }
-        else {
-            if( data[0] in parser._rawHeader ) {
-                var h = parser._rawHeader[data[0]];
-                var val = 0.0, iops = 0.0, read = 0.0, write = 0.0;
-                var query = {};
-                for( var i = 2; i < h.length; i++ ) {
-                    if(h[i] !== '') {
-                        if (h[0] === 'CPU_ALL') {
-                            if (h[i] === 'User%')
-                                query['User'] = parseFloat(data[i]);
-                            else if (h[i] === 'Sys%')
-                                query['Sys'] = parseFloat(data[i]);
-                            else if (h[i] === 'Wait%')
-                                query['Wait'] = parseFloat(data[i]);
-                            else if (h[i] === 'CPUs' || h[i] === 'PhysicalCPUs')
-                                query['CPUs'] = parseFloat(data[i])
-                        }
-                        else if (h[0] === 'MEM') {
-                            if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
-                                query['Real total'] = parseFloat(data[i]);
-                            else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
-                                query['Real free'] = parseFloat(data[i]);
-                            else if (h[i] === 'swaptotal' || h[i] === 'Virtual total(MB)')
-                                query['Virtual total'] = parseFloat(data[i]);
-                            else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
-                                query['Virtual free'] = parseFloat(data[i]);
-                        }
-                        else if (h[0] === 'NET') {
-                            if( h[i].indexOf('read') != -1 )
-                                read += parseFloat(data[i]);
-                            else if( h[i].indexOf('write') != -1)
-                                write += parseFloat(data[i]);
-                        }
-                        else if ((h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/)) {
-                            val += parseFloat(data[i]);
-                        }
-                        else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d+$/)) {
-                            iops += parseFloat(data[i]);
-                        }
-                        else if (h[0] === 'TOP') {
-                            if (data[2] !== 'T0001') {
-                                if( h[0] === 'TOP' && h[i] === 'Command' ) {
-                                    query[h[i]] = data[i];
-                                }
-                                else if( h[0] === 'TOP' && (h[i] === '%CPU' || h[i] === 'ResText' || h[i] === 'ResData') ) {
-                                    query[h[i]] = parseFloat(data[i]);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (Object.keys(query).length !== 0) {
-                    if (h[0] === 'TOP')
-                        parser._document[h[0]].push(query);
-                    else
-                        parser._document[h[0]] = query;
-                }
-
-                if( h[0] === 'DISKREAD' ) {
-                    parser._document['DISK_ALL']['read'] = val;
-                }
-                else if (h[0] === 'DISKWRITE') {
-                    parser._document['DISK_ALL']['write'] = val;
-                }
-                else if (h[0] === 'DISKXFER') {
-                    parser._document['DISK_ALL']['iops'] = iops;
-                }
-                else if (h[0] === 'NET') {
-                    parser._document['NET_ALL']['read'] = read;
-                    parser._document['NET_ALL']['write'] = write;
-                }
-            }
-            else {
-                if (!(data[0] === 'TOP' && data.length <= 2)) {
-                    this.push(['categories', {name :data[0]}]);
-                    parser._rawHeader[data[0]] = data;
-                }
-            }
-        }
-        done();
-    }
-
-    parser._flush = function(done) {
-        parser._flushSave();
-        done();
-    }
-
-    var writer = new Transform({objectMode: true});
-    writer._bulk = [];
-    writer._header = [];
-    writer._headerWrited = false;
-    writer._flushSave = function(done) {
-        //process.stdout.write('s');
-        if( writer._bulk.length > 0 ) {
-            var bulkop = db.collection('performance').initializeOrderedBulkOp();
-            for(var i = 0; i < writer._bulk.length; i++) {
-                bulkop.insert(writer._bulk[i]);
-            }
-            bulkop.execute(function(err, res) {
-                if (err)
-                    log.error(err.toString());
-                //console.log('d');
-                writer._bulk = [];
-                if (done) {
-                    done();    
-                }
-            });
-        }
-        else {
-            if(done) {
-                done();
-            }
-        }
-    }
-
-    writer._transform = function(data, encoding, done) {
-        //process.stdout.write('o');
-        if( data[0] === 'categories' ) {
-            writer._header.push(data[1]);
-            done();
-        }
-        else {
-            if (!writer._headerWrited) {
-                writer._headerWrited = true;
-                var bulkop = db.collection('categories').initializeOrderedBulkOp();
-                for(var i = 0; i < writer._header.length; i++)
-                    bulkop.find(writer._header[i]).upsert().update({ $set: writer._header[i]});
-                bulkop.execute(function(err, res) {
-                    if (err)
-                        log.error(err.toString());
-                    writer._header = [];
-                });
-            }
-            writer._bulk.push(data[1]);
-            if ( writer._bulk.length >= bulk_unit ) {
-                //process.stdout.write('x');
-                writer._flushSave(done);
-            }
-            else {
-                done();
-            }
-        }
-    };
-
-    writer.on('finish', function() {
-        writer._flushSave();
-        process.stdout.write('\n');
-        res.writeHead(200);
-        res.end();
-    });
-   
-    res.connection.setTimeout(0);
-    req.pipe(csvToJson).pipe(parser).pipe(writer);
 }
 
 /*
@@ -350,7 +132,7 @@ function put_nmonlog(req, res, bulk_unit) {
  */
 function get_categories(req, res) {
     var result = [];
-    var categories = db.collection('categories');
+    var categories = mongodb.collection('categories');
     categories.find().sort({name:1}).forEach(function(err, doc) {
         if( err )
             return error_handler(res, err, 500);
@@ -373,7 +155,7 @@ function get_hosts(req, res) {
     var url_info = url.parse(req.url, true);
 
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
-    var collection = db.collection('performance');
+    var collection = mongodb.collection('performance');
     collection.distinct('host', {}, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
@@ -396,7 +178,7 @@ function get_titles(req, res) {
     var url_info = url.parse(req.url, true);
 
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
-    var collection = db.collection('performance');
+    var collection = mongodb.collection('performance');
     var query = { };
     if (m[1] !== 'All') {
         query['host'] = m[1];
@@ -429,7 +211,7 @@ function get_fields(req, res) {
     var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
-    var collection = db.collection('performance');
+    var collection = mongodb.collection('performance');
     var fields = {datetime:1, _id: 0};
     var average = ['Time'];
     for (var i = 0; i < data.length; i++) {
@@ -515,7 +297,7 @@ function get_top_fields(req, res) {
         group['val'] = { $avg : { $add: ["$TOP.ResText", "$TOP.ResData"] } }
 
     results.push(['Command', type]);
-    var collection = db.collection('performance');
+    var collection = mongodb.collection('performance');
     collection.aggregate(
         {'$match' : match}, 
         {'$project': {TOP:1}}, 
@@ -553,7 +335,7 @@ function get_host_fields(req, res) {
     var group = { _id : { host: '$host' } };
     group['val'] = { $avg : { $add: ["$CPU_ALL.User", "$CPU_ALL.Sys"] } };
     group['no'] = { $avg : "$CPU_ALL.CPUs"};
-    db.collection('performance').aggregate(
+    mongodb.collection('performance').aggregate(
         {'$match' : match}, 
         {'$project': {host:1, CPU_ALL:1}}, 
         {'$group': group}, 
@@ -572,7 +354,7 @@ function get_host_fields(req, res) {
             }
             var group2 = { _id: { host: '$host'} };
             group2['val'] = { $avg : { $add: ["$DISK_ALL.read", "$DISK_ALL.write"] } };
-            db.collection('performance').aggregate(
+            mongodb.collection('performance').aggregate(
                 {'$match' : match}, 
                 {'$project': {host:1, DISK_ALL:1}},
                 {'$group': group2}, 
@@ -588,7 +370,7 @@ function get_host_fields(req, res) {
                     }
                     var group3 = { _id: { host: '$host'} };
                     group3['val'] = { $avg : { $add: ["$NET_ALL.read", "$NET_ALL.write"] } };
-                    db.collection('performance').aggregate(
+                    mongodb.collection('performance').aggregate(
                         {'$match' : match}, 
                         {'$project': {host:1, NET_ALL:1}},
                         {'$group': group3}, 
@@ -617,15 +399,6 @@ function get_host_fields(req, res) {
             });
         }
     });
-}
-
-/*
- * Not found helper funtion
- */
-function not_found(req, res) {
-    log.warn('bad request');
-    res.writeHead(404);
-    res.end();
 }
 
 /*
