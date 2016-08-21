@@ -10,18 +10,9 @@
 
 // set up ======================================================================
 // initialize cluster
-var cluster = require('cluster'),       // to manage multi process
-    os = require('os'),                 // to get CPU informations
-    winston = require('winston');
-
-/*
- * Initialize winston logger
- */
-var log = new (winston.Logger)({
-    transports: [
-        new (winston.transports.File)({ filename: 'logs/nmon-db.log', level: 'debug' }),
-    ]
-});
+var os = require('os'),                 // to get CPU informations
+    cluster = require('cluster'),       // to manage multi process
+    log = console;                      // redirect log to console
 
 /*
  * Calculate cluster parameter
@@ -35,16 +26,24 @@ var worker_cnt = Math.trunc( cpus.length * 1.5 ); // # of Worker process = 2 * C
  * Fork worker process and listen service
  */
 if (cluster.isMaster) {
+    log.info('------------------------------------------');
+    log.info((new Date()).toString())
+    log.info('  Starting nmon-server.js...');
+    log.info('------------------------------------------');
+
     log.info('CPU lists:');
     for (var i=0; i< cpus.length; i++)
-        log.info('CPU #%d: %s', i, cpus[i].model);
+        log.info('  CPU #%d: %s', i, cpus[i].model);
 
-    log.info('Spawning %d worker process', worker_cnt);
-
+    log.info('');
+    log.info('%d processes will be used for request handling', worker_cnt);
+    log.info('');
+ 
     for (var i=0; i < worker_cnt; i+=1) {
+        log.info('Spawning %d worker process', i);
         cluster.fork();
     }
-    log.info('Server running at http://localhost:6900');
+    log.info('------------------------------------------');
 
     // Listen for dying workers
     cluster.on('exit', function(worker) {
@@ -109,12 +108,19 @@ if (cluster.isMaster) {
     // Add bower component directory
     app.use('/bower_components',  express.static(__dirname + '/bower_components'));
     
+    //
+    // Load nmon dashboard modules
     // routes ======================================================================
     // load our routes and pass in our app and fully configured passport
-    require('./app/nmon-routes.js')(app, passport); 
-    // nmon-repo ===================================================================
-    // load nmon-repo module
-    require('./app/nmon-repo.js')(app, passport, log);
+    require('./app/nmdb-routes.js')(app, passport); 
+ 
+    // nmdb-api ===================================================================
+    // load nmdb-api module
+    require('./app/nmdb-api.js')(app, passport);
+
+    // nmrep-api ===================================================================
+    // load nmrep-api module
+    require('./app/nmrep-api.js')(app, passport);
 
     //
     // launch ======================================================================

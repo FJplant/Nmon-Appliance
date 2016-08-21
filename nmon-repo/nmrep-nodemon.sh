@@ -1,4 +1,4 @@
 #!/bin/bash
 
-# nohup nodemon nmon-server.js > ./logs/nmon-server.log &
-nodemon nmon-server.js
+# nohup nodemon nmdb-server.js > ./logs/nmdb-server.log &
+nodemon nmdb-server.js
