@@ -76,19 +76,18 @@ function put_nmonlog(req, res, bulk_unit) {
 
     var parser = new Transform({objectMode: true});
     parser.header = null;
-    parser._hostname = '';
+    parser._hostname = '* N/A *';
     parser._document = {};
     parser._rawHeader = {};
     parser._cnt = 0;
     parser._diskTotal = {};
-    parser._hostname = null;
 
     parser._transform = function(data, encoding, done) {
         if( data[0].substring(0, 3) === 'AAA' ) {
             // Process lines which starts with 'AAA'
             //   'AAA' section is system generic information
             process.stdout.write('\n[' + (new Date()).toLocaleTimeString() + ']-');
-            process.stdout.write('[AAA] ' + data[1] + ',' + data[2] );
+            process.stdout.write('['+ parser._hostname + ':AAA] ' + data[1] + ',' + data[2] );
             if (data[1] === 'host')
                 parser._hostname = data[2];
         }
@@ -101,7 +100,7 @@ function put_nmonlog(req, res, bulk_unit) {
             //   'BBBP' line has result of system command like lsconf, lsps, lparstat, emstat, no,
             //          mpstat, vmo, ioo and so on.
             process.stdout.write('\n[' + (new Date()).toLocaleTimeString() + ']-');
-            process.stdout.write('[' + data[0] + ':' + data[1] + '] ' + data[2] + ',' + data[3]);
+            process.stdout.write('['+ parser._hostname + ':' + data[0] + ':' + data[1] + '] ' + data[2] + ',' + data[3]);
 
             // TODO: write all BBBP contents 
         }
@@ -113,7 +112,7 @@ function put_nmonlog(req, res, bulk_unit) {
 
             // Initialize new document
             process.stdout.write('\n[' + (new Date()).toLocaleTimeString() + ']-');
-            process.stdout.write('[ZZZZ:' + data[1] + '] ');
+            process.stdout.write('['+ parser._hostname + ':ZZZZ:' + data[1] + '] ');
 
             parser._document = {};
             parser._document['host'] = parser._hostname;
