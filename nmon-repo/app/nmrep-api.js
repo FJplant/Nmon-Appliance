@@ -83,23 +83,32 @@ function put_nmonlog(req, res, bulk_unit) {
     parser._diskTotal = {};
     parser._hostname = null;
 
-    parser._flushSave = function() {
-        if (Object.keys(parser._document).length !== 0 ) {
-            this.push(['performance', parser._document]);
-            parser._cnt++;
-            process.stdout.write('.');
-            if (parser._cnt % 80 == 0)
-                process.stdout.write('\n');
-        }
-    }
-
     parser._transform = function(data, encoding, done) {
-        if( data[0].substring(0, 3) === 'AAA' || data[0].substring(0, 3) === 'BBB' ) {
+        if( data[0].substring(0, 3) === 'AAA' ) {
+            // Process lines which starts with 'AAA'
+            //   'AAA' section is system generic information
+            process.stdout.write('A');
             if (data[1] === 'host')
                 parser._hostname = data[2];
         }
-        else if (data[0].substring(0, 3) === 'ZZZ' ) {
-            parser._flushSave();
+        else if( data[0].substring(0, 3) === 'BBB' ) {
+            // Process lines which starts with 'BBB'
+            //   'BBBB' and 'BBBC' line has system component configurations
+            //   'BBBV' line has volume configurations
+            //   'BBBN' line has network configurations
+            //   'BBBD' line has Disk Adapter Information
+            //   'BBBP' line has result of system command like lsconf, lsps, lparstat, emstat, no,
+            //          mpstat, vmo, ioo and so on.
+            process.stdout.write('A');
+            if (data[1] === 'host')
+                parser._hostname = data[2];
+        }
+        else if (data[0].substring(0, 4) === 'ZZZZ' ) {
+            // Process lines which starts with 'ZZZZ'
+            //   'ZZZZ' section is a leading line for iterations of current resource utilization
+            parser._flushSave(); // call flushSave when new 'ZZZZ' has arrived
+
+            // Initialize new document
             parser._document = {};
             parser._document['host'] = parser._hostname;
             var ts = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
@@ -109,10 +118,22 @@ function put_nmonlog(req, res, bulk_unit) {
             parser._document['TOP'] = [];
         }
         else {
+            // Processing lines wich not starts with 'AAA', 'BBBB', 'ZZZ'
+            //   for AIX: 
+            //     'CPU_ALL', 'CPUxx': 
+            //     'MEM', 'MEMNEW', 'MEMUSE', 'PAGE', 'LARGEPAGE':
+            //     'PROC','PROCAIO':
+            //     'FILE':
+            //     'NET', 'NETPACKET', 'NETSIZE', 'NETERROR':
+            //     'DISKBUSY', 'DISKREAD', 'DISKWRITE', 'DISKXFER', 'DISKRXFER', 'DISKBSIZE':
+            //     'IOADAPT':
+            //     'JFSFILE': Journal file information
+            //     'TOP':  process information
+            //     'UARG': user process command parameter and informations
             if( data[0] in parser._rawHeader ) {
                 var h = parser._rawHeader[data[0]];
                 var val = 0.0, iops = 0.0, read = 0.0, write = 0.0;
-                var query = {};
+                var query = {}; // data container
                 for( var i = 2; i < h.length; i++ ) {
                     if(h[i] !== '') {
                         if (h[0] === 'CPU_ALL') {
@@ -196,34 +217,20 @@ function put_nmonlog(req, res, bulk_unit) {
         done();
     }
 
+    parser._flushSave = function() {
+        if (Object.keys(parser._document).length !== 0 ) {
+            this.push(['performance', parser._document]);
+            parser._cnt++;
+            process.stdout.write('.');
+            if (parser._cnt % 80 == 0)
+                process.stdout.write('\n');
+        }
+    }
+
     var writer = new Transform({objectMode: true});
     writer._bulk = [];
     writer._header = [];
     writer._headerWrited = false;
-    writer._flushSave = function(done) {
-        process.stdout.write('s');
-        if( writer._bulk.length > 0 ) {
-            var bulkop = mongodb.collection('performance').initializeOrderedBulkOp();
-            for(var i = 0; i < writer._bulk.length; i++) {
-                bulkop.insert(writer._bulk[i]);
-            }
-            bulkop.execute(function(err, res) {
-                if (err)
-                    log.error(err.toString());
-                //console.log('d');
-                writer._bulk = [];
-                if (done) {
-                    done();    
-                }
-            });
-        }
-        else {
-            if(done) {
-                done();
-            }
-        }
-    }
-
     writer._transform = function(data, encoding, done) {
         process.stdout.write('o');
         if( data[0] === 'categories' ) {
@@ -252,6 +259,31 @@ function put_nmonlog(req, res, bulk_unit) {
             }
         }
     };
+
+    writer._flushSave = function(done) {
+        process.stdout.write('s');
+        if( writer._bulk.length > 0 ) {
+            var bulkop = mongodb.collection('performance').initializeOrderedBulkOp();
+            for(var i = 0; i < writer._bulk.length; i++) {
+                bulkop.insert(writer._bulk[i]);
+            }
+            bulkop.execute(function(err, res) {
+                if (err)
+                    log.error(err.toString());
+
+                writer._bulk = [];
+
+                if (done) {
+                    done();    
+                }
+            });
+        }
+        else {
+            if(done) {
+                done();
+            }
+        }
+    }
 
     writer.on('finish', function() {
         writer._flushSave();
