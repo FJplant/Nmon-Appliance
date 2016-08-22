@@ -49,7 +49,8 @@ function getHosts(category) {
 
 //
 // Draw Stacked Area chart for CPU, Memory, Virtual Memory, Disk, Network
-function drawChart(did, data, xlabel, ylabel) {
+// TODO: Add view finder window
+function drawAreaChart(did, data, xlabel, ylabel) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
 
@@ -85,7 +86,7 @@ function drawChart(did, data, xlabel, ylabel) {
         d3.select('#' + did + ' svg')
           .datum(d3data)
           .call(chart);
-
+        
         nv.utils.windowResize(chart.update);
 
         return chart;
@@ -209,7 +210,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["CPU"] = false;
-                drawChart("cpu_chart", result, 'Time', '%');
+                drawAreaChart("cpu_chart", result, 'Time', '%');
                 console.log('  CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -229,7 +230,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 for (var i = 1; i < result.length; i++) {
                     result[i][1] = result[i][1] - result[i][2];
                 }
-                drawChart("mem_chart", result, 'Time', 'MB');
+                drawAreaChart("mem_chart", result, 'Time', 'MB');
                 console.log('  MEM chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -249,7 +250,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 for (var i = 1; i < result.length; i++) {
                     result[i][1] = result[i][1] - result[i][2];
                 }
-                drawChart("swap_chart", result, 'Time', 'MB');
+                drawAreaChart("swap_chart", result, 'Time', 'MB');
                 console.log('  SWAP chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -265,7 +266,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["DISK"] = false;
-                drawChart("disk_chart", result, 'Time', 'KB/s');
+                drawAreaChart("disk_chart", result, 'Time', 'KB/s');
                 console.log(' DISK chart response:' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -281,7 +282,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["NET"] = false;
-                drawChart("network_chart", result, 'Time', 'KB/s');
+                drawAreaChart("network_chart", result, 'Time', 'KB/s');
                 console.log(' NET chart response :' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
