@@ -109,8 +109,8 @@ function drawPieChart(did, data) {
                        .y(function(d) { return d.value })
                        .donut(true)
                        .donutRatio(0.35)
-                       //.legendPosition("right") //nvd3.js v1.8.1
-                       .showLegend(false) //nvd3.js v1.8.0
+                       .legendPosition("right") //nvd3.js v1.8.1
+                       .showLegend(true) //nvd3.js v1.8.0
                        .showLabels(true);
 
         d3.select('#' + did + ' svg')
@@ -125,7 +125,7 @@ function drawPieChart(did, data) {
 
 // Draw scatter chart for server insight
 //
-function drawBubbleChart(did, data, xlabel, ylabel) {
+function drawScatterChart(did, data, xlabel, ylabel) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
 
@@ -139,8 +139,9 @@ function drawBubbleChart(did, data, xlabel, ylabel) {
 
     nv.addGraph(function() {
         var chart = nv.models.scatterChart()
-                    .showDistX(true)
+                    .showDistX(true)  //showDist, when true, will display those little distribution lines on the axis.
                     .showDistY(true)
+                    //.transitionDuration(350) // transitionDuration is not a function error
                     .color(d3.scale.category10().range());
 
         // nvd3.js 1.8.1
@@ -194,7 +195,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             success: function(data) {
                 var result = eval(data);
                 reqStatus["HOSTS"] = false;
-                drawBubbleChart("hosts_chart", data, 'Disk (KB/s)', 'CPU (%)');
+                drawScatterChart("hosts_chart", data, 'Disk (KB/s)', 'CPU (%)');
                 console.log(' HOSTS chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
@@ -385,6 +386,8 @@ $(function() {
     setTimeout( refresh_charts, REFRESH_INTERVAL );
 });
 
+// JQuery UI Date picker event handler
+//
 $(function() {
     $("#from").datepicker({
         defaultDate: "-7m",
@@ -476,6 +479,8 @@ $(function() {
     $("#to_time").val("23:59:59");
 });
 
+// JQuery UI Tab event handler
+//
 $(function() {
     $("#tabs").tabs({
         // event: "beforeActivate"
@@ -549,6 +554,8 @@ $(function() {
     });
 });
 
+// Show progress bar in tabbedpane
+// 
 function setLoading(areaid, reqResType, message) {
     var areaelem = document.getElementById(areaid);
     var proghtml = '<div id="' + areaid + '_progressbar' + '" style="position: relative;">'
@@ -676,6 +683,7 @@ function draw_bubble_chart() {
 }
 
 // Debug helper funtion
+//
 function printObject(obj) {
     var output = "",
         property;

@@ -17,8 +17,8 @@ text {
 }
 
 .nmon-chart {
-  border-size:1px;
-  border-style:dotted;
+  border-size:0px;
+  border-style:none;
   border-radius:10px;
   border-color:black;
   font-size:12pt;
@@ -38,7 +38,7 @@ text {
   border-color:black;
   font-size:12pt;
   padding:0px;
-  margin-top:20px;
+  margin-top:0px;
   margin-bottom:0px;
   margin-left:0px;
   margin-right:0px;
