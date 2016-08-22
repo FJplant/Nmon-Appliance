@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include partials/nmdb-head %>
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <% include partials/nmdb-nav %>
+
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header"><span class="fa fa-gear"></span> Nmon Dashboard Settings Page</h1>
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <!-- /.row -->
+
+                <div class="row">
+                    <!-- Dashboard settings -->
+                    <div class="col-sm-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3><span class="fa fa-dashboard"></span> Dashboard Settings</h3>
+                            </div>
+                            <div class="panel-body">
+                               <p>
+                                   <strong>param #1</strong>: <%= user._id %><br>
+                                   <strong>param #2</strong>: <%= user.local.email %><br>
+                                   <strong>param #3</strong>: <%= user.local.password %>
+                               </p>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+ 
+                <div class="row">
+                    <!-- Repository Settings -->
+                    <div class="col-sm-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3><span class="fa fa-database"></span> Repository Settings</h3>
+                            </div>
+                            <div class="panel-body">
+                               <p>
+                                   <strong>param #1</strong>: <%= user._id %><br>
+                                   <strong>param #2</strong>: <%= user.local.email %><br>
+                                   <strong>param #3</strong>: <%= user.local.password %>
+                               </p>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <div class="row">
+                    <!-- FACEBOOK INFORMATION -->
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="text-primary"><span class="fa fa-linux"></span> Agent #1</h3>
+                            </div>
+                            <div class="panel-body">
+                            <p>
+                                <strong>hostname</strong>: <%= user.facebook.id %><br>
+                                <strong>ip address</strong>: <%= user.facebook.token %><br>
+                                <strong>status</strong>: <%= user.facebook.email %><br>
+                                <strong>logs</strong>: <%= user.facebook.name %>
+                            </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.col-lg-4 -->
+
+                    <!-- GOOGLE INFORMATION -->
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="text-primary"><span class="fa fa-apple"></span> Agent #2</h3>
+                            </div>
+                            <div class="panel-body">
+                            <p>
+                                <strong>hostname</strong>: <%= user.facebook.id %><br>
+                                <strong>ip address</strong>: <%= user.facebook.token %><br>
+                                <strong>status</strong>: <%= user.facebook.email %><br>
+                                <strong>logs</strong>: <%= user.facebook.name %>
+                            </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.col-lg-4 -->
+
+                    <!-- TWITTER INFORMATION -->
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="text-primary"><span class="fa fa-windows"></span> Agent #3</h3>
+                            </div>
+                            <div class="panel-body">
+                            <p>
+                                <strong>hostname</strong>: <%= user.facebook.id %><br>
+                                <strong>ip address</strong>: <%= user.facebook.token %><br>
+                                <strong>status</strong>: <%= user.facebook.email %><br>
+                                <strong>logs</strong>: <%= user.facebook.name %>
+                            </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.col-lg-4 -->
+                </div>
+                <!-- /.row -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <a href="/nmon-db/v1/logout" class="btn btn-default btn-sm">Logout</a>
+                    </div>
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    <% include partials/nmdb-footer %>
+</body>
+
+</html>
