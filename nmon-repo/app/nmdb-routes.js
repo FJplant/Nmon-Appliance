@@ -95,7 +95,7 @@ module.exports = function(app, passport) {
 
     // version 1 nmon-db ejs mappings
     app.get('/nmon-db/v1/main', isLoggedIn, function(req, res) {
-        res.render('nmon-db-v1.ejs', {
+        res.render('nmdb-main.ejs', {
             user : req.user // get the user out of session and pass to template
         });
     });
@@ -114,13 +114,13 @@ module.exports = function(app, passport) {
     });
 
     app.get('/nmon-db/v1/nmon-charts', isLoggedIn, function(req, res) {
-        res.render('nmon-charts.ejs', {
+        res.render('nmdb-nmon-charts.ejs', {
             user : req.user // get the user out of session and pass to template
         });
     });
 
     app.get('/nmon-db/v1/nmon-reports', isLoggedIn, function(req, res) {
-        res.render('nmon-reports.ejs', {
+        res.render('nmdb-nmon-reports.ejs', {
             user : req.user // get the user out of session and pass to template
         });
     });
