@@ -11,24 +11,26 @@
 var url = require('url'),
     winston = require('winston'),
     mongojs = require('mongojs');
+    nmdb = require('../config/nmdb-config.js');
 
 /*
  * Initialize winston logger
  *
- * TODO: make log file configurable
  */
 var log = new (winston.Logger)({
     transports: [
-        new (winston.transports.File)({ filename: 'logs/nmdb-api.log', level: 'debug' }),
+        new (winston.transports.File)({ 
+            filename: nmdb.env.NMDB_LOG_FILE, 
+            level: nmdb.env.NMDB_LOG_LEVEL }),
     ]
 });
 
 /*
  * Initialize mongodb connection
  *
- * TODO: make db connection configurable 
  */
-var  mongodb = mongojs('mongodb.fjint.com/nmon-db', ['performance']);
+var  mongodb = mongojs(nmdb.env.NMDB_NMONDB_URL);
+
 mongodb.on('error', function(err) {
     log.info('Nmon-db database error.', err);
 });
@@ -37,10 +39,7 @@ mongodb.on('ready', function() {
     log.info('Nmon-db database connected.');
 });
 
-/*
- * Graph row number
- */
-var graph_row_number = 1200.0;
+var graph_row_number = nmdb.env.NMDB_GRAPH_ROW_NUMBER;
 
 // expose this function to our app using module.exports
 module.exports = function(app, passport) {

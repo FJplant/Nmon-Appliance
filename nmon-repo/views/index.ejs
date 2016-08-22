@@ -8,14 +8,62 @@ index.ejs
 -->
 <html>
 <head>
-	<title>Nmon Dashboard Authentication</title>
-	<link rel="stylesheet" href="lib/bootstrap/3.3.7/css/bootstrap.min.css"> <!-- load bootstrap css -->
-	<link rel="stylesheet" href="lib/font-awesome/4.6.3/css/font-awesome.min.css"> <!-- load fontawesome -->
-	<style>
-		body 		{ padding-top:80px; }
-	</style>
+  <title>Nmon Dashboard Authentication</title>
+  <link rel="stylesheet" href="lib/bootstrap/3.3.7/css/bootstrap.min.css"> <!-- load bootstrap css -->
+  <link href="/bower_components/bootstrap-social/bootstrap-social.css" rel="stylesheet"> <!-- Social Buttons CSS -->
+  <link rel="stylesheet" href="lib/font-awesome/4.6.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+  <style>
+      body 		{ padding-top:40px; }
+  </style>
 </head>
 <body>
+<div class="container">
+  <a href="/"><img src="dist/images/nmio-logo.png"></a>
+  <p>&nbsp;</p>
+
+  <div class="jumbotron text-center">
+    <h1><span class="fa fa-area-chart"></span> Nmon Dashboard</h1>
+    <h3><span class="fa fa-lock"></span> Authentication Page</h3>
+
+    <p>Login or signup:</p>
+    <a href="/nmon-db/v1/login" class="btn btn-default"><span class="fa fa-user"></span> Login</a>
+    <a href="/nmon-db/v1/signup" class="btn btn-default"><span class="fa fa-user"></span> Sign up on Nmon.io</a>
+    <p> </p>
+    <p>Sign in or register with your social account:</p>
+    <p>
+      <a href="/auth/facebook" class="btn btn-social btn-facebook">
+        <i class="fa fa-facebook"></i> Sign in with Facebook </a>
+      <a onClick="notyet('Google');" href="#" class="btn btn-social btn-google">
+        <i class="fa fa-google"></i> Sign in with Google </a>
+    </p><p>
+      <a onClick="notyet('Twitter');" class="btn btn-social btn-twitter">
+        <i class="fa fa-twitter"></i> Sign in with Twitter </a>
+      <a onClick="notyet('Wechat');" class="btn btn-social btn-success">
+        <i class="fa fa-wechat"></i> Sign in with Wechat </a>
+    </p><p>
+      <a onClick="notyet('Pinterest');" class="btn btn-social btn-pinterest">
+        <i class="fa fa-pinterest"></i> Sign in with Pinterest </a>
+      <a onClick="notyet('Instagram');" class="btn btn-social btn-instagram">
+        <i class="fa fa-instagram"></i> Sign in with Instagram </a>
+    </p><p>
+      <a onClick="notyet('VK');" class="btn btn-social btn-vk">
+        <i class="fa fa-vk"></i> Sign in with VK </a>
+      <a onClick="notyet('LinkedIn');" class="btn btn-social btn-linkedin">
+        <i class="fa fa-linkedin"></i> Sign in with LinkedIn </a>
+    </p><p>
+      <a onClick="notyet('GitHub');" class="btn btn-social btn-github">
+        <i class="fa fa-github"></i> Sign in with GitHub </a>
+      <a onClick="notyet('Bitbucket');" class="btn btn-social btn-bitbucket">
+        <i class="fa fa-bitbucket"></i> Sign in with Bitbucket </a>
+    </p>
+  </div>
+  <div class="fb-like" data-share="true" data-width="450" data-show-faces="true"></div>
+</div>
+<script>
+function notyet(social) {
+  alert('We are sorry!\r\nLogin with ' + social + ' will be supported.');
+}
+</script>
 <script>
   window.fbAsyncInit = function() {
     FB.init({
@@ -26,30 +74,12 @@ index.ejs
   };
 
   (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
 </script>
-<div class="container">
-    <div class="jumbotron text-center">
-        <h1><span class="fa fa-area-chart"></span> Nmon Dashboard</h1>
-        <h3><span class="fa fa-lock"></span> Authentication Page</h3>
-
-        <p>Login or Register with:</p>
-        <a href="/nmon-db/v1/login" class="btn btn-default"><span class="fa fa-user"></span> Local Login</a>
-        <a href="/nmon-db/v1/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
-
-        <a href="/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Facebook</a>
-    </div>
-</div>
-<div
-  class="fb-like"
-  data-share="true"
-  data-width="450"
-  data-show-faces="true">
-</div>
 </body>
 </html>
