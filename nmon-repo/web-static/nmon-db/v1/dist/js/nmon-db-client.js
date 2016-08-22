@@ -595,7 +595,7 @@ function setLoading(areaid, reqResType, message) {
 // Draw process bubble chart
 //
 function draw_bubble_chart() {
-    var diameter = 800,
+    var diameter = 600,
         format = d3.format(",d"),
         color = d3.scale.category20c();
 
@@ -605,9 +605,9 @@ function draw_bubble_chart() {
         .padding(1.5);
 
     // bubble chart location modified by youngmo 2015.8.17. 05:26 AM
-    document.getElementById("bubble_chart_area").innerHTML = "";
+    document.getElementById("process_bubble_chart").innerHTML = "";
 
-    var svg = d3.select("#bubble_chart_area").append("svg")
+    var svg = d3.select("#process_bubble_chart").append("svg")
         .attr("width", diameter)
         .attr("height", diameter)
         .attr("class", "bubble");
