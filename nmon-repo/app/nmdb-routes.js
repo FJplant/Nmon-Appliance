@@ -101,8 +101,14 @@ module.exports = function(app, passport) {
     });
 
     // version 1 settings ejs mappings
-    app.get('/nmon-db/v1/settings', isLoggedIn, function(req, res) {
-        res.render('settings.ejs', {
+    app.get('/nmon-db/v1/user-settings', isLoggedIn, function(req, res) {
+        res.render('nmdb-user-settings.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+    app.get('/nmon-db/v1/nmdb-settings', isLoggedIn, function(req, res) {
+        res.render('nmdb-settings.ejs', {
             user : req.user // get the user out of session and pass to template
         });
     });
