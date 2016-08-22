@@ -13,19 +13,24 @@ var winston = require('winston'),
     Transform = require('stream').Transform,
     csv = require('csv-streamify');
 
+var nmdb = require('../config/nmdb-config.js');
+
 /*
  * Initialize winston logger
  */
 var log = new (winston.Logger)({
     transports: [
-        new (winston.transports.File)({ filename: 'logs/nmrep-api.log', level: 'debug' }),
+        new (winston.transports.File)({
+            filename: nmdb.env.NMREP_LOG_FILE,
+            level: nmdb.env.NMREP_LOG_LEVEL
+        }),
     ]
 });
 
 /*
  * Initialize mongodb connection
  */
-var  mongodb = mongojs('mongodb.fjint.com/nmon-db', ['performance']);
+var  mongodb = mongojs(nmdb.env.NMDB_NMONDB_URL);
 mongodb.on('error', function(err) {
     log.info('Nmon-db database error.', err);
 });
