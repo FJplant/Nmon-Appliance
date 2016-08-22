@@ -18,7 +18,7 @@ var os = require('os'),                 // to get CPU informations
  * Calculate cluster parameter
  */
 var cpus = os.cpus(); // Get CPU informations
-var worker_cnt = Math.trunc( cpus.length * 1.5 ); // # of Worker process = 2 * CPU count
+var worker_cnt = Math.max( 4, Math.trunc( cpus.length * 1.5 )); // # of Worker process = 2 * CPU count or 4 ( minimum )
 //var worker_cnt = 1; // test purpuse
 //var worker_cnt = cpus.length;     // # of Worker process = CPU count, for development purpose
 
@@ -76,7 +76,6 @@ if (cluster.isMaster) {
 } else {
     // get all the tools we need
     var express  = require('express');
-    var port     = process.env.PORT || 6900;
     var mongoose = require('mongoose');
     var passport = require('passport');
     var flash    = require('connect-flash');
@@ -88,13 +87,14 @@ if (cluster.isMaster) {
     var bodyParser   = require('body-parser');
 
     // load database configuration
-    var configDB = require('./config/database.js');
+    var nmdb = require('./config/nmdb-config.js');
 
     // instanciate express 
     var app      = express();
+    var port     = process.env.PORT || nmdb.env.NMDB_LISTEN_PORT; // listen port configuration
 
     // configuration ===============================================================
-    mongoose.connect(configDB.url); // connect to our database
+    mongoose.connect(nmdb.env.NMDB_USERDB_URL); // connect to our database
 
     require('./config/passport')(passport); // pass passport for configuration
 
@@ -115,9 +115,9 @@ if (cluster.isMaster) {
        resave: true,
        saveUninitialized: true,
        store: new MongoStore({
-           // TODO: move to configuration file 
-           url: 'mongodb://mongodb.fjint.com:27017/nmon-user',
-           collection: 'user-session'
+           // Configure mongo user session db
+           url: nmdb.env.NMDB_USERDB_URL,
+           collection: nmdb.env.NMDB_USERDB_COLLECTION_SESSION,
        })
     })); // session secret
     app.use(passport.initialize());
@@ -125,7 +125,8 @@ if (cluster.isMaster) {
     app.use(flash()); // use connect-flash for flash messages stored in session
 
     // Add static page directory
-    app.use(express.static(__dirname + '/web-static'));
+    // Add web-static
+    app.use(express.static(__dirname + nmdb.env.NMDB_WEB_PUBLIC));
 
     // Add bower component directory
     app.use('/bower_components',  express.static(__dirname + '/bower_components'));
