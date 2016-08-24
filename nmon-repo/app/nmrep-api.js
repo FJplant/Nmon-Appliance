@@ -12,14 +12,18 @@ var fs = require('fs'),
     util = require('util'),
     winston = require('winston'),
     mongojs = require('mongojs'),
+    bodyParser = require('body-parser'),
     Transform = require('stream').Transform,
     csv = require('csv-streamify');
+
+var rawParser = bodyParser.raw({
+        limit: '200m'
+    });
 
 var nmdb = require('../config/nmdb-config.js');
 
 // expose this function to our app using module.exports
 module.exports = function(app, passport) {
-
     // Add dynamic local handlers
     // Add PUT methods for nmon-agent
     app.post('/nmonlog', function(req, res) {
@@ -30,12 +34,12 @@ module.exports = function(app, passport) {
         put_nmonlog(req, res, 1);
     });
 
-    app.post('/nmonlog_bulk', function(req, res) {
-         log.info('[Process %d:/nmonlog_bulk] ' 
+    app.post('/nmonlog_bulk', rawParser, function(req, res) {
+        log.info('[Process %d:/nmonlog_bulk] ' 
                + req.connection.remoteAddress 
                + ' ==> '
                + req.url, process.pid);
-         put_nmonlog(req, res, 10);
+        put_nmonlog(req, res, 100);
     });
 }
 
