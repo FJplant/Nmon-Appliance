@@ -109,8 +109,8 @@ var reducer = function(d, docs) {
 };
 
 // day stat
-db.performance.mapReduce(dayMapper, reducer, {out: 'stat_day'});
+db.getCollection('nmon-zzzz').mapReduce(dayMapper, reducer, {out: 'stat_day'});
 
 // month stat
-db.stat_day.mapReduce(monthMapper, reducer, {out: 'stat_month'});
+db.getCollection('stat_day').mapReduce(monthMapper, reducer, {out: 'stat_month'});
 
