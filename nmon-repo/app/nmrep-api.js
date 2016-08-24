@@ -127,12 +127,16 @@ function put_nmonlog(req, res, bulk_unit) {
             
             // TODO: change nmondataid generation policy
             if (data[1] === 'date') {
-                parser._nmondataid = parser._docAAA['host'] + '/' + 
-                                     parser._docAAA['date'] + '/' + 
-                                     parser._docAAA['time'] + '/' + 
-                                     parser._docAAA['timezone'] + '/' + 
+                parser._docAAA['date'] = data[2]
+                parser._nmondataid = parser._docAAA['host'] + '$' + 
+                                     parser._docAAA['date'] + '$' + 
+                                     parser._docAAA['time'] + '$' + 
+                                     parser._docAAA['timezone'] + '$' + 
                                      parser._docAAA['command']; 
                 parser._docAAA['nmon-data-id'] = parser._nmondataid;
+
+                var beginDateTime = parser._docAAA['date'] + ' ' + parser._docAAA['time'];
+                parser._document['datetime'] = (new Date(beginDateTime)).getTime();
             }
 
             if (data[1] === 'host') {
