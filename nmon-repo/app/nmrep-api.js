@@ -17,6 +17,28 @@ var fs = require('fs'),
 
 var nmdb = require('../config/nmdb-config.js');
 
+// expose this function to our app using module.exports
+module.exports = function(app, passport) {
+
+    // Add dynamic local handlers
+    // Add PUT methods for nmon-agent
+    app.post('/nmonlog', function(req, res) {
+        log.info('[Process %d:/nmonlog] ' 
+               + req.connection.remoteAddress 
+               + ' ==> '
+               + req.url, process.pid);
+        put_nmonlog(req, res, 1);
+    });
+
+    app.post('/nmonlog_bulk', function(req, res) {
+         log.info('[Process %d:/nmonlog_bulk] ' 
+               + req.connection.remoteAddress 
+               + ' ==> '
+               + req.url, process.pid);
+         put_nmonlog(req, res, 10);
+    });
+}
+
 /*
  * Initialize winston logger
  */
@@ -48,27 +70,9 @@ mongodb.on('ready', function() {
     log.info('Nmon-db database connected.');
 });
 
-// expose this function to our app using module.exports
-module.exports = function(app, passport) {
-
-    // Add dynamic local handlers
-    // Add PUT methods for nmon-agent
-    app.post('/nmonlog', function(req, res) {
-        log.info('[Process %d:/nmonlog] ' 
-               + req.connection.remoteAddress 
-               + ' ==> '
-               + req.url, process.pid);
-        put_nmonlog(req, res, 1);
-    });
-
-    app.post('/nmonlog_bulk', function(req, res) {
-         log.info('[Process %d:/nmonlog_bulk] ' 
-               + req.connection.remoteAddress 
-               + ' ==> '
-               + req.url, process.pid);
-         put_nmonlog(req, res, 10);
-    });
-}
+var nmondbZZZZ = mongodb.collection('nmon-zzzz'),
+    nmondbUARG = mongodb.collection('nmon-uarg'),
+    nmondbCategories = mongodb.collection('nmon-categories');
 
 /*
  * Put nmonlog 
@@ -80,14 +84,16 @@ module.exports = function(app, passport) {
  *
  */
 function put_nmonlog(req, res, bulk_unit) {
-    mongodb.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
-    mongodb.collection('categories').save({name: 'DISK_ALL'});
-    mongodb.collection('categories').save({name: 'NET_ALL'});
-    mongodb.collection('performance').ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
+    nmondbCategories.ensureIndex({name: 1}, {unique: true, background: true});
+    nmondbCategories.save({name: 'DISK_ALL'});
+    nmondbCategories.save({name: 'NET_ALL'});
+
+    nmondbUARG.ensureIndex({'nmon-data-id': 1, Command: 1, PID: 1});
+    nmondbZZZZ.ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
 
     // create reserved index on (datetime) to assure performance and non-skewed index db.
     // 2016.5.18. ymk
-    mongodb.collection('performance').ensureIndex({datetime: -1, host: 1}, {unique: true, background: true});
+    nmondbZZZZ.ensureIndex({datetime: -1, host: 1}, {unique: true, background: true});
      
     var csvToJson = csv({objectMode: true});
 
@@ -164,9 +170,34 @@ function put_nmonlog(req, res, bulk_unit) {
             parser._document['DISK_ALL'] = {};
             parser._document['NET_ALL'] = {};
             parser._document['TOP'] = []; // store in array
-            // TODO: add UARG 
-
+            
             parser._cntTU = 0;
+        }
+        else if (data[0] === 'UARG' && data[1] != '+Time') {
+            // UARG only apear once when TOP meets a new process or already running process.
+            // So, just write UARG to db whenever meet.
+
+            // TODO: add UARG 
+            var docUARG = {};
+
+            docUARG['nmon-data-id'] = parser._nmondataid;	// nmondataid to compare and search
+            docUARG['host'] = parser._hostname; // redundant but will be convenient 
+            docUARG['snapframe'] = data[1];     // store T0001 ~ Txxxx
+            docUARG['snapdate'] = parser._document['snapdate'];  // add redundant snapdate
+            docUARG['snaptime'] = parser._document['snaptime'];  // add redundant snaptime
+            docUARG['datetime'] = parser._document['datetime'];  // add redundant datetime
+
+            docUARG['PID'] = parseInt(data[2]); // store process ID
+            docUARG['Comand'] = data[3];        // store Command
+            docUARG['FullCommand'] = data[4];   // store FullCommand 
+
+            // just write to mongodb without bulk operation
+            nmondbUARG.insert(docUARG);
+
+            // write parser log
+            loggerParser.write('U');
+            loggerParserZZZZ.write('\n' + data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3] + ',' + data[4]);
+            parser._cntTU++;
         }
         else {
             // Processing lines wich not starts with 'AAA', 'BBBB', 'ZZZ'
@@ -199,10 +230,6 @@ function put_nmonlog(req, res, bulk_unit) {
                         logtype = 'T';
                         parser._cntTU++;
                         break;
-                    case 'UARG': 
-                        logtype = 'U';
-                        parser._cntTU++;
-                        break;
                     default: logtype = '?'; break;
                 };
 
@@ -215,6 +242,10 @@ function put_nmonlog(req, res, bulk_unit) {
                     loggerParser.write('['+ parser._hostname + ':ZZZZ:' + 
                                        ((h[0] === 'TOP')? data[2] : data[1]) + ']\033[m ');
                 }
+
+                // In case of Top, Add process ID
+                if (h[0] === 'TOP')
+                    fields['PID'] = parseInt(data[1]);
 
                 // Iterate all columns
                 for( var i = 2; i < h.length; i++ ) {
@@ -256,21 +287,34 @@ function put_nmonlog(req, res, bulk_unit) {
                             iops += parseFloat(data[i]);
                         }
                         else if (h[0] === 'TOP') {
+                            // skip T0001 - T0001 has total time after boot
+                            // TODO: process T0001 snap frame
                             if (data[2] !== 'T0001') {
-                                if( h[0] === 'TOP' && h[i] === 'Command' ) {
-                                    fields[h[i]] = data[i];
-                                }
-                                else if( h[0] === 'TOP' && (h[i] === '%CPU' || h[i] === 'ResText' || h[i] === 'ResData') ) {
-                                    fields[h[i]] = parseFloat(data[i]);
+                                if (h[0] === 'TOP') {
+                                    switch ( h[i] ) {
+                                        case 'Command': 
+                                            fields[h[i]] = data[i]; 
+                                            break;
+                                        case '%CPU':
+                                        case '%Usr':
+                                        case '%Sys':
+                                            fields[h[i]] = parseFloat(data[i]);
+                                            break;
+                                        case 'Size':
+                                        case 'ResSet':
+                                        case 'ResText':
+                                        case 'ResData':
+                                        case 'ShdLib':
+                                        case 'MinorFault':
+                                        case 'MajorFault':
+                                            fields[h[i]] = parseInt(data[i]);
+                                            break;
+                                    }
                                 }
                             }
                         }
-                        else if (h[0] === 'UARG') {
-                            // Process UARG
-                        }
-
-                    }
-                }
+                    } // end of if
+                } // end of for
 
                 if (Object.keys(fields).length !== 0) {
                     if (h[0] === 'TOP')
@@ -310,7 +354,7 @@ function put_nmonlog(req, res, bulk_unit) {
 
     parser._flushSave = function() {
         if (Object.keys(parser._document).length !== 0 ) {
-            this.push(['performance', parser._document]);
+            this.push(['nmon-zzzz', parser._document]);
             parser._cnt++;
             //loggerParser.stdout.write('f');
             if (parser._cnt % 80 == 0)
@@ -335,7 +379,7 @@ function put_nmonlog(req, res, bulk_unit) {
             // otherwise write header and set _headerWrite to true
             if (!writer._headerWrited) {
                 writer._headerWrited = true;
-                var bulkop = mongodb.collection('categories').initializeOrderedBulkOp();
+                var bulkop = nmondbCategories.initializeOrderedBulkOp();
                 for(var i = 0; i < writer._header.length; i++)
                     bulkop.find(writer._header[i]).upsert().update({ $set: writer._header[i]});
 
@@ -361,7 +405,7 @@ function put_nmonlog(req, res, bulk_unit) {
         //process.stdout.write('F');
         // store remained nmon data to mongo db
         if( writer._bulk.length > 0 ) {
-            var bulkop = mongodb.collection('performance').initializeOrderedBulkOp();
+            var bulkop = nmondbZZZZ.initializeOrderedBulkOp();
             for(var i = 0; i < writer._bulk.length; i++) {
                 bulkop.insert(writer._bulk[i]);
             }
