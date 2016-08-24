@@ -74,7 +74,8 @@ mongodb.on('ready', function() {
     log.info('Nmon-db database connected.');
 });
 
-var nmondbZZZZ = mongodb.collection('nmon-zzzz'),
+var nmondbMETA = mongodb.collection('nmon-meta'),
+    nmondbZZZZ = mongodb.collection('nmon-zzzz'),
     nmondbUARG = mongodb.collection('nmon-uarg'),
     nmondbCategories = mongodb.collection('nmon-categories');
 
@@ -105,6 +106,10 @@ function put_nmonlog(req, res, bulk_unit) {
     parser.header = null;
     parser._hostname = '* N/A *';
     parser._nmondataid = null;
+    parser._docAAA = {'nmon-data-id':'', 'date':'', 'time':'', 'datetime':0, 'timezone':'', 
+                      'interval':9999, 'snapshots':9999, 'x86': {} };
+    parser._isDocAAAInserted = false;
+    parser._docBBBP = [];
     parser._document = {};
     parser._rawHeader = {};
     parser._cnt = 0;
@@ -128,23 +133,72 @@ function put_nmonlog(req, res, bulk_unit) {
                 parser._hostname = data[2];
                 // add host prefix to _nmondataid
                 parser._nmondataid = data[2] + ':' + parser._nmondataid;
+                parser._docAAA['nmon-data-id'] = parser._nmondataid;
+                
+                // TODO: 1. support time zone manipulation
+                if ( parser._hostname === 'nmon-tokyo' )
+                    parser._docAAA['timezone'] = 'UTC'; // TODO: this is temporary
+                else 
+                    parser._docAAA['timezone'] = 'KST'; // TODO: this is temporary
             }
 
+	    if ( data[1] === 'max_disks' || data[1] === 'disks' ) 
+                parser._docAAA[data[1]] = parseInt(data[2]) +',' + data[3];
+            else if ( data[1] === 'OS' )
+                parser._docAAA[data[1]] = data[2] +',' + data[3] + data[4];
+            else if ( data[1] === 'x86' ) {
+                if ( data[2] === 'MHz' || data[2] === 'bogomips' )
+                    parser._docAAA['x86'][data[2]] = parseFloat(data[3]);
+                else if ( data[2] === 'ProcessorChips' || data[2] === 'Cores' 
+                       || data[2] === 'hyperthreads' || data[2] === 'VirtualCPUs')
+                    parser._docAAA['x86'][data[2]] = parseInt(data[3]);
+                else  
+                    parser._docAAA['x86'][data[2]] = data[3];
+            }
+            else if ( data[1] === 'interval' || data[1] === 'snapshots' || data[1] === 'disks_per_line' 
+                   || data[1] === 'cpus' || data[1] === 'proc_stat_variables' )
+                parser._docAAA[data[1]] = parseInt(data[2]);
+            else 
+                parser._docAAA[data[1]] = data[2];
         }
-        else if( data[0].substring(0, 3) === 'BBB' ) {
+        else if( data[0].substring(0, 4) === 'BBBP' ) {
+            // TODO: AIX BBB section
             // Process lines which starts with 'BBB'
+            //   for AIX
             //   'BBBB' and 'BBBC' line has system component configurations
             //   'BBBV' line has volume configurations
             //   'BBBN' line has network configurations
             //   'BBBD' line has Disk Adapter Information
             //   'BBBP' line has result of system command like lsconf, lsps, lparstat, emstat, no,
             //          mpstat, vmo, ioo and so on.
+
+            
+            // BBBP section 
+            //    linux only supports BBBP section
+
+            var bbbp = {};
+            bbbp['seq'] = parseInt(data[1]);
+            bbbp['item'] = data[2];
+            bbbp['content'] = ( typeof data[3] === 'undefined' ) ? '' : data[3];
+            parser._docBBBP.push(bbbp);
+            
             loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
             loggerParser.write('['+ parser._hostname + ':' + data[0] + ':' + data[1] + ']\033[m ' + data[2] + ',' + data[3]);
-
-            // TODO: write all BBBP contents 
         }
         else if (data[0].substring(0, 4) === 'ZZZZ' ) {
+            // if parser meets ZZZZ section 
+            // insert AAA and BBB document once
+            if ( !parser._isDocAAAInserted ) {
+                //    data[2] - Time, 15:44:04
+                //    data[3] - Date, 24-AUG-2046
+                var beginDateTime = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
+                parser._document['datetime'] = (new Date(beginDateTime)).getTime();
+                parser._docAAA['BBBP'] = parser._docBBBP;
+
+                nmondbMETA.insert(parser._docAAA);
+                parser._isDocAAAInserted = true;
+            }
+
             // Process lines which starts with 'ZZZZ'
             //   'ZZZZ' section is a leading line for iterations of current resource utilization
             parser._flushSave(); // call flushSave when new 'ZZZZ' has arrived
@@ -171,8 +225,9 @@ function put_nmonlog(req, res, bulk_unit) {
             //    data[2] - Time, 15:44:04
             //    data[3] - Date, 24-AUG-2046
             var snapDateTime = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
-            // TODO: 1. support time zone manipulation
-            parser._document['datetime'] = (new Date(snapDateTime)).getTime();
+            // TODO: 1. support time zone manipulation. temporary convert nmon-tokyo to KST ( UTC + 9 hours )
+            parser._document['datetime'] = (parser._document['host'] === 'nmon-tokyo') ? 
+                                           (new Date(snapDateTime)).getTime() + 9*60*60*1000 : (new Date(snapDateTime)).getTime();
             parser._document['DISK_ALL'] = {};
             parser._document['NET_ALL'] = {};
             parser._document['TOP'] = []; // store in array
@@ -183,7 +238,6 @@ function put_nmonlog(req, res, bulk_unit) {
             // UARG only apear once when TOP meets a new process or already running process.
             // So, just write UARG to db whenever meet.
 
-            // TODO: add UARG 
             var docUARG = {};
 
             docUARG['nmon-data-id'] = parser._nmondataid;	// nmondataid to compare and search
@@ -208,7 +262,7 @@ function put_nmonlog(req, res, bulk_unit) {
             parser._cntTU++;
         }
         else {
-            // Processing lines wich not starts with 'AAA', 'BBBB', 'ZZZ'
+            // Processing lines wich not starts with 'AAA', 'BBB', 'ZZZ'
             //   for AIX: 
             //     'CPU_ALL', 'CPUxx': 
             //     'MEM', 'MEMNEW', 'MEMUSE', 'PAGE', 'LARGEPAGE':
@@ -454,3 +508,4 @@ function put_nmonlog(req, res, bulk_unit) {
     // in order of request -> parser -> writer
     req.pipe(csvToJson).pipe(parser).pipe(writer);
 }
+
