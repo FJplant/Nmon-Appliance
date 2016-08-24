@@ -8,7 +8,9 @@
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
 
-var winston = require('winston'),
+var fs = require('fs'),
+    util = require('util'),
+    winston = require('winston'),
     mongojs = require('mongojs'),
     Transform = require('stream').Transform,
     csv = require('csv-streamify');
@@ -26,6 +28,13 @@ var log = new (winston.Logger)({
         }),
     ]
 });
+
+/*
+ * Initilize parser log
+ *    flags: 'a' - append mode
+ */
+var loggerParser =  fs.createWriteStream( nmdb.env.NMREP_PARSER_LOG_FILE, { flags: 'a' } );
+var loggerParserZZZZ =  fs.createWriteStream( nmdb.env.NMREP_PARSER_ZZZZ_LOG_FILE, { flags: 'a' } );
 
 /*
  * Initialize mongodb connection
@@ -64,11 +73,11 @@ module.exports = function(app, passport) {
 /*
  * Put nmonlog 
  *
+ *   - processing by http request chaining
+ *       order: request -> parser -> writer
  *   - parse nmon log
  *   - store parsed nmon data to mongodb
  *
- * TODO: 
- *   1. Separate parser log
  */
 function put_nmonlog(req, res, bulk_unit) {
     mongodb.collection('categories').ensureIndex({name: 1}, {unique: true, background: true});
@@ -89,13 +98,16 @@ function put_nmonlog(req, res, bulk_unit) {
     parser._rawHeader = {};
     parser._cnt = 0;
     parser._diskTotal = {};
+    parser._cntTU = 0;
 
     parser._transform = function(data, encoding, done) {
+        var now = new Date();
+
         if( data[0].substring(0, 3) === 'AAA' ) {
             // Process lines which starts with 'AAA'
             //   'AAA' section is system generic information
-            process.stdout.write('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
-            process.stdout.write('['+ parser._hostname + ':AAA]\033[m ' + data[1] + ',' + data[2] );
+            loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+            loggerParser.write('['+ parser._hostname + ':AAA]\033[m ' + data[1] + ',' + data[2] );
             if (data[1] === 'host')
                 parser._hostname = data[2];
         }
@@ -107,8 +119,8 @@ function put_nmonlog(req, res, bulk_unit) {
             //   'BBBD' line has Disk Adapter Information
             //   'BBBP' line has result of system command like lsconf, lsps, lparstat, emstat, no,
             //          mpstat, vmo, ioo and so on.
-            process.stdout.write('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
-            process.stdout.write('['+ parser._hostname + ':' + data[0] + ':' + data[1] + ']\033[m ' + data[2] + ',' + data[3]);
+            loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+            loggerParser.write('['+ parser._hostname + ':' + data[0] + ':' + data[1] + ']\033[m ' + data[2] + ',' + data[3]);
 
             // TODO: write all BBBP contents 
         }
@@ -119,8 +131,8 @@ function put_nmonlog(req, res, bulk_unit) {
                                  // this can be a blocker not sending current data until getting next ZZZZ
 
             // Initialize new document
-            process.stdout.write('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
-            process.stdout.write('['+ parser._hostname + ':ZZZZ:' + data[1] + ']\033[m ');
+            loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+            loggerParser.write('['+ parser._hostname + ':ZZZZ:' + data[1] + ']\033[m ');
 
             parser._document = {};
             parser._document['host'] = parser._hostname;
@@ -129,6 +141,7 @@ function put_nmonlog(req, res, bulk_unit) {
             parser._document['DISK_ALL'] = {};
             parser._document['NET_ALL'] = {};
             parser._document['TOP'] = [];
+            parser._cntTU = 0;
         }
         else {
             // Processing lines wich not starts with 'AAA', 'BBBB', 'ZZZ'
@@ -149,8 +162,14 @@ function put_nmonlog(req, res, bulk_unit) {
                 var query = {}; // data container
                 for( var i = 2; i < h.length; i++ ) {
                     if(h[i] !== '') {
+                        // line break for parser log 
+                        if ((h[0] === 'TOP' || h[0] === 'UARG') && parser._cntTU % 80 == 0) {
+                            loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+                            loggerParser.write('['+ parser._hostname + ':ZZZZ:' + data[2] + ']\033[m ');
+                        }
+
                         if (h[0] === 'CPU_ALL') {
-                            process.stdout.write('C');
+                            loggerParser.write('C');
 
                             if (h[i] === 'User%')
                                 query['User'] = parseFloat(data[i]);
@@ -162,7 +181,7 @@ function put_nmonlog(req, res, bulk_unit) {
                                 query['CPUs'] = parseFloat(data[i])
                         }
                         else if (h[0] === 'MEM') {
-                            process.stdout.write('M');
+                            loggerParser.write('M');
 
                             if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
                                 query['Real total'] = parseFloat(data[i]);
@@ -174,7 +193,7 @@ function put_nmonlog(req, res, bulk_unit) {
                                 query['Virtual free'] = parseFloat(data[i]);
                         }
                         else if (h[0] === 'NET') {
-                            process.stdout.write('N');
+                            loggerParser.write('N');
 
                             if( h[i].indexOf('read') != -1 )
                                 read += parseFloat(data[i]);
@@ -182,17 +201,18 @@ function put_nmonlog(req, res, bulk_unit) {
                                 write += parseFloat(data[i]);
                         }
                         else if ((h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/)) {
-                            process.stdout.write('D');
+                            loggerParser.write('D');
 
                             val += parseFloat(data[i]);
                         }
                         else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d+$/)) {
-                            process.stdout.write('X');
+                            loggerParser.write('X');
 
                             iops += parseFloat(data[i]);
                         }
                         else if (h[0] === 'TOP') {
-                            //process.stdout.write('T');
+                            loggerParser.write('T');
+                            parser._cntTU++;
 
                             if (data[2] !== 'T0001') {
                                 if( h[0] === 'TOP' && h[i] === 'Command' ) {
@@ -203,6 +223,12 @@ function put_nmonlog(req, res, bulk_unit) {
                                 }
                             }
                         }
+                        else if (h[0] === 'UARG') {
+                            loggerParser.write('U');
+                            parser._cntTU++;
+
+                        }
+
                     }
                 }
 
@@ -246,28 +272,33 @@ function put_nmonlog(req, res, bulk_unit) {
         if (Object.keys(parser._document).length !== 0 ) {
             this.push(['performance', parser._document]);
             parser._cnt++;
-            //process.stdout.write('f');
+            //loggerParser.stdout.write('f');
             if (parser._cnt % 80 == 0)
-                process.stdout.write('\n');
+                loggerParser.write('\n');
         }
     }
 
+    // Write html response
+    // 
     var writer = new Transform({objectMode: true});
     writer._bulk = [];
     writer._header = [];
     writer._headerWrited = false;
     writer._transform = function(data, encoding, done) {
-        process.stdout.write('t');
+        //process.stdout.write('t');
         if( data[0] === 'categories' ) {
             writer._header.push(data[1]);
             done();
         }
         else {
+            // Check whether header was written, 
+            // otherwise write header and set _headerWrite to true
             if (!writer._headerWrited) {
                 writer._headerWrited = true;
                 var bulkop = mongodb.collection('categories').initializeOrderedBulkOp();
                 for(var i = 0; i < writer._header.length; i++)
                     bulkop.find(writer._header[i]).upsert().update({ $set: writer._header[i]});
+
                 bulkop.execute(function(err, res) {
                     if (err)
                         log.error(err.toString());
@@ -275,6 +306,8 @@ function put_nmonlog(req, res, bulk_unit) {
                 });
             }
             writer._bulk.push(data[1]);
+
+            // flush writer if there is more data than bulk unit
             if ( writer._bulk.length >= bulk_unit ) {
                 writer._flushSave(done);
             }
@@ -286,23 +319,25 @@ function put_nmonlog(req, res, bulk_unit) {
 
     writer._flushSave = function(done) {
         //process.stdout.write('F');
+        // store remained nmon data to mongo db
         if( writer._bulk.length > 0 ) {
             var bulkop = mongodb.collection('performance').initializeOrderedBulkOp();
             for(var i = 0; i < writer._bulk.length; i++) {
                 bulkop.insert(writer._bulk[i]);
             }
+
             bulkop.execute(function(err, res) {
                 if (err)
                     log.error(err.toString());
 
-                writer._bulk = [];
+                writer._bulk = [];	// clear _bulk buffer
 
                 if (done) {
                     done();    
                 }
             });
         }
-        else {
+        else { // if there is no data remained
             if(done) {
                 done();
             }
@@ -311,11 +346,46 @@ function put_nmonlog(req, res, bulk_unit) {
 
     writer.on('finish', function() {
         writer._flushSave();
-        process.stdout.write('\n');
+        //process.stdout.write('\n');
+        // send HTTP 200 OK
         res.writeHead(200);
         res.end();
     });
    
     res.connection.setTimeout(0);
+
+    // processing nmon log upload by http request chaining 
+    // in order of request -> parser -> writer
     req.pipe(csvToJson).pipe(parser).pipe(writer);
+}
+
+String.format = function(str, arr) {
+    var i = -1;
+    function callback(exp, p0, p1, p2, p3, p4) {
+        if (exp=='%%') return '%';
+        if (arr[++i]===undefined) return undefined;
+        var exp  = p2 ? parseInt(p2.substr(1)) : undefined;
+        var base = p3 ? parseInt(p3.substr(1)) : undefined;
+        var val;
+        switch (p4) {
+            case 's': val = arr[i]; break;
+            case 'c': val = arr[i][0]; break;
+            case 'f': val = parseFloat(arr[i]).toFixed(exp); break;
+            case 'p': val = parseFloat(arr[i]).toPrecision(exp); break;
+            case 'e': val = parseFloat(arr[i]).toExponential(exp); break;
+            case 'x': val = parseInt(arr[i]).toString(base?base:16); break;
+            case 'd': val = parseFloat(parseInt(arr[i], base?base:10).toPrecision(exp)).toFixed(0); break;
+        }
+        val = typeof(val)=='object' ? JSON.stringify(val) : val.toString(base);
+        var sz = parseInt(p1); /* padding size */
+        var ch = p1 && p1[0]=='0' ? '0' : ' '; /* isnull? */
+        while (val.length<sz) val = p0 !== undefined ? val+ch : ch+val; /* isminus? */
+       return val;
+    }
+    var regex = /%(-)?(0?[0-9]+)?([.][0-9]+)?([#][0-9]+)?([scfpexd])/g;
+    return str.replace(regex, callback);
+}
+
+String.prototype.$ = function() {
+    return String.format(this, Array.prototype.slice.call(arguments));
 }
