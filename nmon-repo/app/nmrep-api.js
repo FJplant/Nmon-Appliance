@@ -149,10 +149,12 @@ function put_nmonlog(req, res, bulk_unit) {
             loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
             loggerParser.write('['+ parser._hostname + ':ZZZZ:' + data[1] + ']\033[m ');
 
-            loggerParserZZZZ.write('\n\n==========================================================\n');
-            loggerParserZZZZ.write('---- Processing new ZZZZ section\n');
-            loggerParserZZZZ.write('---- ' + data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3] + '\n');
-            loggerParserZZZZ.write('==========================================================');
+            if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
+                loggerParserZZZZ.write('\n\n==========================================================\n');
+                loggerParserZZZZ.write('---- Processing new ZZZZ section\n');
+                loggerParserZZZZ.write('---- ' + data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3] + '\n');
+                loggerParserZZZZ.write('==========================================================');
+            }
 
             // Initialize new document for mongodb
             parser._document = {};
@@ -196,7 +198,9 @@ function put_nmonlog(req, res, bulk_unit) {
 
             // write parser log
             loggerParser.write('U');
-            loggerParserZZZZ.write('\n' + data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3] + ',' + data[4]);
+            if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
+                loggerParserZZZZ.write('\n' + data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3] + ',' + data[4]);
+            }
             parser._cntTU++;
         }
         else {
@@ -234,7 +238,8 @@ function put_nmonlog(req, res, bulk_unit) {
                 };
 
                 loggerParser.write(logtype);
-                loggerParserZZZZ.write('\n' + data[0] + ',' + data[1] + ',');
+                if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' )
+                    loggerParserZZZZ.write('\n' + data[0] + ',' + data[1] + ',');
 
                 // line break for parser log 
                 if ((h[0] === 'TOP' || h[0] === 'UARG') && parser._cntTU % 80 == 0) {
@@ -250,8 +255,11 @@ function put_nmonlog(req, res, bulk_unit) {
                 // Iterate all columns
                 for( var i = 2; i < h.length; i++ ) {
                     if(h[i] !== '') {
-                        loggerParserZZZZ.write(data[i]);
-                        if (i < h.length-1) loggerParserZZZZ.write(',');
+                        if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
+                            loggerParserZZZZ.write(data[i]);
+
+                            if (i < h.length-1) loggerParserZZZZ.write(',');
+                        }
 
                         if (h[0] === 'CPU_ALL') {
                             if (h[i] === 'User%')
