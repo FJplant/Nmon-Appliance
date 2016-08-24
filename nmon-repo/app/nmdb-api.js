@@ -13,6 +13,26 @@ var url = require('url'),
     mongojs = require('mongojs');
     nmdb = require('../config/nmdb-config.js');
 
+// expose this function to our app using module.exports
+module.exports = function(app, passport) {
+    // Add GET methods for nmon-db
+    app.get('/categories', function(req, res) {
+        service(req, res);
+    });
+
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/, function(req, res) {
+        service(req, res);
+    });
+
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/, function(req, res) {
+        service(req, res);
+    });
+
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, function(req, res) {
+        service(req, res);
+    });
+}
+
 /*
  * Initialize winston logger
  *
@@ -39,27 +59,11 @@ mongodb.on('ready', function() {
     log.info('Nmon-db database connected.');
 });
 
+var nmondbZZZZ = mongodb.collection('nmon-zzzz'),
+    nmondbUARG = mongodb.collection('nmon-uarg'),
+    nmondbCategories = mongodb.collection('nmon-categories');
+
 var graph_row_number = nmdb.env.NMDB_GRAPH_ROW_NUMBER;
-
-// expose this function to our app using module.exports
-module.exports = function(app, passport) {
-    // Add GET methods for nmon-db
-    app.get('/categories', function(req, res) {
-        service(req, res);
-    });
-
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/, function(req, res) {
-        service(req, res);
-    });
-
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/, function(req, res) {
-        service(req, res);
-    });
-
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, function(req, res) {
-        service(req, res);
-    });
-}
 
 /*
  * service funtion
@@ -131,7 +135,7 @@ function service(req, res) {
  */
 function get_categories(req, res) {
     var result = [];
-    var categories = mongodb.collection('categories');
+    var categories = nmondbCategories;
     categories.find().sort({name:1}).forEach(function(err, doc) {
         if( err )
             return error_handler(res, err, 500);
@@ -154,7 +158,7 @@ function get_hosts(req, res) {
     var url_info = url.parse(req.url, true);
 
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
-    var collection = mongodb.collection('performance');
+    var collection = nmondbZZZZ;
     collection.distinct('host', {}, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
@@ -177,7 +181,7 @@ function get_titles(req, res) {
     var url_info = url.parse(req.url, true);
 
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
-    var collection = mongodb.collection('performance');
+    var collection = nmondbZZZZ;
     var query = { };
     if (m[1] !== 'All') {
         query['host'] = m[1];
@@ -210,7 +214,7 @@ function get_fields(req, res) {
     var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
-    var collection = mongodb.collection('performance');
+    var collection = nmondbZZZZ;
     var fields = {datetime:1, _id: 0};
     var average = ['Time'];
     for (var i = 0; i < data.length; i++) {
@@ -296,7 +300,7 @@ function get_top_fields(req, res) {
         group['val'] = { $avg : { $add: ["$TOP.ResText", "$TOP.ResData"] } }
 
     results.push(['Command', type]);
-    var collection = mongodb.collection('performance');
+    var collection = nmondbZZZZ;
     collection.aggregate(
         {'$match' : match}, 
         {'$project': {TOP:1}}, 
@@ -334,7 +338,7 @@ function get_host_fields(req, res) {
     var group = { _id : { host: '$host' } };
     group['val'] = { $avg : { $add: ["$CPU_ALL.User", "$CPU_ALL.Sys"] } };
     group['no'] = { $avg : "$CPU_ALL.CPUs"};
-    mongodb.collection('performance').aggregate(
+    nmondbZZZZ.aggregate(
         {'$match' : match}, 
         {'$project': {host:1, CPU_ALL:1}}, 
         {'$group': group}, 
@@ -353,7 +357,7 @@ function get_host_fields(req, res) {
             }
             var group2 = { _id: { host: '$host'} };
             group2['val'] = { $avg : { $add: ["$DISK_ALL.read", "$DISK_ALL.write"] } };
-            mongodb.collection('performance').aggregate(
+            nmondbZZZZ.aggregate(
                 {'$match' : match}, 
                 {'$project': {host:1, DISK_ALL:1}},
                 {'$group': group2}, 
@@ -369,7 +373,7 @@ function get_host_fields(req, res) {
                     }
                     var group3 = { _id: { host: '$host'} };
                     group3['val'] = { $avg : { $add: ["$NET_ALL.read", "$NET_ALL.write"] } };
-                    mongodb.collection('performance').aggregate(
+                    nmondbZZZZ.aggregate(
                         {'$match' : match}, 
                         {'$project': {host:1, NET_ALL:1}},
                         {'$group': group3}, 
