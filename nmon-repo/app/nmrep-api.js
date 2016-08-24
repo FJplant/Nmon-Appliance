@@ -181,7 +181,7 @@ function put_nmonlog(req, res, bulk_unit) {
             
             // BBBP section 
             //    linux only supports BBBP section
-            if ( _docAAA['datetime'] == 0 ) { 
+            if ( parser._docAAA['datetime'] == 0 ) { 
                 var beginDateTime = parser._docAAA['date'] + ' ' + parser._docAAA['time'];
                 parser._docAAA['datetime'] = (new Date(beginDateTime)).getTime();
             }
