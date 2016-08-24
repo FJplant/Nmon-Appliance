@@ -75,7 +75,7 @@ mongodb.on('ready', function() {
 });
 
 var nmondbMETA = mongodb.collection('nmon-meta'),
-    nmondbZZZZ = mongodb.collection('nmon-zzzz'),
+    nmondbZZZZ = mongodb.collection('nmon-perf'),
     nmondbUARG = mongodb.collection('nmon-uarg'),
     nmondbCategories = mongodb.collection('nmon-categories');
 
@@ -420,7 +420,7 @@ function put_nmonlog(req, res, bulk_unit) {
 
     parser._flushSave = function() {
         if (Object.keys(parser._document).length !== 0 ) {
-            this.push(['nmon-zzzz', parser._document]);
+            this.push(['nmon-perf', parser._document]);
             parser._cnt++;
             //loggerParser.stdout.write('f');
             if (parser._cnt % 80 == 0)

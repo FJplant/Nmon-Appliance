@@ -59,7 +59,7 @@ mongodb.on('ready', function() {
     log.info('Nmon-db database connected.');
 });
 
-var nmondbZZZZ = mongodb.collection('nmon-zzzz'),
+var nmondbZZZZ = mongodb.collection('nmon-perf'),
     nmondbUARG = mongodb.collection('nmon-uarg'),
     nmondbCategories = mongodb.collection('nmon-categories');
 
