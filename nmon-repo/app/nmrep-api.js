@@ -236,7 +236,7 @@ function put_nmonlog(req, res, bulk_unit) {
             //    data[3] - Date, 24-AUG-2046
             var snapDateTime = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
             // TODO: 1. support time zone manipulation. temporary convert nmon-tokyo to KST ( UTC + 9 hours )
-            parser._docZZZZ['datetime'] = (parser..docZZZZ['host'] === 'nmon-tokyo') ? 
+            parser._docZZZZ['datetime'] = (parser._docZZZZ['host'] === 'nmon-tokyo') ? 
                                            (new Date(snapDateTime)).getTime() + 9*60*60*1000 : (new Date(snapDateTime)).getTime();
             parser._docZZZZ['DISK_ALL'] = {};
             parser._docZZZZ['NET_ALL'] = {};
