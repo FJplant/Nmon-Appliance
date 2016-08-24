@@ -94,6 +94,7 @@ function put_nmonlog(req, res, bulk_unit) {
     var parser = new Transform({objectMode: true});
     parser.header = null;
     parser._hostname = '* N/A *';
+    parser._nmondataid = null;
     parser._document = {};
     parser._rawHeader = {};
     parser._cnt = 0;
@@ -108,8 +109,17 @@ function put_nmonlog(req, res, bulk_unit) {
             //   'AAA' section is system generic information
             loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
             loggerParser.write('['+ parser._hostname + ':AAA]\033[m ' + data[1] + ',' + data[2] );
-            if (data[1] === 'host')
+            
+            // TODO: change nmondataid generation policy
+            if (data[1] === 'command')
+                parser._nmondataid = data[2]
+
+            if (data[1] === 'host') {
                 parser._hostname = data[2];
+                // add host prefix to _nmondataid
+                parser._nmondataid = data[2] + ':' + parser._nmondataid;
+            }
+
         }
         else if( data[0].substring(0, 3) === 'BBB' ) {
             // Process lines which starts with 'BBB'
@@ -138,14 +148,24 @@ function put_nmonlog(req, res, bulk_unit) {
             loggerParserZZZZ.write('---- ' + data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3] + '\n');
             loggerParserZZZZ.write('==========================================================');
 
-            // Initialize new document
+            // Initialize new document for mongodb
             parser._document = {};
+            parser._document['nmon-data-id'] = parser._nmondataid;
             parser._document['host'] = parser._hostname;
-            var ts = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
-            parser._document['datetime'] = (new Date(ts)).getTime();
+            parser._document['snapframe'] = data[1]; // store T0001 ~ Txxxx
+            parser._document['snapdate'] = data[3];  // store 24-AUG-2016 ( consider locale )
+            parser._document['snaptime'] = data[2];  // store 15:49:13
+
+            //    data[2] - Time, 15:44:04
+            //    data[3] - Date, 24-AUG-2046
+            var snapDateTime = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
+            // TODO: 1. support time zone manipulation
+            parser._document['datetime'] = (new Date(snapDateTime)).getTime();
             parser._document['DISK_ALL'] = {};
             parser._document['NET_ALL'] = {};
-            parser._document['TOP'] = [];
+            parser._document['TOP'] = []; // store in array
+            // TODO: add UARG 
+
             parser._cntTU = 0;
         }
         else {
@@ -164,7 +184,7 @@ function put_nmonlog(req, res, bulk_unit) {
             if( data[0] in parser._rawHeader ) {
                 var h = parser._rawHeader[data[0]];
                 var val = 0.0, iops = 0.0, read = 0.0, write = 0.0;
-                var query = {}; // data container
+                var fields = {}; // fields container
                 var logtype = '';
 
                 // Log type
@@ -204,23 +224,23 @@ function put_nmonlog(req, res, bulk_unit) {
 
                         if (h[0] === 'CPU_ALL') {
                             if (h[i] === 'User%')
-                                query['User'] = parseFloat(data[i]);
+                                fields['User'] = parseFloat(data[i]);
                             else if (h[i] === 'Sys%')
-                                query['Sys'] = parseFloat(data[i]);
+                                fields['Sys'] = parseFloat(data[i]);
                             else if (h[i] === 'Wait%')
-                                query['Wait'] = parseFloat(data[i]);
+                                fields['Wait'] = parseFloat(data[i]);
                             else if (h[i] === 'CPUs' || h[i] === 'PhysicalCPUs')
-                                query['CPUs'] = parseFloat(data[i]);
+                                fields['CPUs'] = parseFloat(data[i]);
                         }
                         else if (h[0] === 'MEM') {
                             if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
-                                query['Real total'] = parseFloat(data[i]);
+                                fields['Real total'] = parseFloat(data[i]);
                             else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
-                                query['Real free'] = parseFloat(data[i]);
+                                fields['Real free'] = parseFloat(data[i]);
                             else if (h[i] === 'swaptotal' || h[i] === 'Virtual total(MB)')
-                                query['Virtual total'] = parseFloat(data[i]);
+                                fields['Virtual total'] = parseFloat(data[i]);
                             else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
-                                query['Virtual free'] = parseFloat(data[i]);
+                                fields['Virtual free'] = parseFloat(data[i]);
                         }
                         else if (h[0] === 'NET') {
                             if( h[i].indexOf('read') != -1 )
@@ -238,10 +258,10 @@ function put_nmonlog(req, res, bulk_unit) {
                         else if (h[0] === 'TOP') {
                             if (data[2] !== 'T0001') {
                                 if( h[0] === 'TOP' && h[i] === 'Command' ) {
-                                    query[h[i]] = data[i];
+                                    fields[h[i]] = data[i];
                                 }
                                 else if( h[0] === 'TOP' && (h[i] === '%CPU' || h[i] === 'ResText' || h[i] === 'ResData') ) {
-                                    query[h[i]] = parseFloat(data[i]);
+                                    fields[h[i]] = parseFloat(data[i]);
                                 }
                             }
                         }
@@ -252,11 +272,11 @@ function put_nmonlog(req, res, bulk_unit) {
                     }
                 }
 
-                if (Object.keys(query).length !== 0) {
+                if (Object.keys(fields).length !== 0) {
                     if (h[0] === 'TOP')
-                        parser._document[h[0]].push(query);
+                        parser._document[h[0]].push(fields);
                     else
-                        parser._document[h[0]] = query;
+                        parser._document[h[0]] = fields;
                 }
 
                 if( h[0] === 'DISKREAD' ) {
