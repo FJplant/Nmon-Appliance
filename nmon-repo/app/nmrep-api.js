@@ -110,7 +110,7 @@ function put_nmonlog(req, res, bulk_unit) {
                       'interval':9999, 'snapshots':9999, 'x86': {} };
     parser._isDocAAAInserted = false;
     parser._docBBBP = [];
-    parser..docZZZZ = {};
+    parser._docZZZZ = {};
     parser._rawHeader = {};
     parser._cnt = 0;
     parser._diskTotal = {};
@@ -202,7 +202,7 @@ function put_nmonlog(req, res, bulk_unit) {
                 //    data[2] - Time, 15:44:04
                 //    data[3] - Date, 24-AUG-2046
                 var beginDateTime = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
-                parser..docZZZZ['datetime'] = (new Date(beginDateTime)).getTime();
+                parser._docZZZZ['datetime'] = (new Date(beginDateTime)).getTime();
                 parser._docAAA['BBBP'] = parser._docBBBP;
 
                 nmondbMETA.insert(parser._docAAA);
@@ -225,22 +225,22 @@ function put_nmonlog(req, res, bulk_unit) {
             }
 
             // Initialize new document for mongodb
-            parser..docZZZZ = {};
-            parser..docZZZZ['nmon-data-id'] = parser._nmondataid;
-            parser..docZZZZ['host'] = parser._hostname;
-            parser..docZZZZ['snapframe'] = data[1]; // store T0001 ~ Txxxx
-            parser..docZZZZ['snapdate'] = data[3];  // store 24-AUG-2016 ( consider locale )
-            parser..docZZZZ['snaptime'] = data[2];  // store 15:49:13
+            parser._docZZZZ = {};
+            parser._docZZZZ['nmon-data-id'] = parser._nmondataid;
+            parser._docZZZZ['host'] = parser._hostname;
+            parser._docZZZZ['snapframe'] = data[1]; // store T0001 ~ Txxxx
+            parser._docZZZZ['snapdate'] = data[3];  // store 24-AUG-2016 ( consider locale )
+            parser._docZZZZ['snaptime'] = data[2];  // store 15:49:13
 
             //    data[2] - Time, 15:44:04
             //    data[3] - Date, 24-AUG-2046
             var snapDateTime = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
             // TODO: 1. support time zone manipulation. temporary convert nmon-tokyo to KST ( UTC + 9 hours )
-            parser..docZZZZ['datetime'] = (parser..docZZZZ['host'] === 'nmon-tokyo') ? 
+            parser._docZZZZ['datetime'] = (parser..docZZZZ['host'] === 'nmon-tokyo') ? 
                                            (new Date(snapDateTime)).getTime() + 9*60*60*1000 : (new Date(snapDateTime)).getTime();
-            parser..docZZZZ['DISK_ALL'] = {};
-            parser..docZZZZ['NET_ALL'] = {};
-            parser..docZZZZ['TOP'] = []; // store in array
+            parser._docZZZZ['DISK_ALL'] = {};
+            parser._docZZZZ['NET_ALL'] = {};
+            parser._docZZZZ['TOP'] = []; // store in array
             
             parser._cntTU = 0;
         }
@@ -253,9 +253,9 @@ function put_nmonlog(req, res, bulk_unit) {
             docUARG['nmon-data-id'] = parser._nmondataid;	// nmondataid to compare and search
             docUARG['host'] = parser._hostname; // redundant but will be convenient 
             docUARG['snapframe'] = data[1];     // store T0001 ~ Txxxx
-            docUARG['snapdate'] = parser..docZZZZ['snapdate'];  // add redundant snapdate
-            docUARG['snaptime'] = parser..docZZZZ['snaptime'];  // add redundant snaptime
-            docUARG['datetime'] = parser..docZZZZ['datetime'];  // add redundant datetime
+            docUARG['snapdate'] = parser._docZZZZ['snapdate'];  // add redundant snapdate
+            docUARG['snaptime'] = parser._docZZZZ['snaptime'];  // add redundant snaptime
+            docUARG['datetime'] = parser._docZZZZ['datetime'];  // add redundant datetime
 
             docUARG['PID'] = parseInt(data[2]); // store process ID
             docUARG['Comand'] = data[3];        // store Command
@@ -394,23 +394,23 @@ function put_nmonlog(req, res, bulk_unit) {
 
                 if (Object.keys(fields).length !== 0) {
                     if (h[0] === 'TOP')
-                        parser..docZZZZ[h[0]].push(fields);
+                        parser._docZZZZ[h[0]].push(fields);
                     else
-                        parser..docZZZZ[h[0]] = fields;
+                        parser._docZZZZ[h[0]] = fields;
                 }
 
                 if( h[0] === 'DISKREAD' ) {
-                    parser..docZZZZ['DISK_ALL']['read'] = val;
+                    parser._docZZZZ['DISK_ALL']['read'] = val;
                 }
                 else if (h[0] === 'DISKWRITE') {
-                    parser..docZZZZ['DISK_ALL']['write'] = val;
+                    parser._docZZZZ['DISK_ALL']['write'] = val;
                 }
                 else if (h[0] === 'DISKXFER') {
-                    parser..docZZZZ['DISK_ALL']['iops'] = iops;
+                    parser._docZZZZ['DISK_ALL']['iops'] = iops;
                 }
                 else if (h[0] === 'NET') {
-                    parser..docZZZZ['NET_ALL']['read'] = read;
-                    parser..docZZZZ['NET_ALL']['write'] = write;
+                    parser._docZZZZ['NET_ALL']['read'] = read;
+                    parser._docZZZZ['NET_ALL']['write'] = write;
                 }
             }
             else {
@@ -429,8 +429,8 @@ function put_nmonlog(req, res, bulk_unit) {
     }
 
     parser._flushSave = function() {
-        if (Object.keys(parser..docZZZZ).length !== 0 ) {
-            this.push(['nmon-perf', parser..docZZZZ]);
+        if (Object.keys(parser._docZZZZ).length !== 0 ) {
+            this.push(['nmon-perf', parser._docZZZZ]);
             parser._cnt++;
             //loggerParser.stdout.write('f');
             if (parser._cnt % 80 == 0)
