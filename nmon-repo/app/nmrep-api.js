@@ -347,7 +347,7 @@ function put_nmonlog(req, res, bulk_unit) {
             }
             else {
                 if (!(data[0] === 'TOP' && data.length <= 2)) {
-                    this.push(['categories', {name :data[0]}]);
+                    this.push(['nmon-categories', {name :data[0]}]);
                     parser._rawHeader[data[0]] = data;
                 }
             }
@@ -378,7 +378,7 @@ function put_nmonlog(req, res, bulk_unit) {
     writer._headerWrited = false;
     writer._transform = function(data, encoding, done) {
         //process.stdout.write('t');
-        if( data[0] === 'categories' ) {
+        if( data[0] === 'nmon-categories' ) {
             writer._header.push(data[1]);
             done();
         }
