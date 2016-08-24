@@ -126,18 +126,18 @@ function put_nmonlog(req, res, bulk_unit) {
             loggerParser.write('['+ parser._hostname + ':AAA]\033[m ' + data[1] + ',' + data[2] );
             
             // TODO: change nmondataid generation policy
-            if (data[1] === 'date')
+            if (data[1] === 'date') {
                 parser._nmondataid = parser._docAAA['host'] + '/' + 
                                      parser._docAAA['date'] + '/' + 
                                      parser._docAAA['time'] + '/' + 
                                      parser._docAAA['timezone'] + '/' + 
                                      parser._docAAA['command']; 
+                parser._docAAA['nmon-data-id'] = parser._nmondataid;
+            }
 
             if (data[1] === 'host') {
                 parser._hostname = data[2];
                 // add host prefix to _nmondataid
-                parser._nmondataid = parser._hostname + ':' + parser._nmondataid;
-                parser._docAAA['nmon-data-id'] = parser._nmondataid;
                 
                 // TODO: 1. support time zone manipulation
                 if ( parser._hostname === 'nmon-tokyo' )
