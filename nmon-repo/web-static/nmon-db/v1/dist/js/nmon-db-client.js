@@ -108,8 +108,8 @@ function drawPieChart(did, data) {
                        .y(function(d) { return d.value })
                        .donut(true)
                        .donutRatio(0.35)
-                       //.legendPosition("right") //nvd3.js v1.8.1
-                       .showLegend(false) //nvd3.js v1.8.0
+                       .legendPosition("right") //nvd3.js v1.8.1
+                       .showLegend(true) //nvd3.js v1.8.0
                        .showLabels(true);
 
         d3.select('#' + did + ' svg')
