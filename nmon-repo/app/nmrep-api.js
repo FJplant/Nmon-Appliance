@@ -165,7 +165,8 @@ function put_nmonlog(req, res, bulk_unit) {
                         // line break for parser log 
                         if ((h[0] === 'TOP' || h[0] === 'UARG') && parser._cntTU % 80 == 0) {
                             loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
-                            loggerParser.write('['+ parser._hostname + ':ZZZZ:' + data[2] + ']\033[m ');
+                            loggerParser.write('['+ parser._hostname + ':ZZZZ:' + 
+                                               ((h[0] === 'TOP')? data[2] : data[1]) + ']\033[m ');
                         }
 
                         if (h[0] === 'CPU_ALL') {
