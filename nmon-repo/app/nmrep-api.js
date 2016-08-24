@@ -130,10 +130,15 @@ function put_nmonlog(req, res, bulk_unit) {
             parser._flushSave(); // call flushSave when new 'ZZZZ' has arrived
                                  // this can be a blocker not sending current data until getting next ZZZZ
 
-            // Initialize new document
             loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
             loggerParser.write('['+ parser._hostname + ':ZZZZ:' + data[1] + ']\033[m ');
 
+            loggerParserZZZZ.write('\n\n==========================================================\n');
+            loggerParserZZZZ.write('---- Processing new ZZZZ section\n');
+            loggerParserZZZZ.write('---- ' + data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3] + '\n');
+            loggerParserZZZZ.write('==========================================================');
+
+            // Initialize new document
             parser._document = {};
             parser._document['host'] = parser._hostname;
             var ts = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
@@ -160,18 +165,44 @@ function put_nmonlog(req, res, bulk_unit) {
                 var h = parser._rawHeader[data[0]];
                 var val = 0.0, iops = 0.0, read = 0.0, write = 0.0;
                 var query = {}; // data container
+                var logtype = '';
+
+                // Log type
+                switch (data[0]) {
+                    case 'CPU_ALL': logtype = 'C'; break;
+                    case 'MEM': logtype = 'M'; break;
+                    case 'NET': logtype = 'N'; break;
+                    case 'DISKREAD': logtype = 'R'; break;
+                    case 'DISKWRITE': logtype = 'W'; break;
+                    case 'DISKXFER': logtype = 'w'; break;
+                    case 'TOP': 
+                        logtype = 'T';
+                        parser._cntTU++;
+                        break;
+                    case 'UARG': 
+                        logtype = 'U';
+                        parser._cntTU++;
+                        break;
+                    default: logtype = '?'; break;
+                };
+
+                loggerParser.write(logtype);
+                loggerParserZZZZ.write('\n' + data[0] + ',' + data[1] + ',');
+
+                // line break for parser log 
+                if ((h[0] === 'TOP' || h[0] === 'UARG') && parser._cntTU % 80 == 0) {
+                    loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+                    loggerParser.write('['+ parser._hostname + ':ZZZZ:' + 
+                                       ((h[0] === 'TOP')? data[2] : data[1]) + ']\033[m ');
+                }
+
+                // Iterate all columns
                 for( var i = 2; i < h.length; i++ ) {
                     if(h[i] !== '') {
-                        // line break for parser log 
-                        if ((h[0] === 'TOP' || h[0] === 'UARG') && parser._cntTU % 80 == 0) {
-                            loggerParser.write('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
-                            loggerParser.write('['+ parser._hostname + ':ZZZZ:' + 
-                                               ((h[0] === 'TOP')? data[2] : data[1]) + ']\033[m ');
-                        }
+                        loggerParserZZZZ.write(data[i]);
+                        if (i < h.length-1) loggerParserZZZZ.write(',');
 
                         if (h[0] === 'CPU_ALL') {
-                            loggerParser.write('C');
-
                             if (h[i] === 'User%')
                                 query['User'] = parseFloat(data[i]);
                             else if (h[i] === 'Sys%')
@@ -179,11 +210,9 @@ function put_nmonlog(req, res, bulk_unit) {
                             else if (h[i] === 'Wait%')
                                 query['Wait'] = parseFloat(data[i]);
                             else if (h[i] === 'CPUs' || h[i] === 'PhysicalCPUs')
-                                query['CPUs'] = parseFloat(data[i])
+                                query['CPUs'] = parseFloat(data[i]);
                         }
                         else if (h[0] === 'MEM') {
-                            loggerParser.write('M');
-
                             if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
                                 query['Real total'] = parseFloat(data[i]);
                             else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
@@ -194,27 +223,19 @@ function put_nmonlog(req, res, bulk_unit) {
                                 query['Virtual free'] = parseFloat(data[i]);
                         }
                         else if (h[0] === 'NET') {
-                            loggerParser.write('N');
-
                             if( h[i].indexOf('read') != -1 )
                                 read += parseFloat(data[i]);
                             else if( h[i].indexOf('write') != -1)
                                 write += parseFloat(data[i]);
+
                         }
                         else if ((h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/)) {
-                            loggerParser.write('D');
-
                             val += parseFloat(data[i]);
                         }
                         else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d+$/)) {
-                            loggerParser.write('X');
-
                             iops += parseFloat(data[i]);
                         }
                         else if (h[0] === 'TOP') {
-                            loggerParser.write('T');
-                            parser._cntTU++;
-
                             if (data[2] !== 'T0001') {
                                 if( h[0] === 'TOP' && h[i] === 'Command' ) {
                                     query[h[i]] = data[i];
@@ -225,9 +246,7 @@ function put_nmonlog(req, res, bulk_unit) {
                             }
                         }
                         else if (h[0] === 'UARG') {
-                            loggerParser.write('U');
-                            parser._cntTU++;
-
+                            // Process UARG
                         }
 
                     }
