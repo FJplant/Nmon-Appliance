@@ -18,7 +18,7 @@ var os = require('os'),                 // to get CPU informations
  * Calculate cluster parameter
  */
 var cpus = os.cpus(); // Get CPU informations
-var worker_cnt = Math.max( 4, Math.trunc( cpus.length * 1.5 )); // # of Worker process = 2 * CPU count or 4 ( minimum )
+var worker_cnt = Math.max( 4, Math.trunc( cpus.length * 2 )); // # of Worker process = 2 * CPU count or 4 ( minimum )
 //var worker_cnt = 1; // test purpuse
 //var worker_cnt = cpus.length;     // # of Worker process = CPU count, for development purpose
 
@@ -101,7 +101,16 @@ if (cluster.isMaster) {
     // set up our express application
     app.use(morgan('dev')); // log every request to the console
     app.use(cookieParser('NMCRE7')); // read cookies (needed for auth)
-    app.use(bodyParser.urlencoded({ extended: true })); // get information from html forms
+    app.use(bodyParser.urlencoded({ 
+        limit: '200mb',          // to avoid 'request entity too large'
+        extended: true, 
+    })); // get information from html forms
+
+    app.use(bodyParser.json()); // use json parser
+
+    app.use(bodyParser.raw({    // handle large files
+        limit: '200mb'          // to avoid 'request entity too large'
+    }));
 
     app.engine('html', require('ejs').renderFile);
 

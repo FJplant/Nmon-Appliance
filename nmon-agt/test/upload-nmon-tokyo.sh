@@ -1,4 +1,5 @@
 #/bin/bash
+cd ../bin/
 
 ./nmon-upldr.sh nmonlog upload /DATA/nmon-capture/nmon-tokyo.fjint.com/nmon-tokyo_150813_2013.nmon
 ./nmon-upldr.sh nmonlog upload /DATA/nmon-capture/nmon-tokyo.fjint.com/nmon-tokyo_150814_0014.nmon
