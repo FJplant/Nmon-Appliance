@@ -238,7 +238,7 @@ function get_fields(req, res) {
             for (var i = 0; i < data.length; i++) {
                 average.push(0.0);
             }
-            collection.find(query, fields).sort({datetime:1}).forEach(function(err, doc) {
+            nmondbZZZZ.find(query, fields).sort({datetime:1}).forEach(function(err, doc) {
                 if( err )
                     return error_handler(res, err, 500);
                 if( doc ) {
