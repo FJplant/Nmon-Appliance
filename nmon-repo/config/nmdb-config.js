@@ -42,8 +42,8 @@ module.exports = {
         NMREP_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-api.log'),
         NMREP_LOG_LEVEL: 'debug',
         NMREP_PARSER_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-parser.log'),
-        NMREP_PARSER_LOG_LEVEL: 'info',
+        NMREP_PARSER_LOG_LEVEL: 'verbose',
         NMREP_PARSER_ZZZZ_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-parser-zzzz.log'),
-        NMREP_PARSER_ZZZZ_LOG_LEVEL: 'info'
+        NMREP_PARSER_ZZZZ_LOG_LEVEL: 'verbose'
     }
 };

@@ -56,8 +56,8 @@ var reducer = function(d, docs) {
         result['DISK_ALL']['read'] += doc['DISK_ALL']['read'];
         result['DISK_ALL']['write'] += doc['DISK_ALL']['write'];
         result['DISK_ALL']['iops'] += doc['DISK_ALL']['iops'];
-        result['NET_ALL']['read'] += doc['DISK_ALL']['read'];
-        result['NET_ALL']['write'] += doc['DISK_ALL']['write'];
+        result['NET_ALL']['read'] += doc['NET_ALL']['read'];
+        result['NET_ALL']['write'] += doc['NET_ALL']['write'];
         result['CPU_ALL']['User'] += doc['CPU_ALL']['User'];
         result['CPU_ALL']['Sys'] += doc['CPU_ALL']['Sys'];
         result['CPU_ALL']['Wait'] += doc['CPU_ALL']['Wait'];
@@ -109,7 +109,7 @@ var reducer = function(d, docs) {
 };
 
 // day stat
-db.getCollection('nmon-zzzz').mapReduce(dayMapper, reducer, {out: 'nmon-stat_day'});
+db.getCollection('nmon-perf').mapReduce(dayMapper, reducer, {out: 'nmon-stat_day'});
 
 // month stat
 db.getCollection('nmon-stat_day').mapReduce(monthMapper, reducer, {out: 'nmon-stat_month'});
