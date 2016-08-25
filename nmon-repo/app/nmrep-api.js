@@ -139,7 +139,7 @@ function put_nmonlog(req, res, bulk_unit) {
         callback()
     }
 
-//    debug.on('data', function(chunk) => console.log(chunk));
-    //req.pipe(csvToJson).pipe(nmonParser).pipe(nmonWriter);
-    req.pipe(csvToJson).pipe(nmonParser).pipe(debug).pipe(nmonWriter);
+    req.pipe(csvToJson).pipe(nmonParser).pipe(nmonWriter);
+    // Following is debug purpose. it write captures the pipe between nmonParser and nmonWriter, and write all to console.
+    //req.pipe(csvToJson).pipe(nmonParser).pipe(debug).pipe(nmonWriter);
 }
