@@ -127,5 +127,19 @@ function put_nmonlog(req, res, bulk_unit) {
         res.end();
     });
 
-    req.pipe(csvToJson).pipe(nmonParser).pipe(nmonWriter);
+    var debug = new Transform( {
+        objectMode: true
+    });
+
+    debug._transform = function(chunk, encoding, callback) {
+        // Transform the chunk into something else.
+        const data = JSON.stringify(chunk);
+        
+        console.log(data);
+        callback()
+    }
+
+//    debug.on('data', function(chunk) => console.log(chunk));
+    //req.pipe(csvToJson).pipe(nmonParser).pipe(nmonWriter);
+    req.pipe(csvToJson).pipe(nmonParser).pipe(debug).pipe(nmonWriter);
 }
