@@ -103,11 +103,12 @@ function put_nmonlog(req, res, bulk_unit) {
     var csvToJson = csv({objectMode: true});
 
     var parser = new Transform({objectMode: true});
-    parser.header = null;
-    parser._hostname = '* N/A *';
     parser._nmondataid = null;
+    parser._hostname = '* N/A *';
+    // to preserve docAAA element order
     parser._docAAA = {'nmon-data-id':'', 'date':'', 'time':'', 'datetime':0, 'timezone':'', 
                       'interval':9999, 'snapshots':9999, 'x86': {} };
+    // Parsing state: <START> -> AAA -> BBB -> ZZZ -> <END>
     parser._isDocAAAInserted = false;
     parser._docBBBP = [];
     parser._docZZZZ = {};
@@ -466,6 +467,7 @@ function put_nmonlog(req, res, bulk_unit) {
                 });
             }
             writer._bulk.push(data[1]);
+            loggerParser.write('\nData[0]: ' + data[0] + ', Data[1]: ' + JSON.stringify(data[1]));
 
             // flush writer if there is more data than bulk unit
             if ( writer._bulk.length >= bulk_unit ) {
@@ -518,4 +520,3 @@ function put_nmonlog(req, res, bulk_unit) {
     // in order of request -> parser -> writer
     req.pipe(csvToJson).pipe(parser).pipe(writer);
 }
-
