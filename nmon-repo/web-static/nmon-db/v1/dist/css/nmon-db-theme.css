@@ -404,16 +404,17 @@ table.dataTable thead .sorting:after {
 }
 @media (max-width: 767px) {
   ul.timeline:before {
-    left: 40px;
+    left: 0px; // adjust timeline location to left
   }
   ul.timeline > li > .timeline-panel {
-    width: calc(10%);
-    width: -moz-calc(10%);
-    width: -webkit-calc(10%);
+    // adjust suitable width for media. original was 10% 
+    width: calc(94%);
+    width: -moz-calc(94%);
+    width: -webkit-calc(94%);
   }
   ul.timeline > li > .timeline-badge {
     top: 16px;
-    left: 15px;
+    left: -25px;
     margin-left: 0;
   }
   ul.timeline > li > .timeline-panel {
