@@ -86,18 +86,18 @@ util.inherits(NmonParser, Transform);
 
 // NmonParser _transform function
 //
-NmonParser.prototype._transform = function(data, encoding, done) {
+NmonParser.prototype._transform = function(chunk, encoding, callback) {
     var now = new Date();
 
-    if( data[0].substring(0, 3) === 'AAA' ) {
+    if( chunk[0].substring(0, 3) === 'AAA' ) {
         // Process lines which starts with 'AAA'
         //   'AAA' section is system generic information
         this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
-        this.log('['+ this._hostname + ':AAA]\033[m ' + data[1] + ',' + data[2] );
+        this.log('['+ this._hostname + ':AAA]\033[m ' + chunk[1] + ',' + chunk[2] );
             
         // TODO: change nmondataid generation policy
-        if (data[1] === 'date') {
-            this._docAAA['date'] = data[2]
+        if (chunk[1] === 'date') {
+            this._docAAA['date'] = chunk[2]
             this._nmondataid = this._docAAA['host'] + '$' + 
                                this._docAAA['date'] + '$' + 
                                this._docAAA['time'] + '$' + 
@@ -106,8 +106,8 @@ NmonParser.prototype._transform = function(data, encoding, done) {
             this._docAAA['nmon-data-id'] = this._nmondataid;
         }
 
-        if (data[1] === 'host') {
-            this._hostname = data[2];
+        if (chunk[1] === 'host') {
+            this._hostname = chunk[2];
             // add host prefix to _nmondataid
                 
             // TODO: 1. support time zone manipulation
@@ -117,26 +117,26 @@ NmonParser.prototype._transform = function(data, encoding, done) {
                 this._docAAA['timezone'] = 'KST'; // TODO: this is temporary
         }
 
-        if ( data[1] === 'max_disks' || data[1] === 'disks' ) 
-            this._docAAA[data[1]] = parseInt(data[2]) +',' + data[3];
-        else if ( data[1] === 'OS' )
-            this._docAAA[data[1]] = data[2] +',' + data[3] + data[4];
-        else if ( data[1] === 'x86' ) {
-            if ( data[2] === 'MHz' || data[2] === 'bogomips' )
-                this._docAAA['x86'][data[2]] = parseFloat(data[3]);
-            else if ( data[2] === 'ProcessorChips' || data[2] === 'Cores' 
-                   || data[2] === 'hyperthreads' || data[2] === 'VirtualCPUs')
-                this._docAAA['x86'][data[2]] = parseInt(data[3]);
+        if ( chunk[1] === 'max_disks' || chunk[1] === 'disks' ) 
+            this._docAAA[chunk[1]] = parseInt(chunk[2]) +',' + chunk[3];
+        else if ( chunk[1] === 'OS' )
+            this._docAAA[chunk[1]] = chunk[2] +',' + chunk[3] + chunk[4];
+        else if ( chunk[1] === 'x86' ) {
+            if ( chunk[2] === 'MHz' || chunk[2] === 'bogomips' )
+                this._docAAA['x86'][chunk[2]] = parseFloat(chunk[3]);
+            else if ( chunk[2] === 'ProcessorChips' || chunk[2] === 'Cores' 
+                   || chunk[2] === 'hyperthreads' || chunk[2] === 'VirtualCPUs')
+                this._docAAA['x86'][chunk[2]] = parseInt(chunk[3]);
             else  
-                this._docAAA['x86'][data[2]] = data[3];
+                this._docAAA['x86'][chunk[2]] = chunk[3];
         }
-        else if ( data[1] === 'interval' || data[1] === 'snapshots' || data[1] === 'disks_per_line' 
-               || data[1] === 'cpus' || data[1] === 'proc_stat_variables' )
-            this._docAAA[data[1]] = parseInt(data[2]);
+        else if ( chunk[1] === 'interval' || chunk[1] === 'snapshots' || chunk[1] === 'disks_per_line' 
+               || chunk[1] === 'cpus' || chunk[1] === 'proc_stat_variables' )
+            this._docAAA[chunk[1]] = parseInt(chunk[2]);
         else 
-            this._docAAA[data[1]] = data[2];
+            this._docAAA[chunk[1]] = chunk[2];
     }
-    else if( data[0].substring(0, 4) === 'BBBP' ) {
+    else if( chunk[0].substring(0, 4) === 'BBBP' ) {
         // TODO: AIX BBB section
         // Process lines which starts with 'BBB'
         //   for AIX
@@ -156,21 +156,21 @@ NmonParser.prototype._transform = function(data, encoding, done) {
         }
 
         var bbbp = {};
-        bbbp['seq'] = parseInt(data[1]);
-        bbbp['item'] = data[2];
-        bbbp['content'] = ( typeof data[3] === 'undefined' ) ? '' : data[3];
+        bbbp['seq'] = parseInt(chunk[1]);
+        bbbp['item'] = chunk[2];
+        bbbp['content'] = ( typeof chunk[3] === 'undefined' ) ? '' : chunk[3];
         this._docBBBP.push(bbbp);
             
         this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
-        this.log('['+ this._hostname + ':' + data[0] + ':' + data[1] + ']\033[m ' + data[2] + ',' + data[3]);
+        this.log('['+ this._hostname + ':' + chunk[0] + ':' + chunk[1] + ']\033[m ' + chunk[2] + ',' + chunk[3]);
     }
-    else if (data[0].substring(0, 4) === 'ZZZZ' ) {
+    else if (chunk[0].substring(0, 4) === 'ZZZZ' ) {
         // if parser meets ZZZZ section 
         // insert AAA and BBB document once
         if ( !this._isDocAAAInserted ) {
-            //    data[2] - Time, 15:44:04
-            //    data[3] - Date, 24-AUG-2046
-            var beginDateTime = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
+            //    chunk[2] - Time, 15:44:04
+            //    chunk[3] - Date, 24-AUG-2046
+            var beginDateTime = chunk[2] + ' ' + (typeof chunk[3] == "undefined" ? '1-JAN-1970' : chunk[3]);
             this._docZZZZ['datetime'] = (new Date(beginDateTime)).getTime();
             this._docAAA['BBBP'] = this._docBBBP;
 
@@ -181,15 +181,15 @@ NmonParser.prototype._transform = function(data, encoding, done) {
         // Process lines which starts with 'ZZZZ'
         //   'ZZZZ' section is a leading line for iterations of current resource utilization
         this._flushSave(); // call flushSave when new 'ZZZZ' has arrived
-                             // this can be a blocker not sending current data until getting next ZZZZ
+                           // this can be a blocker not sending current data until getting next ZZZZ
 
         this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
-        this.log('['+ this._hostname + ':ZZZZ:' + data[1] + ']\033[m ');
+        this.log('['+ this._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
 
         if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
             this.logZZZZ('\n\n==========================================================\n');
             this.logZZZZ('---- Processing new ZZZZ section\n');
-            this.logZZZZ('---- ' + data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3] + '\n');
+            this.logZZZZ('---- ' + chunk[0] + ',' + chunk[1] + ',' + chunk[2] + ',' + chunk[3] + '\n');
             this.logZZZZ('==========================================================');
         }
 
@@ -197,23 +197,24 @@ NmonParser.prototype._transform = function(data, encoding, done) {
         this._docZZZZ = {};
         this._docZZZZ['nmon-data-id'] = this._nmondataid;
         this._docZZZZ['host'] = this._hostname;
-        this._docZZZZ['snapframe'] = data[1]; // store T0001 ~ Txxxx
-        this._docZZZZ['snapdate'] = data[3];  // store 24-AUG-2016 ( consider locale )
-        this._docZZZZ['snaptime'] = data[2];  // store 15:49:13
+        this._docZZZZ['snapframe'] = chunk[1]; // store T0001 ~ Txxxx
+        this._docZZZZ['snapdate'] = chunk[3];  // store 24-AUG-2016 ( consider locale )
+        this._docZZZZ['snaptime'] = chunk[2];  // store 15:49:13
 
-        //    data[2] - Time, 15:44:04
-        //    data[3] - Date, 24-AUG-2046
-        var snapDateTime = data[2] + ' ' + (typeof data[3] == "undefined" ? '1-JAN-1970' : data[3]);
+        //    chunk[2] - Time, 15:44:04
+        //    chunk[3] - Date, 24-AUG-2046
+        var snapDateTime = chunk[2] + ' ' + (typeof chunk[3] == "undefined" ? '1-JAN-1970' : chunk[3]);
         // TODO: 1. support time zone manipulation. temporary convert nmon-tokyo to KST ( UTC + 9 hours )
         this._docZZZZ['datetime'] = (this._docZZZZ['host'] === 'nmon-tokyo') ? 
-                                           (new Date(snapDateTime)).getTime() + 9*60*60*1000 : (new Date(snapDateTime)).getTime();
+                                        (new Date(snapDateTime)).getTime() + 9*60*60*1000 : 
+                                        (new Date(snapDateTime)).getTime();
         this._docZZZZ['DISK_ALL'] = {};
         this._docZZZZ['NET_ALL'] = {};
         this._docZZZZ['TOP'] = []; // store in array
             
         this._cntTU = 0;
     }
-    else if (data[0] === 'UARG' && data[1] != '+Time') {
+    else if (chunk[0] === 'UARG' && chunk[1] != '+Time') {
         // UARG only apear once when TOP meets a new process or already running process.
         // So, just write UARG to db whenever meet.
 
@@ -221,14 +222,14 @@ NmonParser.prototype._transform = function(data, encoding, done) {
 
         docUARG['nmon-data-id'] = this._nmondataid;	// nmondataid to compare and search
         docUARG['host'] = this._hostname; // redundant but will be convenient 
-        docUARG['snapframe'] = data[1];     // store T0001 ~ Txxxx
+        docUARG['snapframe'] = chunk[1];     // store T0001 ~ Txxxx
         docUARG['snapdate'] = this._docZZZZ['snapdate'];  // add redundant snapdate
         docUARG['snaptime'] = this._docZZZZ['snaptime'];  // add redundant snaptime
         docUARG['datetime'] = this._docZZZZ['datetime'];  // add redundant datetime
 
-        docUARG['PID'] = parseInt(data[2]); // store process ID
-        docUARG['Comand'] = data[3];        // store Command
-        docUARG['FullCommand'] = data[4];   // store FullCommand 
+        docUARG['PID'] = parseInt(chunk[2]); // store process ID
+        docUARG['Comand'] = chunk[3];        // store Command
+        docUARG['FullCommand'] = chunk[4];   // store FullCommand 
 
         // just write to mongodb without bulk operation
         nmondbUARG.insert(docUARG);
@@ -236,7 +237,7 @@ NmonParser.prototype._transform = function(data, encoding, done) {
         // write parser log
         this.log('U');
         if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
-            this.logZZZZ('\n' + data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3] + ',' + data[4]);
+            this.logZZZZ('\n' + chunk[0] + ',' + chunk[1] + ',' + chunk[2] + ',' + chunk[3] + ',' + chunk[4]);
         }
         this._cntTU++;
     }
@@ -253,14 +254,14 @@ NmonParser.prototype._transform = function(data, encoding, done) {
         //     'JFSFILE': Journal file information
         //     'TOP':  process information
         //     'UARG': user process command parameter and informations
-        if( data[0] in this._rawHeader ) {
-            var h = this._rawHeader[data[0]];
+        if( chunk[0] in this._rawHeader ) {
+            var h = this._rawHeader[chunk[0]];
             var val = 0.0, iops = 0.0, read = 0.0, write = 0.0;
             var fields = {}; // fields container
             var logtype = '';
 
             // Log type
-            switch (data[0]) {
+            switch (chunk[0]) {
                 case 'CPU_ALL': logtype = 'C'; break;
                 case 'MEM': logtype = 'M'; break;
                 case 'NET': logtype = 'N'; break;
@@ -276,74 +277,74 @@ NmonParser.prototype._transform = function(data, encoding, done) {
 
             this.log(logtype);
             if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' )
-                this.logZZZZ('\n' + data[0] + ',' + data[1] + ',');
+                this.logZZZZ('\n' + chunk[0] + ',' + chunk[1] + ',');
 
             // line break for parser log 
             if ((h[0] === 'TOP' || h[0] === 'UARG') && this._cntTU % 80 == 0) {
                 this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
                 this.log('['+ this._hostname + ':ZZZZ:' + 
-                                   ((h[0] === 'TOP')? data[2] : data[1]) + ']\033[m ');
+                                   ((h[0] === 'TOP')? chunk[2] : chunk[1]) + ']\033[m ');
             }
 
             // In case of Top, Add process ID
             if (h[0] === 'TOP')
-                fields['PID'] = parseInt(data[1]);
+                fields['PID'] = parseInt(chunk[1]);
 
             // Iterate all columns
             for( var i = 2; i < h.length; i++ ) {
                 if(h[i] !== '') {
                     if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
-                        this.logZZZZ(data[i]);
+                        this.logZZZZ(chunk[i]);
 
                         if (i < h.length-1) this.logZZZZ(',');
                     }
 
                     if (h[0] === 'CPU_ALL') {
                         if (h[i] === 'User%')
-                            fields['User'] = parseFloat(data[i]);
+                            fields['User'] = parseFloat(chunk[i]);
                         else if (h[i] === 'Sys%')
-                            fields['Sys'] = parseFloat(data[i]);
+                            fields['Sys'] = parseFloat(chunk[i]);
                         else if (h[i] === 'Wait%')
-                            fields['Wait'] = parseFloat(data[i]);
+                            fields['Wait'] = parseFloat(chunk[i]);
                         else if (h[i] === 'CPUs' || h[i] === 'PhysicalCPUs')
-                            fields['CPUs'] = parseFloat(data[i]);
+                            fields['CPUs'] = parseFloat(chunk[i]);
                     }
                     else if (h[0] === 'MEM') {
                         if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
-                            fields['Real total'] = parseFloat(data[i]);
+                            fields['Real total'] = parseFloat(chunk[i]);
                         else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
-                            fields['Real free'] = parseFloat(data[i]);
+                            fields['Real free'] = parseFloat(chunk[i]);
                         else if (h[i] === 'swaptotal' || h[i] === 'Virtual total(MB)')
-                            fields['Virtual total'] = parseFloat(data[i]);
+                            fields['Virtual total'] = parseFloat(chunk[i]);
                         else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
-                            fields['Virtual free'] = parseFloat(data[i]);
+                            fields['Virtual free'] = parseFloat(chunk[i]);
                     }
                     else if (h[0] === 'NET') {
                         if( h[i].indexOf('read') != -1 )
-                            read += parseFloat(data[i]);
+                            read += parseFloat(chunk[i]);
                         else if( h[i].indexOf('write') != -1)
-                            write += parseFloat(data[i]);
+                            write += parseFloat(chunk[i]);
 
                     }
                     else if ((h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/)) {
-                        val += parseFloat(data[i]);
+                        val += parseFloat(chunk[i]);
                     }
                     else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d+$/)) {
-                        iops += parseFloat(data[i]);
+                        iops += parseFloat(chunk[i]);
                     }
                     else if (h[0] === 'TOP') {
                         // skip T0001 - T0001 has total time after boot
                         // TODO: process T0001 snap frame
-                        if (data[2] !== 'T0001') {
+                        if (chunk[2] !== 'T0001') {
                             if (h[0] === 'TOP') {
                                 switch ( h[i] ) {
                                     case 'Command': 
-                                        fields[h[i]] = data[i]; 
+                                        fields[h[i]] = chunk[i]; 
                                         break;
                                     case '%CPU':
                                     case '%Usr':
                                     case '%Sys':
-                                        fields[h[i]] = parseFloat(data[i]);
+                                        fields[h[i]] = parseFloat(chunk[i]);
                                         break;
                                     case 'Size':
                                     case 'ResSet':
@@ -352,7 +353,7 @@ NmonParser.prototype._transform = function(data, encoding, done) {
                                     case 'ShdLib':
                                     case 'MinorFault':
                                     case 'MajorFault':
-                                        fields[h[i]] = parseInt(data[i]);
+                                        fields[h[i]] = parseInt(chunk[i]);
                                         break;
                                 }
                             }
@@ -383,18 +384,18 @@ NmonParser.prototype._transform = function(data, encoding, done) {
             }
         }
         else {
-            if (!(data[0] === 'TOP' && data.length <= 2)) {
-                this.push(['nmon-categories', {name :data[0]}]);
-                this._rawHeader[data[0]] = data;
+            if (!(chunk[0] === 'TOP' && chunk.length <= 2)) {
+                this.push(['nmon-categories', {name :chunk[0]}]);
+                this._rawHeader[chunk[0]] = chunk;
             }
         }
     }
-    done();
+    callback();
 } // enf of NmonParser.prototype._transform 
 
-NmonParser.prototype._flush = function(done) {
+NmonParser.prototype._flush = function(callback) {
     this._flushSave();
-    done();
+    callback();
 }
 
 NmonParser.prototype._flushSave = function() {
