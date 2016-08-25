@@ -158,8 +158,8 @@ function get_hosts(req, res) {
     var url_info = url.parse(req.url, true);
 
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
-    var collection = nmondbZZZZ;
-    collection.distinct('host', {}, function (err, doc) {
+
+    nmondbZZZZ.distinct('host', {}, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
         res.writeHead(200, {'Content-Type': 'text/json'});
@@ -181,14 +181,14 @@ function get_titles(req, res) {
     var url_info = url.parse(req.url, true);
 
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
-    var collection = nmondbZZZZ;
     var query = { };
     if (m[1] !== 'All') {
         query['host'] = m[1];
     }
     var fields = { _id: 0 };
     fields[m[2]] = 1;
-    collection.findOne(query, fields, function (err, doc) {
+
+    nmondbZZZZ.findOne(query, fields, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
         var results = [];
@@ -214,7 +214,6 @@ function get_fields(req, res) {
     var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
-    var collection = nmondbZZZZ;
     var fields = {datetime:1, _id: 0};
     var average = ['Time'];
     for (var i = 0; i < data.length; i++) {
@@ -229,7 +228,7 @@ function get_fields(req, res) {
     if (typeof date !== 'undefined') {
         query['datetime'] = { $gt : date[0], $lt : date[1] };
     }
-    collection.count(query, function(err, doc) {
+    nmondbZZZZ.count(query, function(err, doc) {
         if (err)
             return error_handler(res, err, 500);
         if (doc) {
@@ -300,8 +299,8 @@ function get_top_fields(req, res) {
         group['val'] = { $avg : { $add: ["$TOP.ResText", "$TOP.ResData"] } }
 
     results.push(['Command', type]);
-    var collection = nmondbZZZZ;
-    collection.aggregate(
+
+    nmondbZZZZ.aggregate(
         {'$match' : match}, 
         {'$project': {TOP:1}}, 
         {'$unwind': '$TOP'}, 
