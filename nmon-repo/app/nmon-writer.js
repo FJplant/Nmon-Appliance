@@ -81,10 +81,14 @@ NmonWriter.prototype._transform = function(chunk, encoding, callback) {
 
         // TODO: if is just workaround for bug which write only datetime. have to fix it.
         //       there is some case with only datetime like {"datetime":1472140248000}
-        if (chunk[1].length >= 3 ) {
-          console.log(JSON.stringify(chunk[1]));
+        var test = JSON.stringify(chunk[1]);
+        if (test.length <= 100)
+            console.log(test);
+        if (test.length >= 100 ) {
+          // store data. main feature.
           this._bulk.push(chunk[1]);
         }
+        // workaround until here
 
         // flush writer if there is more data than bulk unit
         if ( this._bulk.length >= this._bulk_unit ) {
