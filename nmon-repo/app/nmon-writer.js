@@ -92,7 +92,7 @@ NmonWriter.prototype._transform = function(chunk, encoding, callback) {
 
         // flush writer if there is more data than bulk unit
         if ( this._bulk.length >= this._bulk_unit ) {
-            this._flushSave(callback);
+            this._flush(callback);
         }
         else {
             callback();
@@ -100,7 +100,7 @@ NmonWriter.prototype._transform = function(chunk, encoding, callback) {
     }
 };
 
-NmonWriter.prototype._flushSave = function(callback) {
+NmonWriter.prototype._flush = function(callback) {
     //process.stdout.write('F');
     // store remained nmon data to mongo db
     if( this._bulk.length > 0 ) {

@@ -399,12 +399,16 @@ NmonParser.prototype._flush = function(callback) {
 }
 
 NmonParser.prototype._flushSave = function() {
-    if (Object.keys(this._docZZZZ).length !== 0 ) {
+    // temporal workaround 
+    if (Object.keys(this._docZZZZ).length > 2 ) {
+    //if (Object.keys(this._docZZZZ).length !== 0 ) {
         this.push(['nmon-perf', this._docZZZZ]);
         this._cnt++;
         //loggerParser.stdout.write('f');
         if (this._cnt % 80 == 0)
             this.log('\n');
+    } else {
+        console.error('Strange _docZZZZ occurred: '  + JSON.stringify(this._docZZZZ));
     }
 }
 
