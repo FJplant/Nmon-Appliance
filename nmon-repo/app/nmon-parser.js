@@ -191,7 +191,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
             this.logZZZZ('\n---- Processing new ZZZZ section');
             this.logZZZZ('\n---- hostname: ' + this._hostname);
             this.logZZZZ('\n---- ' + chunk[0] + ',' + chunk[1] + ',' + chunk[2] + ',' + chunk[3]);
-            this.logZZZZ('\n==========================================================\n');
+            this.logZZZZ('\n==========================================================');
         }
 
         // Initialize new document for mongodb
