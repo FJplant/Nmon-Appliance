@@ -164,20 +164,11 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         // Process lines which starts with 'ZZZZ'
         //   'ZZZZ' section is a leading line for iterations of current resource utilization
 
+        // flush previous ZZZZ section when we meet new ZZZZ
         // call flushSave when new 'ZZZZ' has arrived
         // this can be a blocker not sending current data until getting next ZZZZ
-        this._flushSave(); 
-
-        //    chunk[2] - Time, 15:44:04
-        //    chunk[3] - Date, 24-AUG-2046
-        var beginDateTime = chunk[2] + ' ' + (typeof chunk[3] == "undefined" ? '1-JAN-1970' : chunk[3]);
-        // Strange writing of only datetime is related to 
-        // ordering of _flushSave() and following line
-        //    chunk[2] - Time, 15:44:04
-        this._docZZZZ['datetime'] = (new Date(beginDateTime)).getTime();
-
-        this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
-        this.log('['+ this._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
+        if (typeof this._docZZZZ['snapframe'] !== 'undefined')
+            this._flushSave(); 
 
         if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
             this.logZZZZ('\n\n==========================================================');
@@ -189,23 +180,32 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
 
         // Initialize new document for mongodb
         this._docZZZZ = {};
+
+        // Strange writing of only datetime is related to 
+        // ordering of _flushSave() and following line
+        this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+        this.log('['+ this._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
         this._docZZZZ['nmon-data-id'] = this._nmondataid;
         this._docZZZZ['host'] = this._hostname;
+
+        //    chunk[2] - Time, 15:44:04
+        //    chunk[3] - Date, 24-AUG-2046
         this._docZZZZ['snapframe'] = chunk[1]; // store T0001 ~ Txxxx
         this._docZZZZ['snapdate'] = chunk[3];  // store 24-AUG-2016 ( consider locale )
         this._docZZZZ['snaptime'] = chunk[2];  // store 15:49:13
 
-        //    chunk[2] - Time, 15:44:04
-        //    chunk[3] - Date, 24-AUG-2046
         var snapDateTime = chunk[2] + ' ' + (typeof chunk[3] == "undefined" ? '1-JAN-1970' : chunk[3]);
         // TODO: 1. support time zone manipulation. temporary convert nmon-tokyo to KST ( UTC + 9 hours )
         this._docZZZZ['datetime'] = (this._docZZZZ['host'] === 'nmon-tokyo') ? 
                                         (new Date(snapDateTime)).getTime() + 9*60*60*1000 : 
                                         (new Date(snapDateTime)).getTime();
+
+        // initialize DISK_ALL, NET_ALL, TOP
         this._docZZZZ['DISK_ALL'] = {};
         this._docZZZZ['NET_ALL'] = {};
         this._docZZZZ['TOP'] = []; // store in array
             
+        // reset _cntTU
         this._cntTU = 0;
     }
     else if (chunk[0] === 'UARG' && chunk[1] != '+Time') {
