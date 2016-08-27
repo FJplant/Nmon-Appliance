@@ -11,31 +11,13 @@
 module.exports = NmonParser;
 
 var fs = require('fs'),
-    util = require('util'),
-    mongojs = require('mongojs');
+    util = require('util');
 
 // TODO: remove nmdb environment. This is not realted to generic nmon-parser.js
-var nmdb = require('../config/nmdb-config.js');
-
-/*
- * Initialize mongodb connection
- *
- * TODO: get mongodb URL from constructor;
- */
-var  mongodb = mongojs(nmdb.env.NMDB_NMONDB_URL);
-mongodb.on('error', function(err) {
-    log.info('Nmon-db database error.', err);
-});
-
-mongodb.on('ready', function() {
-    log.info('Nmon-db database connected.');
-});
-
-var nmondbMETA = mongodb.collection('nmon-meta'),
-    nmondbZZZZ = mongodb.collection('nmon-perf'), // used after refactoring
-    nmondbUARG = mongodb.collection('nmon-uarg');
+var nmdb = require('../config/nmdb-config');
 
 const Transform = require('stream').Transform;
+const NmonWriter = require('./nmon-writer');
  
 function NmonParser(options) {
     // allow use without new
@@ -60,6 +42,11 @@ function NmonParser(options) {
     this._cnt = 0;
     this._diskTotal = {};
     this._cntTU = 0;
+
+    // NmonWriter
+    this._writer = new NmonWriter({
+        bulkUnit: options['bulkUnit']
+    });
 
     // Logging 
     this._loggerParser = null;
@@ -168,29 +155,36 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         // if parser meets ZZZZ section 
         // insert AAA and BBB document once
         if ( !this._isDocAAAInserted ) {
-            //    chunk[2] - Time, 15:44:04
-            //    chunk[3] - Date, 24-AUG-2046
-            var beginDateTime = chunk[2] + ' ' + (typeof chunk[3] == "undefined" ? '1-JAN-1970' : chunk[3]);
-            this._docZZZZ['datetime'] = (new Date(beginDateTime)).getTime();
             this._docAAA['BBBP'] = this._docBBBP;
 
-            nmondbMETA.insert(this._docAAA);
+            this._writer.writeMETA(this._docAAA);
             this._isDocAAAInserted = true;
         }
 
         // Process lines which starts with 'ZZZZ'
         //   'ZZZZ' section is a leading line for iterations of current resource utilization
-        this._flushSave(); // call flushSave when new 'ZZZZ' has arrived
-                           // this can be a blocker not sending current data until getting next ZZZZ
+
+        // call flushSave when new 'ZZZZ' has arrived
+        // this can be a blocker not sending current data until getting next ZZZZ
+        this._flushSave(); 
+
+        //    chunk[2] - Time, 15:44:04
+        //    chunk[3] - Date, 24-AUG-2046
+        var beginDateTime = chunk[2] + ' ' + (typeof chunk[3] == "undefined" ? '1-JAN-1970' : chunk[3]);
+        // Strange writing of only datetime is related to 
+        // ordering of _flushSave() and following line
+        //    chunk[2] - Time, 15:44:04
+        this._docZZZZ['datetime'] = (new Date(beginDateTime)).getTime();
 
         this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
         this.log('['+ this._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
 
         if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
-            this.logZZZZ('\n\n==========================================================\n');
-            this.logZZZZ('---- Processing new ZZZZ section\n');
-            this.logZZZZ('---- ' + chunk[0] + ',' + chunk[1] + ',' + chunk[2] + ',' + chunk[3] + '\n');
-            this.logZZZZ('==========================================================');
+            this.logZZZZ('\n\n==========================================================');
+            this.logZZZZ('\n---- Processing new ZZZZ section');
+            this.logZZZZ('\n---- hostname: ' + this._hostname);
+            this.logZZZZ('\n---- ' + chunk[0] + ',' + chunk[1] + ',' + chunk[2] + ',' + chunk[3]);
+            this.logZZZZ('\n==========================================================');
         }
 
         // Initialize new document for mongodb
@@ -232,7 +226,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         docUARG['FullCommand'] = chunk[4];   // store FullCommand 
 
         // just write to mongodb without bulk operation
-        nmondbUARG.insert(docUARG);
+        this._writer.writeUARG(docUARG);
 
         // write parser log
         this.log('U');
@@ -384,8 +378,9 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
             }
         }
         else {
+            // if found new row header, add it to categories
             if (!(chunk[0] === 'TOP' && chunk.length <= 2)) {
-                this.push(['nmon-categories', {name :chunk[0]}]);
+                this._writer.addCategory({name: chunk[0]});
                 this._rawHeader[chunk[0]] = chunk;
             }
         }
@@ -399,10 +394,8 @@ NmonParser.prototype._flush = function(callback) {
 }
 
 NmonParser.prototype._flushSave = function() {
-    // temporal workaround 
-    if (Object.keys(this._docZZZZ).length > 2 ) {
-    //if (Object.keys(this._docZZZZ).length !== 0 ) {
-        this.push(['nmon-perf', this._docZZZZ]);
+    if (Object.keys(this._docZZZZ).length !== 0 ) {
+        this._writer.writeZZZZ(this._docZZZZ);
         this._cnt++;
         //loggerParser.stdout.write('f');
         if (this._cnt % 80 == 0)

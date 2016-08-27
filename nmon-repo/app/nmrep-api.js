@@ -20,7 +20,6 @@ var rawParser = bodyParser.raw({
 
 var nmdb = require('../config/nmdb-config.js');
 var NmonParser = require('./nmon-parser.js');
-var NmonWriter = require('./nmon-writer.js');
 
 // expose this function to our app using module.exports
 module.exports = function(app, passport) {
@@ -39,7 +38,7 @@ module.exports = function(app, passport) {
                + req.connection.remoteAddress 
                + ' ==> '
                + req.url, process.pid);
-        put_nmonlog(req, res, 100);
+        put_nmonlog(req, res, 10);
     });
 }
 
@@ -86,6 +85,7 @@ function put_nmonlog(req, res, bulk_unit) {
     nmondbCategories.save({name: 'DISK_ALL'});
     nmondbCategories.save({name: 'NET_ALL'});
 
+    nmondbMETA.ensureIndex({'host': 1, 'date': 1});
     nmondbUARG.ensureIndex({'nmon-data-id': 1, Command: 1, PID: 1});
     nmondbZZZZ.ensureIndex({host: 1, datetime: 1}, {unique: true, background: true});
 
@@ -98,29 +98,20 @@ function put_nmonlog(req, res, bulk_unit) {
     // Intanciate nmon parser
     var nmonParser = new NmonParser({
         objectMode: true,
+        bulkUnit: bulk_unit,
         logfile: nmdb.env.NMREP_PARSER_LOG_FILE,
         loglevel: nmdb.env.NMREP_PARSER_LOG_LEVEL,
         logfileZZZZ: nmdb.env.NMREP_PARSER_ZZZZ_LOG_FILE,
         loglevelZZZZ: nmdb.env.NMREP_PARSER_ZZZZ_LOG_FILE
     });
 
-    // Write html response
-    // 
-    var nmonWriter = new NmonWriter({
-        objectMode: true,
-        bulkUnit: bulk_unit 
-    });
-
+    //  set response timeout to 0 
     res.connection.setTimeout(0);
 
     // processing nmon log upload by http request chaining 
     // in order of request -> parser -> writer
     nmonParser.on('finish', function() {
-          log.info('Parsing nmon data file finished.');
-    });
-
-    nmonWriter.on('finish', function() {
-        nmonWriter._flushSave();
+        nmonParser._flushSave();
         log.info('Parsing and storing of nmon data file finished.');
         // send HTTP 200 OK
         res.writeHead(200);
@@ -139,7 +130,8 @@ function put_nmonlog(req, res, bulk_unit) {
         callback()
     }
 
-    req.pipe(csvToJson).pipe(nmonParser).pipe(nmonWriter);
-    // Following is debug purpose. it write captures the pipe between nmonParser and nmonWriter, and write all to console.
-    //req.pipe(csvToJson).pipe(nmonParser).pipe(debug).pipe(nmonWriter);
+    req.pipe(csvToJson).pipe(nmonParser);
+
+    // Following is debug purpose. 
+    //req.pipe(csvToJson).pipe(debug).pipe(nmonParser);
 }

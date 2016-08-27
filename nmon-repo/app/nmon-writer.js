@@ -10,8 +10,7 @@
 
 module.exports = NmonWriter;
 
-var util = require('util'),
-    mongojs = require('mongojs');
+var mongojs = require('mongojs');
 
 // TODO: remove nmdb environment. This is not realted to generic nmon-parser.js
 // var nmdb = require('../config/nmdb-config.js');
@@ -31,10 +30,10 @@ mongodb.on('ready', function() {
     console.log('Nmon-db database connected.');
 });
 
-var nmondbZZZZ = mongodb.collection('nmon-perf'),
-    nmondbCategories = mongodb.collection('nmon-categories');
-
-const Transform = require('stream').Transform;
+var nmondbCategories = mongodb.collection('nmon-categories'),
+    nmondbMETA = mongodb.collection('nmon-meta'),
+    nmondbZZZZ = mongodb.collection('nmon-perf'),
+    nmondbUARG = mongodb.collection('nmon-uarg');
 
 // Constructor
 function NmonWriter(options) {
@@ -42,9 +41,6 @@ function NmonWriter(options) {
     if (!(this instanceof NmonWriter)) {
         return new NmonWriter(options);
     }
-
-    // init Transform
-    Transform.call(this, options);
 
     // Nmon Writer instance variables
     this._bulk = [];
@@ -55,65 +51,79 @@ function NmonWriter(options) {
     if (typeof options['bulkUnit'] != 'undefined') 
         this._bulk_unit = parseInt( options['bulkUnit'] );
 }
-util.inherits(NmonWriter, Transform);
 
-NmonWriter.prototype._transform = function(chunk, encoding, callback) {
-    //process.stdout.write('t');
-    if( chunk[0] === 'nmon-categories' ) {
-        this._header.push(chunk[1]);
-        callback();
+// TODO: DB error handling
+NmonWriter.prototype.writeMETA = function(meta) {
+    nmondbMETA.insert(meta);
+}
+
+// TODO: DB error handling
+NmonWriter.prototype.writeUARG = function(uarg) {
+    nmondbMETA.insert(uarg);
+}
+
+// TODO: DB error handling
+//       header should be moved to parser
+NmonWriter.prototype.addCategory = function(category) {
+    this._header.push(category);
+}
+
+// TODO: DB error handling
+NmonWriter.prototype.writeZZZZ = function(zzzz) {
+    // Check whether header was written,
+    // otherwise write header and set _headerWrite to true
+    if (!this._headerWrited) {
+        this._headerWrited = true;
+        var bulkop = nmondbCategories.initializeOrderedBulkOp();
+        for(var i = 0; i < this._header.length; i++)
+            bulkop.find(this._header[i]).upsert().update({ $set: this._header[i]});
+
+        bulkop.execute(function(err, res) {
+            if (err)
+                console.err(err.toString());
+            this._header = [];
+        });
     }
-    else {
-        // Check whether header was written,
-        // otherwise write header and set _headerWrite to true
-        if (!this._headerWrited) {
-            this._headerWrited = true;
-            var bulkop = nmondbCategories.initializeOrderedBulkOp();
-            for(var i = 0; i < this._header.length; i++)
-                bulkop.find(this._header[i]).upsert().update({ $set: this._header[i]});
 
-            bulkop.execute(function(err, res) {
-                if (err)
-                    console.err(err.toString());
-                this._header = [];
-            });
-        }
+    this._bulk.push(zzzz);
+    
+    // for debug purpose
+    console.log('Pushed host: ' + zzzz['host']
+              + ', Snapframe: ' + zzzz['snapframe']
+              + ', Keys: ' + Object.keys(zzzz).length
+              + ', Bulk count: ' + this._bulk.length
+              + ', Bulk Unit: ' + this._bulk_unit);
+    console.log('     , Keys: ' + Object.keys(zzzz));
+    // debug until here
 
-        this._bulk.push(chunk[1]);
+    // flush writer if there is more data than bulk unit
+    if ( this._bulk.length >= this._bulk_unit ) {
+        this._flushSave();
 
-        // flush writer if there is more data than bulk unit
-        if ( this._bulk.length >= this._bulk_unit ) {
-            this._flush(callback);
-        }
-        else {
-            callback();
-        }
+        // clear _bulk buffer
+        this._bulk = [];
+        //console.log('this._bulk was cleared...');
     }
-};
+}
 
-NmonWriter.prototype._flush = function(callback) {
+// Insert accumulated Nmon ZZZZ data
+NmonWriter.prototype._flushSave = function() {
     //process.stdout.write('F');
     // store remained nmon data to mongo db
     if( this._bulk.length > 0 ) {
         var bulkop = nmondbZZZZ.initializeOrderedBulkOp();
         for(var i = 0; i < this._bulk.length; i++) {
+            console.log('Insert #' + (i + 1) + ' item in _fluashSave()');
             bulkop.insert(this._bulk[i]);
         }
 
+        // execute bulk operation to database
         bulkop.execute(function(err, res) {
             if (err)
-                console.err(err.toString());
-
-            this._bulk = [];      // clear _bulk buffer
-
-            if (callback) {
-                callback();
+                console.error(err.toString());
+            else {
+                console.log('Successful inserted item counts to db: ' + res['nInserted']);
             }
         });
-    }
-    else { // if there is no data remained
-        if(callback) {
-            callback();
-        }
     }
 }
