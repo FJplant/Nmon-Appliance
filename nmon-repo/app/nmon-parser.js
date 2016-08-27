@@ -189,7 +189,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
             this.logZZZZ('\n\n==========================================================\n');
             this.logZZZZ('---- Processing new ZZZZ section\n');
-            this.logZZZZ('hostname: ' + this._hostname);
+            this.logZZZZ('---- hostname: ' + this._hostname);
             this.logZZZZ('---- ' + chunk[0] + ',' + chunk[1] + ',' + chunk[2] + ',' + chunk[3] + '\n');
             this.logZZZZ('==========================================================');
         }
