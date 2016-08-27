@@ -59,11 +59,11 @@ util.inherits(NmonWriter, Transform);
 
 NmonWriter.prototype._transform = function(chunk, encoding, callback) {
     //process.stdout.write('t');
-    if( chunk[0] === 'nmon-categories' ) {
+    if (chunk[0] === 'nmon-categories') {
         this._header.push(chunk[1]);
         callback();
     }
-    else {
+    else if (chunk[0] === 'nmon-perf') {
         // Check whether header was written,
         // otherwise write header and set _headerWrite to true
         if (!this._headerWrited) {
@@ -83,15 +83,18 @@ NmonWriter.prototype._transform = function(chunk, encoding, callback) {
 
         // flush writer if there is more data than bulk unit
         if ( this._bulk.length >= this._bulk_unit ) {
-            this._flush(callback);
+            this._flushSave(callback);
         }
         else {
             callback();
         }
     }
+    else {
+        console.log('Not processed chunk[0]:' + chunk[0] + ',' + JSON.stringify(chunk[1]));
+    }
 };
 
-NmonWriter.prototype._flush = function(callback) {
+NmonWriter.prototype._flushSave = function(callback) {
     //process.stdout.write('F');
     // store remained nmon data to mongo db
     if( this._bulk.length > 0 ) {
