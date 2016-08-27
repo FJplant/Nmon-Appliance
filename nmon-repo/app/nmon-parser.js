@@ -167,6 +167,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         // flush previous ZZZZ section when we meet new ZZZZ
         // call flushSave when new 'ZZZZ' has arrived
         // this can be a blocker not sending current data until getting next ZZZZ
+        // Fix the bug: NMIO-158-nmon-data-parsing-nmon-perf
         if (typeof this._docZZZZ['snapframe'] !== 'undefined')
             this._flushSave(); 
 
