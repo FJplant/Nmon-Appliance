@@ -11,6 +11,7 @@
     "ejs": "~1.0.0",
     "express": "latest",
     "express-session": "latest",
+    "file-stream-rotator": "latest",
     "forever": "latest",
     "mongojs": "latest",
     "mongoose": "~4.4",

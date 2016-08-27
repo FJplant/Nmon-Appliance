@@ -76,15 +76,16 @@ if (cluster.isMaster) {
 } else {
     // get all the tools we need
     var express  = require('express');
+    var session  = require('express-session');
+    var morgan   = require('morgan');
     var mongoose = require('mongoose');
     var passport = require('passport');
     var flash    = require('connect-flash');
 
-    var session      = require('express-session');
     var MongoStore   = require('connect-mongo')(session);
-    var morgan       = require('morgan');
     var cookieParser = require('cookie-parser');
     var bodyParser   = require('body-parser');
+    var FileStreamRotator = require('file-stream-rotator');
 
     // load database configuration
     var nmdb = require('./config/nmdb-config.js');
@@ -98,8 +99,19 @@ if (cluster.isMaster) {
 
     require('./config/passport')(passport); // pass passport for configuration
 
+    // set up rotated access log
+    var accessLogStream = FileStreamRotator.getStream({
+        date_format: 'YYYYMMDD',
+        filename: nmdb.env.NMDB_LOG_PATH + '/nmdb-access-%DATE%.log',
+        frequency: 'daily',
+        verbose: false
+    });
+
     // set up our express application
-    app.use(morgan('dev')); // log every request to the console
+    app.use(morgan('dev', {
+        immediate: true,
+        stream: accessLogStream
+    })); // log every request to rotated filestream
     app.use(cookieParser('NMCRE7')); // read cookies (needed for auth)
     app.use(bodyParser.urlencoded({ 
         limit: '200mb',          // to avoid 'request entity too large'
