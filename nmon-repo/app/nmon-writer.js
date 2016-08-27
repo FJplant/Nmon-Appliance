@@ -94,6 +94,7 @@ NmonWriter.prototype._transform = function(chunk, encoding, callback) {
     }
 };
 
+// Insert accumulated Nmon ZZZZ data
 NmonWriter.prototype._flushSave = function(callback) {
     //process.stdout.write('F');
     // store remained nmon data to mongo db

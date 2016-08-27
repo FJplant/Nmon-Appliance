@@ -39,7 +39,7 @@ module.exports = function(app, passport) {
                + req.connection.remoteAddress 
                + ' ==> '
                + req.url, process.pid);
-        put_nmonlog(req, res, 100);
+        put_nmonlog(req, res, 10);
     });
 }
 
