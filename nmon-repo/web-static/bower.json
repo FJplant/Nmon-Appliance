@@ -1,5 +1,5 @@
 {
-  "name": "nmon-dashboard-1",
+  "name": "nmon-dashboard-v1",
   "homepage": "http://www.nmon.io",
   "version": "1.0.0",
   "authors": [
@@ -7,8 +7,8 @@
   ],
   "description": "Nmon Dashboard Appliance ( Cloud ) ",
   "keywords": [
-    "bootstrap",
-    "theme"
+    "nmon dashboard",
+    "nmon analyzer"
   ],
   "license": "MIT",
   "ignore": [
@@ -16,20 +16,21 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests",
     "pages",
     "index.html",
     "/js"
   ],
   "main": [
-    "dist/css/sb-admin-2.css",
-    "dist/js/sb-admin-2.js"
+    "dist/css/nmon-db-theme.css",
+    "dist/js/nmon-db-theme.js"
   ],
   "dependencies": {
     "bootstrap": "~3.3.7",
     "jquery": "latest",
     "jquery-ui": "latest",
     "d3": "~3.5.17",
+    "crossfilter": "~1.3.12",
+    "dcjs": "~1.7.5",
     "nvd3": "~1.8.4",
     "datatables": "~1.10.4",
     "datatables-plugins": "~1.0.1",
