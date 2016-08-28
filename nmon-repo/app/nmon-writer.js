@@ -59,7 +59,7 @@ NmonWriter.prototype.writeMETA = function(meta) {
 
 // TODO: DB error handling
 NmonWriter.prototype.writeUARG = function(uarg) {
-    nmondbMETA.insert(uarg);
+    nmondbUARG.insert(uarg);
 }
 
 // TODO: DB error handling
