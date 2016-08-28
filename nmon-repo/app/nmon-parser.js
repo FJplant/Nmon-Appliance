@@ -209,14 +209,22 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         this._docZZZZ['datetime'] = (this._docZZZZ['host'] === 'nmon-tokyo') ? 
                                         (new Date(snapDateTime)).getTime() + 9*60*60*1000 : 
                                         (new Date(snapDateTime)).getTime();
+
+        // Initialize for db insert ordering 
         this._docZZZZ['CPU'] = [];
         this._docZZZZ['CPU_ALL'] = {};
+        this._docZZZZ['MEM'] = [];
+        this._docZZZZ['VM'] = [];
+        this._docZZZZ['PROC'] = [];
+        this._docZZZZ['NET'] = [];
+        this._docZZZZ['NETPACKET'] = [];
+        this._docZZZZ['DISKSTATS'] = [];
+        this._docZZZZ['JFSFILE'] = [];
+        this._docZZZZ['TOP'] = []; // store in array
 
         // initialize DISK_ALL, NET_ALL, TOP
         this._docZZZZ['DISK_ALL'] = {};
         this._docZZZZ['NET_ALL'] = {};
-        this._docZZZZ['NET'] = [];
-        this._docZZZZ['TOP'] = []; // store in array
             
         // reset _cntTU
         this._cntTU = 0;
@@ -367,23 +375,25 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                     else if (h[0] === 'NET') {
                         if( h[i].indexOf('read') != -1 ) {
                             var adapter_idx = i - 2;
-                            this._netstats[adapter_idx]['read-KB/s'] = parseFloat(chunk[i]);
+                            this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
 
                             read += parseFloat(chunk[i]);
                         }
                         else if( h[i].indexOf('write') != -1) {
                             var adapter_idx = (i - 2) - this._netstats.length;
-                            this._netstats[adapter_idx]['write-KB/s'] = parseFloat(chunk[i]);
+                            this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
                             
                             write += parseFloat(chunk[i]);
                         }
                     }
                     else if (h[0] === 'NETPACKET') {
                         if( h[i].indexOf('read/s') != -1 ) {
-                            readps += parseFloat(chunk[i]);
+                            var adapter_idx = i - 2;
+                            this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
                         }
                         else if( h[i].indexOf('write/s') != -1) {
-                            writeps += parseFloat(chunk[i]);
+                            var adapter_idx = (i - 2) - this._netstats.length;
+                            this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
                         }
                     }
                     //       have to index (i-2) to _diskstats because here is more column before real data
@@ -469,6 +479,9 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                 this._docZZZZ['NET_ALL']['read'] = read;
                 this._docZZZZ['NET_ALL']['write'] = write;
             }
+            else if (h[0] === 'NETPACKET') {
+                this._docZZZZ['NETPACKET'] = this._netstats;
+            }
             // end of set summary data
         } // end of if
         else {
@@ -491,14 +504,27 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                         } );
                     }
                 }
-
+                else
                 if ( chunk[0] === 'NET' ) { 
                     var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
+                    this._netstats = [];   // initialize _netstats buffer
                     for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
                         this._netstats.push( {
                             'adapter_id' : chunk[i].split('-')[0],
                             'read-KB/s' : 0.,
                             'write-KB/s' : 0.
+                        } );
+                    }
+                }
+                else
+                if ( chunk[0] === 'NETPACKET' ) { 
+                    var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
+                    this._netstats = [];   // initialize _netstats buffer
+                    for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
+                        this._netstats.push( {
+                            'adapter_id' : chunk[i].split('-')[0],
+                            'read/s' : 0.,
+                            'write/s' : 0.
                         } );
                     }
                 }
