@@ -336,6 +336,10 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                             fields['Idle%'] = parseFloat(chunk[i]);
                     }
                     else if (h[0] === 'MEM') {
+                        // Store all original fields first
+                        fields[h[i]] = parseFloat(chunk[i]) + .0;
+
+                        // Remove following lines after fixing nmdb-api
                         // second condition is for AIX nmon data file 
                         if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
                             fields['Real total'] = parseFloat(chunk[i]);
