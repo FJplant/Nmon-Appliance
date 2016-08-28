@@ -90,10 +90,11 @@ NmonWriter.prototype.writeZZZZ = function(zzzz) {
     // for debug purpose
     console.log('Pushed host: ' + zzzz['host']
               + ', Snapframe: ' + zzzz['snapframe']
+              + ', Snaptime: ' + zzzz['snaptime']
               + ', Keys: ' + Object.keys(zzzz).length
-              + ', Bulk count: ' + this._bulk.length
-              + ', Bulk Unit: ' + this._bulk_unit);
-    console.log('     , Keys: ' + Object.keys(zzzz));
+              + ', Bulk Unit: ' + this._bulk_unit
+              + ', Document count: ' + this._bulk.length);
+    //console.log('     , Keys: ' + Object.keys(zzzz));
     // debug until here
 
     // flush writer if there is more data than bulk unit
@@ -113,7 +114,7 @@ NmonWriter.prototype._flushSave = function() {
     if( this._bulk.length > 0 ) {
         var bulkop = nmondbZZZZ.initializeOrderedBulkOp();
         for(var i = 0; i < this._bulk.length; i++) {
-            console.log('Insert #' + (i + 1) + ' item in _fluashSave()');
+            //console.log('Insert #' + (i + 1) + ' item in _fluashSave()');
             bulkop.insert(this._bulk[i]);
         }
 
@@ -122,7 +123,7 @@ NmonWriter.prototype._flushSave = function() {
             if (err)
                 console.error(err.toString());
             else {
-                console.log('Successful inserted item counts to db: ' + res['nInserted']);
+                //console.log('Successful inserted item counts to db: ' + res['nInserted']);
             }
         });
     }

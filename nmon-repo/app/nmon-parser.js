@@ -38,9 +38,9 @@ function NmonParser(options) {
     this._isDocAAAInserted = false;
     this._docBBBP = [];
     this._docZZZZ = {};
+    this._diskstats = [];
     this._rawHeader = {};
     this._cnt = 0;
-    this._diskTotal = {};
     this._cntTU = 0;
 
     // NmonWriter
@@ -73,6 +73,7 @@ util.inherits(NmonParser, Transform);
 
 // NmonParser _transform function
 //
+// TODO: separate functions body
 NmonParser.prototype._transform = function(chunk, encoding, callback) {
     var now = new Date();
 
@@ -213,6 +214,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         // initialize DISK_ALL, NET_ALL, TOP
         this._docZZZZ['DISK_ALL'] = {};
         this._docZZZZ['NET_ALL'] = {};
+        this._docZZZZ['NET'] = [];
         this._docZZZZ['TOP'] = []; // store in array
             
         // reset _cntTU
@@ -263,25 +265,34 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
             // TODO: Separate val, iops, readkb, writekb, readps, writeps to db
             var val = 0.0, iops = 0.0, 
                 read = 0.0, write = 0.0, 
-                readps = 0.0, writeps = 0.0,
-                jfsused = 0.0;
+                readps = 0.0, writeps = 0.0;
             var fields = {}; // fields container
             var logtype = '';
 
             // Log type
-            switch (chunk[0]) {
-                case 'CPU_ALL': logtype = 'A'; break;
-                case 'MEM': logtype = 'M'; break;
-                case 'NET': logtype = 'N'; break;
-                case 'DISKREAD': logtype = 'R'; break;
-                case 'DISKWRITE': logtype = 'W'; break;
-                case 'DISKXFER': logtype = 'w'; break;
-                case 'TOP': 
-                    logtype = 'T';
-                    this._cntTU++;
-                    break;
-                default: logtype = '?'; break;
-            };
+            if (chunk[0].substring(0,3) === 'CPU')
+                logtype = 'C'; 
+            else {
+                switch (chunk[0]) {
+                    case 'CPU_ALL': logtype = 'A'; break;
+                    case 'MEM': logtype = 'M'; break;
+                    case 'VM': logtype = 'V'; break;
+                    case 'PROC': logtype = 'P'; break;
+                    case 'NET': logtype = 'N'; break;
+                    case 'NETPACKET': logtype = 'P'; break;
+                    case 'DISKBUSY': logtype = 'B'; break;
+                    case 'DISKREAD': logtype = 'R'; break;
+                    case 'DISKWRITE': logtype = 'W'; break;
+                    case 'DISKXFER': logtype = 'X'; break;
+                    case 'DISKBSIZE': logtype = 'B'; break;
+                    case 'JFSFILE': logtype = 'J'; break;
+                    case 'TOP': 
+                        logtype = 'T';
+                        this._cntTU++;
+                        break;
+                    default: logtype = '?'; break;
+                }
+            }
 
             this.log(logtype);
             if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' )
@@ -360,22 +371,39 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                             write += parseFloat(chunk[i]);
                     }
                     else if (h[0] === 'NETPACKET') {
-                        if( h[i].indexOf('read/s') != -1 )
+                        if( h[i].indexOf('read/s') != -1 ) {
                             readps += parseFloat(chunk[i]);
-                        else if( h[i].indexOf('write/s') != -1)
+                        }
+                        else if( h[i].indexOf('write/s') != -1) {
                             writeps += parseFloat(chunk[i]);
+                        }
                     }
                     // TODO: separate DISK statistics.
                     //       every fields should go to array
-                    else if ((h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0 ||
-                              h[0].indexOf("DISKBUSY")== 0 || h[0].indexOf("DISKXFER")== 0 ||
-                              h[0].indexOf("DISKBSIZE")== 0) && h[i].match(/.+\d+$/)) {
+                    //       have to index i - 2 to _diskstats because here is more column before real data
+                    else if (h[0].indexOf("DISKBUSY")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['%Busy'] = parseFloat(chunk[i]);
+                    }
+                    else if (h[0].indexOf("DISKREAD")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['ReadKB'] = parseFloat(chunk[i]);
+
                         val += parseFloat(chunk[i]);
+                    }
+                    else if (h[0].indexOf("DISKWRITE")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['WriteKB'] = parseFloat(chunk[i]);
+
+                        val += parseFloat(chunk[i]);
+                    }
+                    else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['tps'] = parseFloat(chunk[i]);
+                    }
+                    else if (h[0].indexOf("DISKBSIZE")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['BlockSize'] = parseFloat(chunk[i]);
                     }
                     // TODO: separate JFS filesystem used %
                     //       should go to array
                     else if (h[0].indexOf("JFSFILE")== 0) {
-                        jfsused += parseFloat(chunk[i]);
+                        fields[h[i]] = parseFloat(chunk[i]);
                     }
                     else if (h[0] === 'TOP') {
                         // skip T0001 - T0001 has total time after boot
@@ -418,6 +446,10 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                     this._docZZZZ[h[0]] = fields;
             }
 
+            if (h[0] === 'DISKBSIZE')         // set disk stats
+                this._docZZZZ['DISKSTATS'] = this._diskstats;
+
+            // Set summary data
             if( h[0] === 'DISKREAD' ) {
                 this._docZZZZ['DISK_ALL']['read'] = val;
             }
@@ -431,12 +463,28 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                 this._docZZZZ['NET_ALL']['read'] = read;
                 this._docZZZZ['NET_ALL']['write'] = write;
             }
-        }
+
+            // set 
+        } // end of if
         else {
             // if found new row header, add it to categories
             if (!(chunk[0] === 'TOP' && chunk.length <= 2)) {
                 this._writer.addCategory({name: chunk[0]});
                 this._rawHeader[chunk[0]] = chunk;
+                
+                // Initialize disk list
+                if ( chunk[0] === 'DISKBUSY' ) { 
+                    for ( var i = 2; i < chunk.length; i++ ) {
+                        this._diskstats.push( {
+                            'diskid' : chunk[i],
+                            '%Busy' : 0.,
+                            'ReadKB' : 0.,
+                            'WriteKB' : 0.,
+                            'tps' : 0.,
+                            'BlockSize' : 0.
+                        } );
+                    }
+                }
             }
         }
     }
