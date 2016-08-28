@@ -336,6 +336,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                             fields['Idle%'] = parseFloat(chunk[i]);
                     }
                     else if (h[0] === 'MEM') {
+                        // second condition is for AIX nmon data file 
                         if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
                             fields['Real total'] = parseFloat(chunk[i]);
                         else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
@@ -346,7 +347,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                             fields['Virtual free'] = parseFloat(chunk[i]);
                     }
                     else if (h[0] === 'VM') {
-
+                        fields[h[i]] = parseInt(chunk[i]);
                     }
                     else if (h[0] === 'PROC') {
 
