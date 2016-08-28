@@ -346,11 +346,8 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                         else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
                             fields['Virtual free'] = parseFloat(chunk[i]);
                     }
-                    else if (h[0] === 'VM') {
+                    else if (h[0] === 'VM' || h[0] === 'PROC') {
                         fields[h[i]] = parseInt(chunk[i]);
-                    }
-                    else if (h[0] === 'PROC') {
-
                     }
                     else if (h[0] === 'NET') {
                         if( h[i].indexOf('read') != -1 )
