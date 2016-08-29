@@ -7,7 +7,8 @@ OPTION="-w \\n\\n%{http_code} %{url_effective} %{time_total}\\n\\n"
 
 function nmonlog_upload {
     echo -e "> upload nmonlog...\n"
-    curl $VERBOSE "$OPTION" -X POST --data-binary @$1 http://$HOSTNAME:$PORT/nmonlog_bulk
+#    curl $VERBOSE "$OPTION" -X POST --data-binary @$1 http://$HOSTNAME:$PORT/nmonlog_bulk
+    curl $VERBOSE "$OPTION" -X POST --data-urlencode nmonlog@$1 http://$HOSTNAME:$PORT/nmonlog_bulk
 }
 
 function categories_list {
