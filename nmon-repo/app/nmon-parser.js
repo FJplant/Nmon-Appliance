@@ -13,7 +13,7 @@ module.exports = NmonParser;
 var fs = require('fs'),
     util = require('util');
 
-// TODO: remove nmdb environment. This is not realted to generic nmon-parser.js
+// TODO: change nmdb environment. This is not realted to generic nmon-parser.js
 var nmdb = require('../config/nmdb-config');
 
 const Transform = require('stream').Transform;
@@ -32,15 +32,42 @@ function NmonParser(options) {
     this._hostname = '* N/A *';
 
     this._nmondataid = null;
-    this._docAAA = {'nmon-data-id':'', 'date':'', 'time':'', 'datetime':0, 'timezone':'', 
-                    'interval':9999, 'snapshots':9999, 'x86': {} };
+    // to preserve data storing order, list all AAA items in advance
+    this._docAAA = {
+        'nmon-data-id':'', 
+        'database-version': '1.0',
+        'datetime':0, 
+        'timezone':'UTC', // default to UTC
+        'progname': '',
+        'command': '',
+        'version': '',
+        'disks_per_line': 0,
+        'max_disks': 0,
+        'disks': 0,
+        'host': '',
+        'user': '',
+        'OS': '',
+        'runname': '',
+        'time': '',
+        'date': '',
+        'interval': 0, 
+        'snapshots': 0, 
+        'cpus': 0,
+        'x86': {},
+        'proc_stat_variables': 0, 
+        'note0': '',
+        'note1': '',
+        'note2': ''
+    };
+
     // TODO: change to state machine notation
     this._isDocAAAInserted = false;
     this._docBBBP = [];
     this._docZZZZ = {};
+    this._diskstats = [];
+    this._netstats = [];
     this._rawHeader = {};
     this._cnt = 0;
-    this._diskTotal = {};
     this._cntTU = 0;
 
     // NmonWriter
@@ -73,6 +100,7 @@ util.inherits(NmonParser, Transform);
 
 // NmonParser _transform function
 //
+// TODO: separate functions body
 NmonParser.prototype._transform = function(chunk, encoding, callback) {
     var now = new Date();
 
@@ -82,9 +110,22 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
         this.log('['+ this._hostname + ':AAA]\033[m ' + chunk[1] + ',' + chunk[2] );
             
-        // TODO: change nmondataid generation policy
-        if (chunk[1] === 'date') {
-            this._docAAA['date'] = chunk[2]
+        if (chunk[1] === 'time') {
+            var time = chunk[2];
+            this._docAAA['time'] = time.replace(/\./gi,':');  // fix leading "." before seconds in linux nmon file             
+        } 
+        else if (chunk[1] === 'date') {
+            this._docAAA['date'] = chunk[2];
+
+            //console.log('date: ' + this._docAAA['date'] + ', time: ' + this._docAAA['time'] );
+
+            // if parser meet AAA,date then, time field is already filled
+            var beginDateTime = this._docAAA['date'] + ' ' + this._docAAA['time'];
+            this._docAAA['datetime'] = (new Date(beginDateTime)).getTime();
+
+            //console.log('beginDateTime: ' + beginDateTime + ', datetime: ' + (new Date(beginDateTime)).getTime());
+
+            // TODO: change nmondataid generation policy
             this._nmondataid = this._docAAA['host'] + '$' + 
                                this._docAAA['date'] + '$' + 
                                this._docAAA['time'] + '$' + 
@@ -92,19 +133,18 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                                this._docAAA['command']; 
             this._docAAA['nmon-data-id'] = this._nmondataid;
         }
-
-        if (chunk[1] === 'host') {
+        else if (chunk[1] === 'host') {
             this._hostname = chunk[2];
             // add host prefix to _nmondataid
                 
+            this._docAAA['host'] = chunk[2]; 
             // TODO: 1. support time zone manipulation
             if ( this._hostname === 'nmon-tokyo' )
                 this._docAAA['timezone'] = 'UTC'; // TODO: this is temporary
             else 
                 this._docAAA['timezone'] = 'KST'; // TODO: this is temporary
         }
-
-        if ( chunk[1] === 'max_disks' || chunk[1] === 'disks' ) 
+        else if ( chunk[1] === 'max_disks' || chunk[1] === 'disks' ) 
             this._docAAA[chunk[1]] = parseInt(chunk[2]) +',' + chunk[3];
         else if ( chunk[1] === 'OS' )
             this._docAAA[chunk[1]] = chunk[2] +',' + chunk[3] + chunk[4];
@@ -137,11 +177,6 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
             
         // BBBP section 
         //    linux only supports BBBP section
-        if ( this._docAAA['datetime'] == 0 ) { 
-            var beginDateTime = this._docAAA['date'] + ' ' + this._docAAA['time'];
-            this._docAAA['datetime'] = (new Date(beginDateTime)).getTime();
-        }
-
         var bbbp = {};
         bbbp['seq'] = parseInt(chunk[1]);
         bbbp['item'] = chunk[2];
@@ -201,10 +236,21 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                                         (new Date(snapDateTime)).getTime() + 9*60*60*1000 : 
                                         (new Date(snapDateTime)).getTime();
 
+        // Initialize for db insert ordering 
+        this._docZZZZ['CPU'] = [];
+        this._docZZZZ['CPU_ALL'] = {};
+        this._docZZZZ['MEM'] = [];
+        this._docZZZZ['VM'] = [];
+        this._docZZZZ['PROC'] = [];
+        this._docZZZZ['NET'] = [];
+        this._docZZZZ['NETPACKET'] = [];
+        this._docZZZZ['DISKSTATS'] = [];
+        this._docZZZZ['JFSFILE'] = [];
+        this._docZZZZ['TOP'] = []; // store in array
+
         // initialize DISK_ALL, NET_ALL, TOP
         this._docZZZZ['DISK_ALL'] = {};
         this._docZZZZ['NET_ALL'] = {};
-        this._docZZZZ['TOP'] = []; // store in array
             
         // reset _cntTU
         this._cntTU = 0;
@@ -251,24 +297,36 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         //     'UARG': user process command parameter and informations
         if( chunk[0] in this._rawHeader ) {
             var h = this._rawHeader[chunk[0]];
-            var val = 0.0, iops = 0.0, read = 0.0, write = 0.0;
+            var val = 0.0, iops = 0.0, 
+                read = 0.0, write = 0.0, 
+                readps = 0.0, writeps = 0.0;
             var fields = {}; // fields container
             var logtype = '';
 
             // Log type
-            switch (chunk[0]) {
-                case 'CPU_ALL': logtype = 'C'; break;
-                case 'MEM': logtype = 'M'; break;
-                case 'NET': logtype = 'N'; break;
-                case 'DISKREAD': logtype = 'R'; break;
-                case 'DISKWRITE': logtype = 'W'; break;
-                case 'DISKXFER': logtype = 'w'; break;
-                case 'TOP': 
-                    logtype = 'T';
-                    this._cntTU++;
-                    break;
-                default: logtype = '?'; break;
-            };
+            if (chunk[0].substring(0,3) === 'CPU')
+                logtype = 'C'; 
+            else {
+                switch (chunk[0]) {
+                    case 'CPU_ALL': logtype = 'A'; break;
+                    case 'MEM': logtype = 'M'; break;
+                    case 'VM': logtype = 'V'; break;
+                    case 'PROC': logtype = 'P'; break;
+                    case 'NET': logtype = 'N'; break;
+                    case 'NETPACKET': logtype = 'P'; break;
+                    case 'DISKBUSY': logtype = 'B'; break;
+                    case 'DISKREAD': logtype = 'R'; break;
+                    case 'DISKWRITE': logtype = 'W'; break;
+                    case 'DISKXFER': logtype = 'X'; break;
+                    case 'DISKBSIZE': logtype = 'B'; break;
+                    case 'JFSFILE': logtype = 'J'; break;
+                    case 'TOP': 
+                        logtype = 'T';
+                        this._cntTU++;
+                        break;
+                    default: logtype = '?'; break;
+                }
+            }
 
             this.log(logtype);
             if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' )
@@ -284,6 +342,10 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
             // In case of Top, Add process ID
             if (h[0] === 'TOP')
                 fields['PID'] = parseInt(chunk[1]);
+
+            // In case of CPUXXXX, initilize CPU
+            if (h[0].substring(0, 3) === 'CPU' && h[0] != 'CPU_ALL')
+                fields['CPU#'] = chunk[0];
 
             // Iterate all columns
             for( var i = 2; i < h.length; i++ ) {
@@ -301,10 +363,29 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                             fields['Sys'] = parseFloat(chunk[i]);
                         else if (h[i] === 'Wait%')
                             fields['Wait'] = parseFloat(chunk[i]);
+                        else if (h[i] === 'Idle%')
+                            fields['Idle%'] = parseFloat(chunk[i]);
+                        else if (h[i] === 'Busy') // Busy column has empty data for both of aix and linux
+                            fields['Busy'] = -1;
                         else if (h[i] === 'CPUs' || h[i] === 'PhysicalCPUs')
                             fields['CPUs'] = parseFloat(chunk[i]);
                     }
+                    else if (h[0].substring(0, 3) === 'CPU') {
+                        if (h[i] === 'User%')
+                            fields['User%'] = parseFloat(chunk[i]);
+                        else if (h[i] === 'Sys%')
+                            fields['Sys%'] = parseFloat(chunk[i]);
+                        else if (h[i] === 'Wait%')
+                            fields['Wait%'] = parseFloat(chunk[i]);
+                        else if (h[i] === 'Idle%')
+                            fields['Idle%'] = parseFloat(chunk[i]);
+                    }
                     else if (h[0] === 'MEM') {
+                        // Store all original fields first
+                        fields[h[i]] = parseFloat(chunk[i]) + .0;
+
+                        // Remove following lines after fixing nmdb-api
+                        // second condition is for AIX nmon data file 
                         if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
                             fields['Real total'] = parseFloat(chunk[i]);
                         else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
@@ -314,18 +395,55 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                         else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
                             fields['Virtual free'] = parseFloat(chunk[i]);
                     }
-                    else if (h[0] === 'NET') {
-                        if( h[i].indexOf('read') != -1 )
-                            read += parseFloat(chunk[i]);
-                        else if( h[i].indexOf('write') != -1)
-                            write += parseFloat(chunk[i]);
-
+                    else if (h[0] === 'VM' || h[0] === 'PROC') {
+                        fields[h[i]] = parseInt(chunk[i]);
                     }
-                    else if ((h[0].indexOf("DISKREAD")== 0 || h[0].indexOf("DISKWRITE")== 0) && h[i].match(/.+\d+$/)) {
+                    else if (h[0] === 'NET') {
+                        if( h[i].indexOf('read') != -1 ) {
+                            var adapter_idx = i - 2;
+                            this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
+
+                            read += parseFloat(chunk[i]);
+                        }
+                        else if( h[i].indexOf('write') != -1) {
+                            var adapter_idx = (i - 2) - this._netstats.length;
+                            this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
+                            
+                            write += parseFloat(chunk[i]);
+                        }
+                    }
+                    else if (h[0] === 'NETPACKET') {
+                        if( h[i].indexOf('read/s') != -1 ) {
+                            var adapter_idx = i - 2;
+                            this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
+                        }
+                        else if( h[i].indexOf('write/s') != -1) {
+                            var adapter_idx = (i - 2) - this._netstats.length;
+                            this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
+                        }
+                    }
+                    //       have to index (i-2) to _diskstats because here is more column before real data
+                    else if (h[0].indexOf("DISKBUSY")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['%Busy'] = parseFloat(chunk[i]);
+                    }
+                    else if (h[0].indexOf("DISKREAD")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['ReadKB'] = parseFloat(chunk[i]);
+
                         val += parseFloat(chunk[i]);
                     }
-                    else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d+$/)) {
-                        iops += parseFloat(chunk[i]);
+                    else if (h[0].indexOf("DISKWRITE")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['WriteKB'] = parseFloat(chunk[i]);
+
+                        val += parseFloat(chunk[i]);
+                    }
+                    else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['tps'] = parseFloat(chunk[i]);
+                    }
+                    else if (h[0].indexOf("DISKBSIZE")== 0 && h[i].match(/.+\d*$/)) {
+                        this._diskstats[i-2]['BlockSize'] = parseFloat(chunk[i]);
+                    }
+                    else if (h[0].indexOf("JFSFILE")== 0) {
+                        fields[h[i]] = parseFloat(chunk[i]);
                     }
                     else if (h[0] === 'TOP') {
                         // skip T0001 - T0001 has total time after boot
@@ -357,13 +475,20 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                 } // end of if
             } // end of for
 
+            // write to _docZZZZ
             if (Object.keys(fields).length !== 0) {
-                if (h[0] === 'TOP')
-                    this._docZZZZ[h[0]].push(fields);
+                if (h[0].substring(0, 3) === 'CPU' && h[0] !== 'CPU_ALL')
+                    this._docZZZZ['CPU'].push(fields);
+                else if (h[0] === 'TOP')
+                    this._docZZZZ['TOP'].push(fields);
                 else
                     this._docZZZZ[h[0]] = fields;
             }
 
+            if (h[0] === 'DISKBSIZE')         // set disk stats
+                this._docZZZZ['DISKSTATS'] = this._diskstats;
+
+            // Set summary data
             if( h[0] === 'DISKREAD' ) {
                 this._docZZZZ['DISK_ALL']['read'] = val;
             }
@@ -374,15 +499,61 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
                 this._docZZZZ['DISK_ALL']['iops'] = iops;
             }
             else if (h[0] === 'NET') {
+                this._docZZZZ['NET'] = this._netstats;
+
+                // TODO: remove folllowing lines after chaning logic
                 this._docZZZZ['NET_ALL']['read'] = read;
                 this._docZZZZ['NET_ALL']['write'] = write;
             }
-        }
+            else if (h[0] === 'NETPACKET') {
+                this._docZZZZ['NETPACKET'] = this._netstats;
+            }
+            // end of set summary data
+        } // end of if
         else {
             // if found new row header, add it to categories
             if (!(chunk[0] === 'TOP' && chunk.length <= 2)) {
                 this._writer.addCategory({name: chunk[0]});
                 this._rawHeader[chunk[0]] = chunk;
+                
+                // Initialize disk list. 
+                // This is necessary because DISKSTSTS spans to multi rows. 
+                if ( chunk[0] === 'DISKBUSY' ) { 
+                    for ( var i = 2; i < chunk.length; i++ ) {
+                        this._diskstats.push( {
+                            'diskid' : chunk[i],
+                            '%Busy' : 0.,
+                            'ReadKB' : 0.,
+                            'WriteKB' : 0.,
+                            'tps' : 0.,
+                            'BlockSize' : 0.
+                        } );
+                    }
+                }
+                else
+                if ( chunk[0] === 'NET' ) { 
+                    var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
+                    this._netstats = [];   // initialize _netstats buffer
+                    for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
+                        this._netstats.push( {
+                            'adapter_id' : chunk[i].split('-')[0],
+                            'read-KB/s' : 0.,
+                            'write-KB/s' : 0.
+                        } );
+                    }
+                }
+                else
+                if ( chunk[0] === 'NETPACKET' ) { 
+                    var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
+                    this._netstats = [];   // initialize _netstats buffer
+                    for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
+                        this._netstats.push( {
+                            'adapter_id' : chunk[i].split('-')[0],
+                            'read/s' : 0.,
+                            'write/s' : 0.
+                        } );
+                    }
+                }
             }
         }
     }

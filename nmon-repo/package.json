@@ -22,7 +22,6 @@
     "passport-twitter": "~1.0.2",
     "swig": "latest",
     "winston": "latest",
-
     "morgan": "~1.7.0",
     "body-parser": "~1.15.2",
     "cookie-parser": "~1.4.3",
