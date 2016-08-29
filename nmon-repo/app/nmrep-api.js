@@ -12,35 +12,11 @@ var winston = require('winston'),
     mongojs = require('mongojs'),
     bodyParser = require('body-parser'),
     csv = require('csv-streamify'),
+    Readable = require('stream').Readable,
     Transform = require('stream').Transform;
-
-var rawParser = bodyParser.raw({
-        limit: '200m'
-});
 
 var nmdb = require('../config/nmdb-config.js');
 var NmonParser = require('./nmon-parser.js');
-
-// expose this function to our app using module.exports
-module.exports = function(app, passport) {
-    // Add dynamic local handlers
-    // Add PUT methods for nmon-agent
-    app.post('/nmonlog', function(req, res) {
-        log.info('[Process %d:/nmonlog] ' 
-               + req.connection.remoteAddress 
-               + ' ==> '
-               + req.url, process.pid);
-        put_nmonlog(req, res, 1);
-    });
-
-    app.post('/nmonlog_bulk', rawParser, function(req, res) {
-        log.info('[Process %d:/nmonlog_bulk] ' 
-               + req.connection.remoteAddress 
-               + ' ==> '
-               + req.url, process.pid);
-        put_nmonlog(req, res, 10);
-    });
-}
 
 /*
  * Initialize winston logger
@@ -71,16 +47,9 @@ var nmondbMETA = mongodb.collection('nmon-meta'),
     nmondbUARG = mongodb.collection('nmon-uarg'),
     nmondbCategories = mongodb.collection('nmon-categories');
 
-/*
- * Put nmonlog 
- *
- *   - processing by http request chaining
- *       order: request -> parser -> writer
- *   - parse nmon log
- *   - store parsed nmon data to mongodb
- *
- */
-function put_nmonlog(req, res, bulk_unit) {
+// expose this function to our app using module.exports
+module.exports = function(app, passport) {
+    // TODO: move following index section to other place where has configure function
     nmondbCategories.ensureIndex({name: 1}, {unique: true, background: true});
     nmondbCategories.save({name: 'DISK_ALL'});
     nmondbCategories.save({name: 'NET_ALL'});
@@ -92,7 +61,69 @@ function put_nmonlog(req, res, bulk_unit) {
     // create reserved index on (datetime) to assure performance and non-skewed index db.
     // 2016.5.18. ymk
     nmondbZZZZ.ensureIndex({datetime: -1, host: 1}, {unique: true, background: true});
-     
+
+    // Add dynamic local handlers
+    app.use(bodyParser.urlencoded({
+        extended: true,
+        limit: '200m'
+    }));
+
+    app.use(bodyParser.raw({
+        extended: true,
+        limit: '200m',
+        type: 'application/octet-stream'
+    }));
+
+    app.use(bodyParser.json({
+    }));
+
+    // Add PUT methods for nmon-agent
+    app.post('/nmonlog', function(req, res) {
+        //console.log('Host name: ' + req.hostname);
+        //console.log('Remote IP: ' + req.ip);
+        //console.log('Request method: ' + req.method);
+        //console.log('Request path: ' + req.path);
+        //console.log('Requested base URL: ' + req.baseUrl);
+        //console.log('Requested body: ' + JSON.stringify(req.body));
+
+        log.info('[Process %d:/nmonlog] ' 
+               + req.connection.remoteAddress 
+               + ' ==> '
+               + req.url, process.pid);
+        put_nmonlog(req, res, 1);
+    });
+
+    app.post('/nmonlog_bulk', function(req, res) {
+        //console.log('Host name: ' + req.hostname);
+        //console.log('Remote IP: ' + req.ip);
+        //console.log('Request method: ' + req.method);
+        //console.log('Request path: ' + req.path);
+        //console.log('Requested base URL: ' + req.baseUrl);
+        //console.log('Requested body: ' + JSON.stringify(req.body));
+
+        if(!req.body || req.body.length === 0) {
+            console.log('request body not found');
+            return res.sendStatus(400);
+        }
+
+        log.info('[Process %d:/nmonlog_bulk] ' 
+               + req.connection.remoteAddress 
+               + ' ==> '
+               + req.url, process.pid);
+        put_nmonlog(req, res, 10);
+    });
+}
+
+/*
+ * Put nmonlog 
+ *
+ *   - processing by http request chaining
+ *       order: request -> parser -> writer
+ *   - parse nmon log
+ *   - store parsed nmon data to mongodb
+ *
+ */
+function put_nmonlog(req, res, bulk_unit) {
     var csvToJson = csv({objectMode: true});
 
     // Intanciate nmon parser
@@ -130,8 +161,17 @@ function put_nmonlog(req, res, bulk_unit) {
         callback()
     }
 
-    req.pipe(csvToJson).pipe(nmonParser);
+    // TODO: merge two processing method
+    //       Now, due to bug NMIO-183
+    if ( bulk_unit > 1 ) {
+        var nmonStream = new Readable();
+        nmonStream.push(req.body['nmonlog']);
+        nmonStream.push(null);
 
-    // Following is debug purpose. 
-    //req.pipe(csvToJson).pipe(debug).pipe(nmonParser);
+        nmonStream.pipe(csvToJson).pipe(nmonParser);
+        // Following is debug purpose. 
+        // nmonStream.pipe(csvToJson).pipe(debug).pipe(nmonParser);
+    } else {
+        req.pipe(csvToJson).pipe(nmonParser);
+    }
 }
