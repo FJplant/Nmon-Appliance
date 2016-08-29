@@ -123,6 +123,41 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         this.parseNmonPerf(chunk);
     
     callback();  // last call for callback()
+
+    // AIX SECTIONS ( Total 33 sections )
+    // AAA
+    // BBBB
+    // BBBC
+    // BBBD
+    // BBBN
+    // BBBP
+    // BBBV
+    // CPU_ALL
+    // CPUxx
+    // DISKBSIZEx
+    // DISKBUSYx
+    // DISKREADx
+    // DISKRXFERx
+    // DISKWRITEx
+    // DISKXFERx
+    // FILE
+    // IOADAPT
+    // JFSFILE
+    // JFSINODE
+    // LARGEPAGE
+    // MEM
+    // MEMNEW
+    // MEMUSE
+    // NET
+    // NETERROR
+    // NETPACKET
+    // NETSIZE
+    // PAGE
+    // PROC
+    // PROCAIO
+    // TOP
+    // UARG
+    // ZZZZ
 } // enf of NmonParser.prototype._transform 
 
 NmonParser.prototype._flush = function(callback) {
