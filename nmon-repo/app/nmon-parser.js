@@ -102,12 +102,11 @@ util.inherits(NmonParser, Transform);
 //
 // TODO: separate functions body
 NmonParser.prototype._transform = function(chunk, encoding, callback) {
-    var now = new Date();
 
     if( chunk[0].substring(0, 3) === 'AAA' ) {
         // Process lines which starts with 'AAA'
         //   'AAA' section is system generic information
-        this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+        this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
         this.log('['+ this._hostname + ':AAA]\033[m ' + chunk[1] + ',' + chunk[2] );
             
         if (chunk[1] === 'time') {
@@ -183,7 +182,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
         bbbp['content'] = ( typeof chunk[3] === 'undefined' ) ? '' : chunk[3];
         this._docBBBP.push(bbbp);
             
-        this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+        this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
         this.log('['+ this._hostname + ':' + chunk[0] + ':' + chunk[1] + ']\033[m ' + chunk[2] + ',' + chunk[3]);
     }
     else if (chunk[0].substring(0, 4) === 'ZZZZ' ) {
@@ -219,7 +218,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
 
         // Strange writing of only datetime is related to 
         // ordering of _flushSave() and following line
-        this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+        this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
         this.log('['+ this._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
         this._docZZZZ['nmon-data-id'] = this._nmondataid;
         this._docZZZZ['host'] = this._hostname;
@@ -334,7 +333,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
 
             // line break for parser log 
             if ((h[0] === 'TOP' || h[0] === 'UARG') && this._cntTU % 80 == 0) {
-                this.log('\n\033[1;34m[' + now.toLocaleTimeString() + ']-');
+                this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
                 this.log('['+ this._hostname + ':ZZZZ:' + 
                                    ((h[0] === 'TOP')? chunk[2] : chunk[1]) + ']\033[m ');
             }
