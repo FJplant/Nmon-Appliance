@@ -32,8 +32,34 @@ function NmonParser(options) {
     this._hostname = '* N/A *';
 
     this._nmondataid = null;
-    this._docAAA = {'nmon-data-id':'', 'date':'', 'time':'', 'datetime':0, 'timezone':'', 
-                    'interval':9999, 'snapshots':9999, 'x86': {} };
+    // to preserve data storing order, list all AAA items in advance
+    this._docAAA = {
+        'nmon-data-id':'', 
+        'database-version': '1.0',
+        'datetime':0, 
+        'timezone':'UTC', // default to UTC
+        'progname': '',
+        'command': '',
+        'version': '',
+        'disks_per_line': 0,
+        'max_disks': 0,
+        'disks': 0,
+        'host': '',
+        'user': '',
+        'OS': '',
+        'runname': '',
+        'time': '',
+        'date': '',
+        'interval': 0, 
+        'snapshots': 0, 
+        'cpus': 0,
+        'x86': {},
+        'proc_stat_variables': 0, 
+        'note0': '',
+        'note1': '',
+        'note2': ''
+    };
+
     // TODO: change to state machine notation
     this._isDocAAAInserted = false;
     this._docBBBP = [];
