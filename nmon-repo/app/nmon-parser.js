@@ -120,7 +120,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
     else if (chunk[0] === 'UARG' && chunk[1] != '+Time')    // Process UARG line
         this.parseNmonUARG(chunk);
     else                                                    // Process other perf log line CPUxxx, MEM, and so on
-        this.parseNmonPerfLog(chunk);
+        this.parseNmonPerf(chunk);
     
     callback();  // last call for callback()
 } // enf of NmonParser.prototype._transform 
@@ -140,6 +140,18 @@ NmonParser.prototype._flushSave = function() {
     } else {
         console.error('Strange _docZZZZ occurred: '  + JSON.stringify(this._docZZZZ));
     }
+}
+
+// Log helper function
+NmonParser.prototype.log = function(msg) {
+    if ( this._loggerParser != null )
+        this._loggerParser.write(msg);
+}
+
+// Log helper function for ZZZZ section
+NmonParser.prototype.logZZZZ = function(msg) {
+    if ( this._loggerParserZZZZ != null )
+        this._loggerParserZZZZ.write(msg);
 }
 
 NmonParser.prototype.parseNmonAAA = function(chunk) {
@@ -315,7 +327,10 @@ NmonParser.prototype.parseNmonUARG = function(chunk) {
     this._cntTU++;
 }
 
-NmonParser.prototype.parseNmonPerfLog = function(chunk) {
+// NmonParser.prototype.parseNmonPerf
+//   - Entry point for Nmon perf section
+//   - Calls parseNmonPerfHeader or parseNmonPefLog
+NmonParser.prototype.parseNmonPerf = function(chunk) {
     // Processing lines wich not starts with 'AAA', 'BBB', 'ZZZ'
     //   for AIX: 
     //     'CPU_ALL', 'CPUxx': 
@@ -328,277 +343,277 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
     //     'JFSFILE': Journal file information
     //     'TOP':  process information
     //     'UARG': user process command parameter and informations
-    if( chunk[0] in this._rawHeader ) {
-        var h = this._rawHeader[chunk[0]];
-        var val = 0.0, iops = 0.0, 
-            read = 0.0, write = 0.0, 
-            readps = 0.0, writeps = 0.0;
-        var fields = {}; // fields container
-        var logtype = '';
+    if( chunk[0] in this._rawHeader )    // process Nmon Perf log
+        this.parseNmonPerfLog(chunk);
+    else 
+        this.parseNmonPerfHeader(chunk); // process Nmon Perf header
+}
 
-        // Log type
-        if (chunk[0].substring(0,3) === 'CPU')
-            logtype = 'C'; 
-        else {
-            switch (chunk[0]) {
-                case 'CPU_ALL': logtype = 'A'; break;
-                case 'MEM': logtype = 'M'; break;
-                case 'VM': logtype = 'V'; break;
-                case 'PROC': logtype = 'P'; break;
-                case 'NET': logtype = 'N'; break;
-                case 'NETPACKET': logtype = 'P'; break;
-                case 'DISKBUSY': logtype = 'B'; break;
-                case 'DISKREAD': logtype = 'R'; break;
-                case 'DISKWRITE': logtype = 'W'; break;
-                case 'DISKXFER': logtype = 'X'; break;
-                case 'DISKBSIZE': logtype = 'B'; break;
-                case 'JFSFILE': logtype = 'J'; break;
-                case 'TOP': 
-                    logtype = 'T';
-                    this._cntTU++;
-                    break;
-                default: logtype = '?'; break;
+// NmonParser.prototype.parseNmonPerfHeader
+//   - parse nmon performance section's header
+//   - process parsed data to maintain header
+NmonParser.prototype.parseNmonPerfHeader = function(chunk) {
+    // if found new row header, add it to categories
+    if (!(chunk[0] === 'TOP' && chunk.length <= 2)) {   // if not a top first section which has only flag fields
+        this._writer.addCategory({name: chunk[0]});
+        this._rawHeader[chunk[0]] = chunk;
+        
+        // Initialize disk list. 
+        // This is necessary because DISKSTSTS spans to multi rows. 
+        if ( chunk[0] === 'DISKBUSY' ) { 
+            for ( var i = 2; i < chunk.length; i++ ) {
+                this._diskstats.push( {
+                    'diskid' : chunk[i],
+                    '%Busy' : 0.,
+                    'ReadKB' : 0.,
+                    'WriteKB' : 0.,
+                    'tps' : 0.,
+                    'BlockSize' : 0.
+                } );
             }
         }
-
-        this.log(logtype);
-        if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' )
-            this.logZZZZ('\n' + chunk[0] + ',' + chunk[1] + ',');
-
-        // line break for parser log 
-        if ((h[0] === 'TOP' || h[0] === 'UARG') && this._cntTU % 80 == 0) {
-            this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
-            this.log('['+ this._hostname + ':ZZZZ:' + 
-                               ((h[0] === 'TOP')? chunk[2] : chunk[1]) + ']\033[m ');
-        }
-
-        // In case of Top, Add process ID
-        if (h[0] === 'TOP')
-            fields['PID'] = parseInt(chunk[1]);
-
-        // In case of CPUXXXX, initilize CPU
-        if (h[0].substring(0, 3) === 'CPU' && h[0] != 'CPU_ALL')
-            fields['CPU#'] = chunk[0];
-
-        // Iterate all columns
-        for( var i = 2; i < h.length; i++ ) {
-            if(h[i] !== '') {
-                if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
-                    this.logZZZZ(chunk[i]);
-
-                    if (i < h.length-1) this.logZZZZ(',');
-                }
-
-                if (h[0] === 'CPU_ALL') {
-                    if (h[i] === 'User%')
-                        fields['User'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'Sys%')
-                        fields['Sys'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'Wait%')
-                        fields['Wait'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'Idle%')
-                        fields['Idle%'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'Busy') // Busy column has empty data for both of aix and linux
-                        fields['Busy'] = -1;
-                    else if (h[i] === 'CPUs' || h[i] === 'PhysicalCPUs')
-                        fields['CPUs'] = parseFloat(chunk[i]);
-                }
-                else if (h[0].substring(0, 3) === 'CPU') {
-                    if (h[i] === 'User%')
-                        fields['User%'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'Sys%')
-                        fields['Sys%'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'Wait%')
-                        fields['Wait%'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'Idle%')
-                        fields['Idle%'] = parseFloat(chunk[i]);
-                }
-                else if (h[0] === 'MEM') {
-                    // Store all original fields first
-                    fields[h[i]] = parseFloat(chunk[i]) + .0;
-
-                    // Remove following lines after fixing nmdb-api
-                    // second condition is for AIX nmon data file 
-                    if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
-                        fields['Real total'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
-                        fields['Real free'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'swaptotal' || h[i] === 'Virtual total(MB)')
-                        fields['Virtual total'] = parseFloat(chunk[i]);
-                    else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
-                        fields['Virtual free'] = parseFloat(chunk[i]);
-                }
-                else if (h[0] === 'VM' || h[0] === 'PROC') {
-                    fields[h[i]] = parseInt(chunk[i]);
-                }
-                else if (h[0] === 'NET') {
-                    if( h[i].indexOf('read') != -1 ) {
-                        var adapter_idx = i - 2;
-                        this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
-
-                        read += parseFloat(chunk[i]);
-                    }
-                    else if( h[i].indexOf('write') != -1) {
-                        var adapter_idx = (i - 2) - this._netstats.length;
-                        this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
-                        
-                        write += parseFloat(chunk[i]);
-                    }
-                }
-                else if (h[0] === 'NETPACKET') {
-                    if( h[i].indexOf('read/s') != -1 ) {
-                        var adapter_idx = i - 2;
-                        this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
-                    }
-                    else if( h[i].indexOf('write/s') != -1) {
-                        var adapter_idx = (i - 2) - this._netstats.length;
-                        this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
-                    }
-                }
-                //       have to index (i-2) to _diskstats because here is more column before real data
-                else if (h[0].indexOf("DISKBUSY")== 0 && h[i].match(/.+\d*$/)) {
-                    this._diskstats[i-2]['%Busy'] = parseFloat(chunk[i]);
-                }
-                else if (h[0].indexOf("DISKREAD")== 0 && h[i].match(/.+\d*$/)) {
-                    this._diskstats[i-2]['ReadKB'] = parseFloat(chunk[i]);
-
-                    val += parseFloat(chunk[i]);
-                }
-                else if (h[0].indexOf("DISKWRITE")== 0 && h[i].match(/.+\d*$/)) {
-                    this._diskstats[i-2]['WriteKB'] = parseFloat(chunk[i]);
-
-                    val += parseFloat(chunk[i]);
-                }
-                else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d*$/)) {
-                    this._diskstats[i-2]['tps'] = parseFloat(chunk[i]);
-                }
-                else if (h[0].indexOf("DISKBSIZE")== 0 && h[i].match(/.+\d*$/)) {
-                    this._diskstats[i-2]['BlockSize'] = parseFloat(chunk[i]);
-                }
-                else if (h[0].indexOf("JFSFILE")== 0) {
-                    fields[h[i]] = parseFloat(chunk[i]);
-                }
-                else if (h[0] === 'TOP') {
-                    // skip T0001 - T0001 has total time after boot
-                    // TODO: process T0001 snap frame
-                    if (chunk[2] !== 'T0001') {
-                        if (h[0] === 'TOP') {
-                            switch ( h[i] ) {
-                                case 'Command': 
-                                    fields[h[i]] = chunk[i]; 
-                                    break;
-                                case '%CPU':
-                                case '%Usr':
-                                case '%Sys':
-                                    fields[h[i]] = parseFloat(chunk[i]);
-                                    break;
-                                case 'Size':
-                                case 'ResSet':
-                                case 'ResText':
-                                case 'ResData':
-                                case 'ShdLib':
-                                case 'MinorFault':
-                                case 'MajorFault':
-                                    fields[h[i]] = parseInt(chunk[i]);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            } // end of if
-        } // end of for
-
-        // write to _docZZZZ
-        if (Object.keys(fields).length !== 0) {
-            if (h[0].substring(0, 3) === 'CPU' && h[0] !== 'CPU_ALL')
-                this._docZZZZ['CPU'].push(fields);
-            else if (h[0] === 'TOP')
-                this._docZZZZ['TOP'].push(fields);
-            else
-                this._docZZZZ[h[0]] = fields;
-        }
-
-        if (h[0] === 'DISKBSIZE')         // set disk stats
-            this._docZZZZ['DISKSTATS'] = this._diskstats;
-
-        // Set summary data
-        if( h[0] === 'DISKREAD' ) {
-            this._docZZZZ['DISK_ALL']['read'] = val;
-        }
-        else if (h[0] === 'DISKWRITE') {
-            this._docZZZZ['DISK_ALL']['write'] = val;
-        }
-        else if (h[0] === 'DISKXFER') {
-            this._docZZZZ['DISK_ALL']['iops'] = iops;
-        }
-        else if (h[0] === 'NET') {
-            this._docZZZZ['NET'] = this._netstats;
-
-            // TODO: remove folllowing lines after chaning logic
-            this._docZZZZ['NET_ALL']['read'] = read;
-            this._docZZZZ['NET_ALL']['write'] = write;
-        }
-        else if (h[0] === 'NETPACKET') {
-            this._docZZZZ['NETPACKET'] = this._netstats;
-        }
-        // end of set summary data
-    } // end of if
-    else {
-        // if found new row header, add it to categories
-        if (!(chunk[0] === 'TOP' && chunk.length <= 2)) {
-            this._writer.addCategory({name: chunk[0]});
-            this._rawHeader[chunk[0]] = chunk;
-            
-            // Initialize disk list. 
-            // This is necessary because DISKSTSTS spans to multi rows. 
-            if ( chunk[0] === 'DISKBUSY' ) { 
-                for ( var i = 2; i < chunk.length; i++ ) {
-                    this._diskstats.push( {
-                        'diskid' : chunk[i],
-                        '%Busy' : 0.,
-                        'ReadKB' : 0.,
-                        'WriteKB' : 0.,
-                        'tps' : 0.,
-                        'BlockSize' : 0.
-                    } );
-                }
+        else
+        if ( chunk[0] === 'NET' ) { 
+            var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
+            this._netstats = [];   // initialize _netstats buffer
+            for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
+                this._netstats.push( {
+                    'adapter_id' : chunk[i].split('-')[0],
+                    'read-KB/s' : 0.,
+                    'write-KB/s' : 0.
+                } );
             }
-            else
-            if ( chunk[0] === 'NET' ) { 
-                var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
-                this._netstats = [];   // initialize _netstats buffer
-                for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
-                    this._netstats.push( {
-                        'adapter_id' : chunk[i].split('-')[0],
-                        'read-KB/s' : 0.,
-                        'write-KB/s' : 0.
-                    } );
-                }
-            }
-            else
-            if ( chunk[0] === 'NETPACKET' ) { 
-                var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
-                this._netstats = [];   // initialize _netstats buffer
-                for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
-                    this._netstats.push( {
-                        'adapter_id' : chunk[i].split('-')[0],
-                        'read/s' : 0.,
-                        'write/s' : 0.
-                    } );
-                }
+        }
+        else
+        if ( chunk[0] === 'NETPACKET' ) { 
+            var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
+            this._netstats = [];   // initialize _netstats buffer
+            for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
+                this._netstats.push( {
+                    'adapter_id' : chunk[i].split('-')[0],
+                    'read/s' : 0.,
+                    'write/s' : 0.
+                } );
             }
         }
     }
 }
 
-// Log helper function
-NmonParser.prototype.log = function(msg) {
-    if ( this._loggerParser != null )
-        this._loggerParser.write(msg);
-}
+// NmonParser.prototype.parseNmonPerfLog
+//   - parse nmon performance section
+//   - insert parsed data to database
+NmonParser.prototype.parseNmonPerfLog = function(chunk) {
+    var h = this._rawHeader[chunk[0]];
+    var val = 0.0, iops = 0.0, 
+        read = 0.0, write = 0.0, 
+        readps = 0.0, writeps = 0.0;
+    var fields = {}; // fields container
+    var logtype = '';
 
-// Log helper function for ZZZZ section
-NmonParser.prototype.logZZZZ = function(msg) {
-    if ( this._loggerParserZZZZ != null )
-        this._loggerParserZZZZ.write(msg);
+    // Assign log type to write log file
+    if (chunk[0].substring(0,3) === 'CPU')
+        logtype = 'C'; 
+    else {
+        switch (chunk[0]) {
+            case 'CPU_ALL': logtype = 'A'; break;
+            case 'MEM': logtype = 'M'; break;
+            case 'VM': logtype = 'V'; break;
+            case 'PROC': logtype = 'P'; break;
+            case 'NET': logtype = 'N'; break;
+            case 'NETPACKET': logtype = 'P'; break;
+            case 'DISKBUSY': logtype = 'B'; break;
+            case 'DISKREAD': logtype = 'R'; break;
+            case 'DISKWRITE': logtype = 'W'; break;
+            case 'DISKXFER': logtype = 'X'; break;
+            case 'DISKBSIZE': logtype = 'B'; break;
+            case 'JFSFILE': logtype = 'J'; break;
+            case 'TOP': 
+                logtype = 'T';
+                this._cntTU++;
+                break;
+            default: logtype = '?'; break;
+        }
+    }
+
+    this.log(logtype);
+    if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' )
+        this.logZZZZ('\n' + chunk[0] + ',' + chunk[1] + ',');
+
+    // line break for parser log 
+    if ((h[0] === 'TOP' || h[0] === 'UARG') && this._cntTU % 80 == 0) {
+        this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
+        this.log('['+ this._hostname + ':ZZZZ:' + 
+                           ((h[0] === 'TOP')? chunk[2] : chunk[1]) + ']\033[m ');
+    }
+
+    // In case of Top, Add process ID
+    if (h[0] === 'TOP')
+        fields['PID'] = parseInt(chunk[1]);
+
+    // In case of CPUXXXX, initilize CPU
+    if (h[0].substring(0, 3) === 'CPU' && h[0] != 'CPU_ALL')
+        fields['CPU#'] = chunk[0];
+
+    // Iterate all columns
+    for( var i = 2; i < h.length; i++ ) {
+        if(h[i] !== '') {
+            if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
+                this.logZZZZ(chunk[i]);
+
+                if (i < h.length-1) this.logZZZZ(',');
+            }
+
+            if (h[0] === 'CPU_ALL') {
+                if (h[i] === 'User%')
+                    fields['User'] = parseFloat(chunk[i]);
+                else if (h[i] === 'Sys%')
+                    fields['Sys'] = parseFloat(chunk[i]);
+                else if (h[i] === 'Wait%')
+                    fields['Wait'] = parseFloat(chunk[i]);
+                else if (h[i] === 'Idle%')
+                    fields['Idle%'] = parseFloat(chunk[i]);
+                else if (h[i] === 'Busy') // Busy column has empty data for both of aix and linux
+                    fields['Busy'] = -1;
+                else if (h[i] === 'CPUs' || h[i] === 'PhysicalCPUs')
+                    fields['CPUs'] = parseFloat(chunk[i]);
+            }
+            else if (h[0].substring(0, 3) === 'CPU') {
+                if (h[i] === 'User%')
+                    fields['User%'] = parseFloat(chunk[i]);
+                else if (h[i] === 'Sys%')
+                    fields['Sys%'] = parseFloat(chunk[i]);
+                else if (h[i] === 'Wait%')
+                    fields['Wait%'] = parseFloat(chunk[i]);
+                else if (h[i] === 'Idle%')
+                    fields['Idle%'] = parseFloat(chunk[i]);
+            }
+            else if (h[0] === 'MEM') {
+                // Store all original fields first
+                fields[h[i]] = parseFloat(chunk[i]) + .0;
+
+                // Remove following lines after fixing nmdb-api
+                // second condition is for AIX nmon data file 
+                if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
+                    fields['Real total'] = parseFloat(chunk[i]);
+                else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
+                    fields['Real free'] = parseFloat(chunk[i]);
+                else if (h[i] === 'swaptotal' || h[i] === 'Virtual total(MB)')
+                    fields['Virtual total'] = parseFloat(chunk[i]);
+                else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
+                    fields['Virtual free'] = parseFloat(chunk[i]);
+            }
+            else if (h[0] === 'VM' || h[0] === 'PROC') {
+                fields[h[i]] = parseInt(chunk[i]);
+            }
+            else if (h[0] === 'NET') {
+                if( h[i].indexOf('read') != -1 ) {
+                    var adapter_idx = i - 2;
+                    this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
+
+                    read += parseFloat(chunk[i]);
+                }
+                else if( h[i].indexOf('write') != -1) {
+                    var adapter_idx = (i - 2) - this._netstats.length;
+                    this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
+                    
+                    write += parseFloat(chunk[i]);
+                }
+            }
+            else if (h[0] === 'NETPACKET') {
+                if( h[i].indexOf('read/s') != -1 ) {
+                    var adapter_idx = i - 2;
+                    this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
+                }
+                else if( h[i].indexOf('write/s') != -1) {
+                    var adapter_idx = (i - 2) - this._netstats.length;
+                    this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
+                }
+            }
+            //       have to index (i-2) to _diskstats because here is more column before real data
+            else if (h[0].indexOf("DISKBUSY")== 0 && h[i].match(/.+\d*$/)) {
+                this._diskstats[i-2]['%Busy'] = parseFloat(chunk[i]);
+            }
+            else if (h[0].indexOf("DISKREAD")== 0 && h[i].match(/.+\d*$/)) {
+                this._diskstats[i-2]['ReadKB'] = parseFloat(chunk[i]);
+
+                val += parseFloat(chunk[i]);
+            }
+            else if (h[0].indexOf("DISKWRITE")== 0 && h[i].match(/.+\d*$/)) {
+                this._diskstats[i-2]['WriteKB'] = parseFloat(chunk[i]);
+
+                val += parseFloat(chunk[i]);
+            }
+            else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d*$/)) {
+                this._diskstats[i-2]['tps'] = parseFloat(chunk[i]);
+            }
+            else if (h[0].indexOf("DISKBSIZE")== 0 && h[i].match(/.+\d*$/)) {
+                this._diskstats[i-2]['BlockSize'] = parseFloat(chunk[i]);
+            }
+            else if (h[0].indexOf("JFSFILE")== 0) {
+                fields[h[i]] = parseFloat(chunk[i]);
+            }
+            else if (h[0] === 'TOP') {
+                // skip T0001 - T0001 has total time after boot
+                // TODO: process T0001 snap frame
+                if (chunk[2] !== 'T0001') {
+                    if (h[0] === 'TOP') {
+                        switch ( h[i] ) {
+                            case 'Command': 
+                                fields[h[i]] = chunk[i]; 
+                                break;
+                            case '%CPU':
+                            case '%Usr':
+                            case '%Sys':
+                                fields[h[i]] = parseFloat(chunk[i]);
+                                break;
+                            case 'Size':
+                            case 'ResSet':
+                            case 'ResText':
+                            case 'ResData':
+                            case 'ShdLib':
+                            case 'MinorFault':
+                            case 'MajorFault':
+                                fields[h[i]] = parseInt(chunk[i]);
+                                break;
+                        }
+                    }
+                }
+            }
+        } // end of if
+    } // end of for
+
+    // write to _docZZZZ
+    if (Object.keys(fields).length !== 0) {
+        if (h[0].substring(0, 3) === 'CPU' && h[0] !== 'CPU_ALL')
+            this._docZZZZ['CPU'].push(fields);
+        else if (h[0] === 'TOP')
+            this._docZZZZ['TOP'].push(fields);
+        else
+            this._docZZZZ[h[0]] = fields;
+    }
+
+    if (h[0] === 'DISKBSIZE')         // set disk stats
+        this._docZZZZ['DISKSTATS'] = this._diskstats;
+
+    // Set summary data
+    if( h[0] === 'DISKREAD' ) {
+        this._docZZZZ['DISK_ALL']['read'] = val;
+    }
+    else if (h[0] === 'DISKWRITE') {
+        this._docZZZZ['DISK_ALL']['write'] = val;
+    }
+    else if (h[0] === 'DISKXFER') {
+        this._docZZZZ['DISK_ALL']['iops'] = iops;
+    }
+    else if (h[0] === 'NET') {
+        this._docZZZZ['NET'] = this._netstats;
+
+        // TODO: remove folllowing lines after chaning logic
+        this._docZZZZ['NET_ALL']['read'] = read;
+        this._docZZZZ['NET_ALL']['write'] = write;
+    }
+    else if (h[0] === 'NETPACKET') {
+        this._docZZZZ['NETPACKET'] = this._netstats;
+    }
+    // end of set summary data
 }
