@@ -142,7 +142,7 @@ function put_nmonlog(req, res, bulk_unit) {
     // processing nmon log upload by http request chaining 
     // in order of request -> parser -> writer
     nmonParser.on('finish', function() {
-        nmonParser._flushSave();
+        // nmonParser._flushSave();  // TODO: check this code is necessary
         log.info('Parsing and storing of nmon data file finished.');
         // send HTTP 200 OK
         res.writeHead(200);
