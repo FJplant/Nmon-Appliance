@@ -26,6 +26,7 @@
   ],
   "dependencies": {
     "bootstrap": "~3.3.7",
+    "colorbrewer": "latest",
     "jquery": "latest",
     "jquery-ui": "latest",
     "d3": "~3.x.x",
