@@ -9,13 +9,15 @@
  */
 
 var winston = require('winston'),
-    mongojs = require('mongojs'),
     bodyParser = require('body-parser'),
+    mongojs = require('mongojs'),
+    multer  = require('multer'),
     csv = require('csv-streamify'),
     Readable = require('stream').Readable,
     Transform = require('stream').Transform;
 
 var nmdb = require('../config/nmdb-config.js');
+var upload = multer({ dest: 'uploads/' });
 var NmonParser = require('./nmon-parser.js');
 
 /*
@@ -94,12 +96,34 @@ module.exports = function(app, passport) {
     });
 
     app.post('/nmonlog_bulk', function(req, res) {
-        //console.log('Host name: ' + req.hostname);
-        //console.log('Remote IP: ' + req.ip);
-        //console.log('Request method: ' + req.method);
-        //console.log('Request path: ' + req.path);
-        //console.log('Requested base URL: ' + req.baseUrl);
-        //console.log('Requested body: ' + JSON.stringify(req.body));
+        console.log('Host name: ' + req.hostname);
+        console.log('Remote IP: ' + req.ip);
+        console.log('Request method: ' + req.method);
+        console.log('Request path: ' + req.path);
+        console.log('Requested base URL: ' + req.baseUrl);
+        console.log('Requested body: ' + JSON.stringify(req.body));
+
+        if(!req.body || req.body.length === 0) {
+            console.log('request body not found');
+            return res.sendStatus(400);
+        }
+
+        log.info('[Process %d:/nmonlog_bulk] ' 
+               + req.connection.remoteAddress 
+               + ' ==> '
+               + req.url, process.pid);
+        put_nmonlog(req, res, 10);
+    });
+
+    app.post('/nmonlog_attach', /* upload.array('nmon-data-files',10),*/ function(req, res) {
+        console.log('Host name: ' + req.hostname);
+        console.log('Remote IP: ' + req.ip);
+        console.log('Request method: ' + req.method);
+        console.log('Request path: ' + req.path);
+        console.log('Requested base URL: ' + req.baseUrl);
+        console.log('Requested body: ' + JSON.stringify(req.body));
+        console.log('Requested files: ' + JSON.stringify(req.files));
+
 
         if(!req.body || req.body.length === 0) {
             console.log('request body not found');

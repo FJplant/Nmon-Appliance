@@ -183,10 +183,10 @@
                         <div class="panel-body">
                             <b>Nmon data file upload: </b>
                             <br><br>
-                            <form action="nmon-file-upload" method="post" enctype="multipart/form-data" class="text-center">
-                            <!-- TODO: nmon-files-upload-temp is temporary name, after fixing jquery.filer issue
-                                 it should be fxied as nmon-file-upload -->
-                                <input type="file" name="files[]" id="nmon-upload-files" multiple="multiple">
+                            <!-- action is manipulated by jquery.filer -->
+                            <form action="managed by jquery.filer" method="post" enctype="multipart/form-data" class="text-center">
+
+                                <input type="file" name="nmon-data-files[]" id="nmon-upload-files" multiple="multiple">
                                 <input type="submit" class="btn-custom green" value="Submit">
                             </form>
                         </div>
