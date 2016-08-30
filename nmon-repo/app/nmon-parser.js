@@ -67,8 +67,7 @@ function NmonParser(options) {
     this._diskstats = [];
     this._netstats = [];
     this._rawHeader = {};
-    this._cnt = 0;
-    this._cntTU = 0;
+    this._cntTU = 0; // counter for parser log formatting
 
     // NmonWriter
     this._writer = new NmonWriter({
@@ -168,10 +167,6 @@ NmonParser.prototype._flush = function(callback) {
 NmonParser.prototype._flushSave = function() {
     if (Object.keys(this._docZZZZ).length !== 0 ) {
         this._writer.writeZZZZ(this._docZZZZ);
-        this._cnt++;
-        //loggerParser.stdout.write('f');
-        if (this._cnt % 80 == 0)
-            this.log('\n');
     } else {
         console.error('Strange _docZZZZ occurred: '  + JSON.stringify(this._docZZZZ));
     }
