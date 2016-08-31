@@ -67,8 +67,7 @@ function NmonParser(options) {
     this._diskstats = [];
     this._netstats = [];
     this._rawHeader = {};
-    this._cnt = 0;
-    this._cntTU = 0;
+    this._cntTU = 0; // counter for parser log formatting
 
     // NmonWriter
     this._writer = new NmonWriter({
@@ -168,10 +167,6 @@ NmonParser.prototype._flush = function(callback) {
 NmonParser.prototype._flushSave = function() {
     if (Object.keys(this._docZZZZ).length !== 0 ) {
         this._writer.writeZZZZ(this._docZZZZ);
-        this._cnt++;
-        //loggerParser.stdout.write('f');
-        if (this._cnt % 80 == 0)
-            this.log('\n');
     } else {
         console.error('Strange _docZZZZ occurred: '  + JSON.stringify(this._docZZZZ));
     }
@@ -317,16 +312,17 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk) {
     // Initialize for db insert ordering 
     this._docZZZZ['CPU'] = [];
     this._docZZZZ['CPU_ALL'] = {};
-    this._docZZZZ['MEM'] = [];
-    this._docZZZZ['VM'] = [];
-    this._docZZZZ['PROC'] = [];
+    this._docZZZZ['MEM'] = {};
+    this._docZZZZ['VM'] = {};
+    this._docZZZZ['PROC'] = {};
     this._docZZZZ['NET'] = [];
     this._docZZZZ['NETPACKET'] = [];
     this._docZZZZ['DISKSTATS'] = [];
-    this._docZZZZ['JFSFILE'] = [];
+    this._docZZZZ['JFSFILE'] = {};
     this._docZZZZ['TOP'] = []; // store in array
 
-    // initialize DISK_ALL, NET_ALL, TOP
+    // initialize MEM_ALL, DISK_ALL, NET_ALL
+    this._docZZZZ['MEM_ALL'] = {};
     this._docZZZZ['DISK_ALL'] = {};
     this._docZZZZ['NET_ALL'] = {};
         
@@ -442,7 +438,8 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
     var val = 0.0, iops = 0.0, 
         read = 0.0, write = 0.0, 
         readps = 0.0, writeps = 0.0;
-    var fields = {}; // fields container
+    var fields = {};     // fields container
+    var old_fields = {}; // old style fields container
     var logtype = '';
 
     // Assign log type to write log file
@@ -529,13 +526,13 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
                 // Remove following lines after fixing nmdb-api
                 // second condition is for AIX nmon data file 
                 if (h[i] === 'memtotal' || h[i] === 'Real total(MB)')
-                    fields['Real total'] = parseFloat(chunk[i]);
+                    old_fields['Real total'] = parseFloat(chunk[i]);
                 else if (h[i] === 'memfree' || h[i] === 'Real free(MB)')
-                    fields['Real free'] = parseFloat(chunk[i]);
+                    old_fields['Real free'] = parseFloat(chunk[i]);
                 else if (h[i] === 'swaptotal' || h[i] === 'Virtual total(MB)')
-                    fields['Virtual total'] = parseFloat(chunk[i]);
+                    old_fields['Virtual total'] = parseFloat(chunk[i]);
                 else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
-                    fields['Virtual free'] = parseFloat(chunk[i]);
+                    old_fields['Virtual free'] = parseFloat(chunk[i]);
             }
             else if (h[0] === 'VM' || h[0] === 'PROC') {
                 fields[h[i]] = parseInt(chunk[i]);
@@ -623,6 +620,10 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
             this._docZZZZ['CPU'].push(fields);
         else if (h[0] === 'TOP')
             this._docZZZZ['TOP'].push(fields);
+        else if (h[0] === 'MEM') {
+            this._docZZZZ['MEM'] = fields;
+            this._docZZZZ['MEM_ALL'] = old_fields;
+        }
         else
             this._docZZZZ[h[0]] = fields;
     }
