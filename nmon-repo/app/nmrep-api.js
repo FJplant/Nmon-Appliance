@@ -17,7 +17,9 @@ var winston = require('winston'),
     Transform = require('stream').Transform;
 
 var nmdb = require('../config/nmdb-config.js');
-var upload = multer({ dest: 'uploads/' });
+var upload = multer({ 
+//    dest: './uploads/'     // to use memory file, dest should be null
+});
 var NmonParser = require('./nmon-parser.js');
 
 /*
@@ -115,26 +117,39 @@ module.exports = function(app, passport) {
         put_nmonlog(req, res, 10);
     });
 
-    app.post('/nmonlog_attach', /* upload.array('nmon-data-files',10),*/ function(req, res) {
+    var cpUpload = upload.fields([
+       { name: 'csv-files', maxCount: 10 }, 
+       { name: 'nmon-data-files[]', maxCount: 10 }
+    ]);
+
+    app.post('/nmonlog_attach', cpUpload, function(req, res) {
         console.log('Host name: ' + req.hostname);
         console.log('Remote IP: ' + req.ip);
         console.log('Request method: ' + req.method);
         console.log('Request path: ' + req.path);
         console.log('Requested base URL: ' + req.baseUrl);
         console.log('Requested body: ' + JSON.stringify(req.body));
-        console.log('Requested files: ' + JSON.stringify(req.files));
 
+        var files = req.files['csv-files'];
+        console.log('Requested csv-files: ' + JSON.stringify(
+            (typeof files != 'undefined')? files.length : 'null')
+        );
 
-        if(!req.body || req.body.length === 0) {
-            console.log('request body not found');
-            return res.sendStatus(400);
+        files = req.files['nmon-data-files[]'];
+        console.log('Requested nmon-data-files: ' + JSON.stringify(
+            (typeof files != 'undefined')? files.length : 'null')
+        );
+
+        if(!req.body && typeof req.files == 'undefined') {
+            console.log('Upload was requested. But, requested file was empty');
+            return res.sendStatus(400);   // send - HTTP Error 400 Bad request
         }
 
         log.info('[Process %d:/nmonlog_bulk] ' 
                + req.connection.remoteAddress 
                + ' ==> '
                + req.url, process.pid);
-        put_nmonlog(req, res, 10);
+        put_nmonlog(req, res, 100, true);
     });
 }
 
@@ -147,7 +162,7 @@ module.exports = function(app, passport) {
  *   - store parsed nmon data to mongodb
  *
  */
-function put_nmonlog(req, res, bulk_unit) {
+function put_nmonlog(req, res, bulk_unit, multipart) {
     var csvToJson = csv({objectMode: true});
 
     // Intanciate nmon parser
@@ -187,14 +202,31 @@ function put_nmonlog(req, res, bulk_unit) {
 
     // TODO: merge two processing method
     //       Now, due to bug NMIO-183
-    if ( bulk_unit > 1 ) {
+    if ( bulk_unit > 1) {
         var nmonStream = new Readable();
-        nmonStream.push(req.body['nmonlog']);
-        nmonStream.push(null);
 
-        nmonStream.pipe(csvToJson).pipe(nmonParser);
-        // Following is debug purpose. 
-        // nmonStream.pipe(csvToJson).pipe(debug).pipe(nmonParser);
+        if (multipart) {
+            // TODO: handle \r\n CRLF problem.
+            //       some nmon file have DOS CRLF format it generates error
+            // TODO: check the name limitation of jQuery.filer restriction
+            //       jQuery.filer only works when name ends with [] for multiple file upload
+            var nmonfiles = req.files['nmon-data-files[]'];
+            // TODO: write parsing statistics to response
+            for (var i=0; i < nmonfiles.length; i++) {
+                console.log('Processing uploaded file: ' + nmonfiles[i].originalname
+                           + ', size of: ' + nmonfiles[i].size);
+                nmonStream.push(nmonfiles[i].buffer);
+                nmonStream.push(null);
+                nmonStream.pipe(csvToJson).pipe(nmonParser);
+            }
+        }
+        else {
+            nmonStream.push(req.body['nmonlog']);
+            nmonStream.push(null);
+            nmonStream.pipe(csvToJson).pipe(nmonParser);
+            // Following is debug purpose. 
+            // nmonStream.pipe(csvToJson).pipe(debug).pipe(nmonParser);
+        }
     } else {
         req.pipe(csvToJson).pipe(nmonParser);
     }

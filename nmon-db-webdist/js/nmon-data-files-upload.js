@@ -68,7 +68,7 @@ $(document).ready(function(){
             },
             dragDrop: {},
             uploadFile: {
-                url: "./php/upload.php",
+                url: "/nmonlog_attach",
                 data: {},
                 type: 'POST',
                 enctype: 'multipart/form-data',
