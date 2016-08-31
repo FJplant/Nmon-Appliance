@@ -68,7 +68,7 @@ $(document).ready(function(){
             },
             dragDrop: {},
             uploadFile: {
-                url: "./php/upload.php",
+                url: "/nmonlog_attach",
                 data: {},
                 type: 'POST',
                 enctype: 'multipart/form-data',
@@ -135,6 +135,30 @@ $(document).ready(function(){
         maxSize: 200,
         showThumbs: true,
         uploadFile: filer_default_opts.uploadFile,
+        uploadFile: {
+            url: "/nmonlog_attach",
+            data: {},
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            beforeSend: function(){},
+            success: function(data, el){
+                var parent = el.find(".jFiler-jProgressBar").parent();
+                el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
+                    $("<div class=\"jFiler-item-others text-success\"><i class=\"icon-jfi-check-circle\"></i> Success</div>").hide().appendTo(parent).fadeIn("slow");
+                });
+
+                console.log(data);
+            },
+            error: function(el){
+               var parent = el.find(".jFiler-jProgressBar").parent();
+               el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
+                   $("<div class=\"jFiler-item-others text-error\"><i class=\"icon-jfi-minus-circle\"></i> Error</div>").hide().appendTo(parent).fadeIn("slow");
+               });
+            },
+            statusCode: null,
+            onProgress: null,
+            onComplete: null
+        },
         theme: "dragdropbox",
         templates: filer_default_opts.templates
     });

@@ -88,17 +88,19 @@ NmonWriter.prototype.writeZZZZ = function(zzzz) {
     this._bulk.push(zzzz);
     
     // for debug purpose
-    console.log('Pushed host: ' + zzzz['host']
-              + ', Snapframe: ' + zzzz['snapframe']
-              + ', Snaptime: ' + zzzz['snaptime']
-              + ', Keys: ' + Object.keys(zzzz).length
-              + ', Bulk Unit: ' + this._bulk_unit
-              + ', Document count: ' + this._bulk.length);
-    //console.log('     , Keys: ' + Object.keys(zzzz));
+    if (this._bulk_unit == 1 || (this._bulk_unit > 1 && this._bulk.length >= this._bulk_unit)) {
+        console.log('Pushed host: ' + zzzz['host']
+                  + ', Snapframe: ' + zzzz['snapframe']
+                  + ', Snaptime: ' + zzzz['snaptime']
+                  + ', Keys: ' + Object.keys(zzzz).length
+                  + ', Bulk Unit: ' + this._bulk_unit
+                  + ', Document count: ' + this._bulk.length);
+        //console.log('     , Keys: ' + Object.keys(zzzz));
+    }
     // debug until here
 
     // flush writer if there is more data than bulk unit
-    if ( this._bulk.length >= this._bulk_unit ) {
+    if (this._bulk.length >= this._bulk_unit) {
         this._flushSave();
 
         // clear _bulk buffer
