@@ -1,0 +1,8 @@
+{ 
+    "_id" : ObjectId("55da3374746256f525e15821"), 
+    "username" : "multipia", 
+    "password" : "abcdefg", 
+    "fullname" : "Youngmo Kwon", 
+    "email" : "youngmo.kwon@fjint.com", 
+    "recover_email" : "youngmo.kwon@fjint.com"
+}

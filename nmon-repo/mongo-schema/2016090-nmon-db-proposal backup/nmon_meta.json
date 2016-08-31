@@ -1,0 +1,8 @@
+{ 
+    "_id" : "fjint.com:nmon-tokyo:20150824", 
+    "org" : "fjint", 
+    "host" : "nmon-tokyo", 
+    "from" : ISODate("2015-08-23T17:37:14.491+0000"), 
+    "interval" : NumberInt(5), 
+    "snapshot" : "720"
+}

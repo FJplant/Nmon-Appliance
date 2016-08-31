@@ -1,0 +1,332 @@
+{ 
+    "_id" : "fjint.com:nmon-tokyo:2015-08-23T18:30:00.000", 
+    "orgname" : "fjint", 
+    "hostname" : "nmon-tokyo", 
+    "snap_seq" : "T0002", 
+    "snap_dt" : ISODate("2015-08-23T18:30:00.000+0000"), 
+    "interval" : NumberInt(5), 
+    "CPU_ALL" : {
+        "User%" : 2.3, 
+        "Sys%" : 6.2, 
+        "Wait%" : 2.3, 
+        "Idle%" : 89.2, 
+        "Busy" : 80.5, 
+        "CPUs" : NumberInt(2)
+    }, 
+    "CPU" : [
+        {
+            "cpuid" : "CPU001", 
+            "User%" : 0.4, 
+            "Sys%" : 0.2, 
+            "Wait%" : NumberInt(0), 
+            "Idle%" : 99.4
+        }, 
+        {
+            "cpuid" : "CPU002", 
+            "User%" : 0.4, 
+            "Sys%" : 0.2, 
+            "Wait%" : NumberInt(0), 
+            "Idle%" : 99.4
+        }
+    ], 
+    "DISKGROUP" : {
+        "DGBUSY" : 0.0, 
+        "DGREAD" : 0.0, 
+        "DGSIZE" : 0.0, 
+        "DGWRITE" : 0.0
+    }, 
+    "DISK" : {
+        "DISKBUSY" : 0.0, 
+        "DISKREAD" : 0.0, 
+        "DISKWRITE" : 0.0, 
+        "DISKXFER" : 0.0, 
+        "DISKRXFER" : 0.0, 
+        "DISKBSIZE" : 0.0
+    }, 
+    "ERROR" : {
+        "MESSAGE" : "Disk statistics reset detected. This time Read=1 Write=1 and Total so far=40"
+    }, 
+    "FILE" : {
+        "datetime" : 1427842867000.0, 
+        "iget" : NumberInt(0), 
+        "namei" : NumberInt(58473), 
+        "dirblk" : NumberInt(0), 
+        "readch" : NumberInt(11606401), 
+        "writech" : NumberInt(240134), 
+        "ttyrawch" : NumberInt(0), 
+        "ttycanch" : NumberInt(0), 
+        "ttyoutch" : NumberInt(0)
+    }, 
+    "IOADAPT" : [
+        {
+            "name" : "fcs0", 
+            "read-KB/s" : 1724.7, 
+            "write-KB/s" : 103.8, 
+            "xfer-tps" : 151.7
+        }, 
+        {
+            "name" : "fcs3", 
+            "read-KB/s" : 1724.7, 
+            "write-KB/s" : 99.8, 
+            "xfer-tps" : 147.7
+        }, 
+        {
+            "name" : "fcs1", 
+            "read-KB/s" : 1852.4, 
+            "write-KB/s" : 95.8, 
+            "xfer-tps" : 159.7
+        }, 
+        {
+            "name" : "fcs2", 
+            "read-KB/s" : 1788.6, 
+            "write-KB/s" : 91.8, 
+            "xfer-tps" : 151.7
+        }, 
+        {
+            "name" : "scsi0", 
+            "read-KB/s" : 115.8, 
+            "write-KB/s" : 154.7, 
+            "xfer-tps" : 27.4
+        }
+    ], 
+    "JFSFILE" : [
+        {
+            "mount_point" : "/", 
+            "%Used" : 77.7
+        }, 
+        {
+            "mount_point" : "/home", 
+            "%Used" : 60.8
+        }, 
+        {
+            "mount_point" : "/usr", 
+            "%Used" : 84.3
+        }
+    ], 
+    "JFSINODE" : [
+        {
+            "mount_point" : "/", 
+            "%Iused" : 4.2
+        }, 
+        {
+            "mount_point" : "/home", 
+            "%Iused" : 0.5
+        }, 
+        {
+            "mount_point" : "/usr", 
+            "%Iused" : 19.2
+        }
+    ], 
+    "NET" : [
+        {
+            "name" : "en7", 
+            "read-KB/s" : 39.2, 
+            "write-KB/s" : 79.4
+        }, 
+        {
+            "name" : "en8", 
+            "read-KB/s" : 955.8, 
+            "write-KB/s" : 734.1
+        }, 
+        {
+            "name" : "lo0", 
+            "read-KB/s" : 10.3, 
+            "write-KB/s" : 10.3
+        }
+    ], 
+    "NETERROR" : [
+
+    ], 
+    "NETPACKET" : [
+
+    ], 
+    "NETSIZE" : [
+
+    ], 
+    "PROC_AIX" : {
+        "aioprocs" : NumberInt(19), 
+        "aiorunning" : NumberInt(0), 
+        "aiocpu" : NumberInt(0)
+    }, 
+    "PROC_LINUX" : {
+        "Runnable" : 1.0, 
+        "Blocked" : NumberInt(0), 
+        "pswitch" : NumberInt(0), 
+        "syscall" : NumberInt(-1), 
+        "read" : NumberInt(-1), 
+        "write" : NumberInt(-1), 
+        "fork" : NumberInt(0), 
+        "exec" : NumberInt(-1), 
+        "sem" : NumberInt(-1), 
+        "msg" : NumberInt(-1)
+    }, 
+    "TOP_LINUX" : [
+        {
+            "%CPU" : 0.4, 
+            "%Usr" : 0.2, 
+            "%Sys" : 0.2, 
+            "Size" : NumberInt(467368), 
+            "ResSet" : NumberInt(3436), 
+            "ResText" : NumberInt(22808), 
+            "ResData" : NumberInt(167596), 
+            "ShdLib" : NumberInt(692), 
+            "MinorFault" : NumberInt(1), 
+            "MajorFault" : NumberInt(2), 
+            "Command" : "mongod"
+        }, 
+        {
+            "%CPU" : 0.4, 
+            "%Usr" : 0.2, 
+            "%Sys" : 0.2, 
+            "Size" : NumberInt(983052), 
+            "ResSet" : NumberInt(1384), 
+            "ResText" : NumberInt(160524), 
+            "ResData" : NumberInt(3716), 
+            "ShdLib" : NumberInt(1284), 
+            "MinorFault" : NumberInt(0), 
+            "MajorFault" : NumberInt(0), 
+            "Command" : "oracle"
+        }
+    ], 
+    "TOP_AIX" : [
+        {
+            "%CPU" : 2.27, 
+            "%Usr" : 2.15, 
+            "%Sys" : 0.12, 
+            "Threads" : NumberInt(1), 
+            "Size" : NumberInt(94496), 
+            "ResText" : NumberInt(128576), 
+            "ResData" : NumberInt(7308), 
+            "CharIO" : NumberInt(153571), 
+            "%RAM" : 0.703, 
+            "Paging" : NumberInt(38), 
+            "Command" : "oracle", 
+            "WLMclass" : �
+        }, 
+        {
+            "%CPU" : 1.04, 
+            "%Usr" : 0.65, 
+            "%Sys" : 0.39, 
+            "Threads" : NumberInt(1), 
+            "Size" : NumberInt(18016), 
+            "ResText" : NumberInt(1684), 
+            "ResData" : NumberInt(17480), 
+            "CharIO" : NumberInt(728), 
+            "%RAM" : 0.099, 
+            "Paging" : NumberInt(76), 
+            "Command" : "topas_nmon", 
+            "WLMclass" : �
+        }
+    ], 
+    "UARG_AIX" : [
+        {
+            "PID" : NumberInt(1561216), 
+            "PPID" : NumberInt(1344386), 
+            "COMM" : "gzip", 
+            "THCOUNT" : NumberInt(1), 
+            "USER" : "oracle", 
+            "GROUP" : "dba", 
+            "FullCommand" : "/oracle/product/10.2.0/db/bin/exp parfile=/ora_backup/MGR_LEF_05.par file=/ora_backup/LEFDB2_MGRLEF_05_150512_pipe log=/ora_backup/LEFDB2_MGRLEF_05_150512.log"
+        }
+    ], 
+    "MEM_AIX" : {
+        "Real Free %" : 7.1, 
+        "Virtual free %" : 98.3, 
+        "Real free(MB)" : 5377.5, 
+        "Virtual free(MB)" : 10063.2, 
+        "Real total(MB)" : NumberInt(75520), 
+        "Virtual total(MB)" : NumberInt(10240)
+    }, 
+    "MEMNEW_AIX" : {
+        "Process%" : 43.6, 
+        "FScache%" : 37.8, 
+        "System%" : 11.6, 
+        "Free%" : 7.1, 
+        "Pinned%" : 13.4, 
+        "User%" : 78.1
+    }, 
+    "MEMUSE_AIX" : {
+        "%numperm" : 37.8, 
+        "%minperm" : 2.9, 
+        "%maxperm" : NumberInt(77), 
+        "minfree" : NumberInt(1200), 
+        "maxfree" : NumberInt(1328), 
+        "%numclient" : 37.8, 
+        "%maxclient" : NumberInt(77)
+    }, 
+    "PAGE_AIX" : {
+        "faults" : 6620.4, 
+        "pgin" : 0.3, 
+        "pgout" : 3.4, 
+        "pgsin" : NumberInt(0), 
+        "pgsout" : NumberInt(0), 
+        "reclaims" : NumberInt(0), 
+        "scans" : NumberInt(0), 
+        "cycles" : NumberInt(0)
+    }, 
+    "LARGEPAGE_AIX" : {
+        "Freepages" : NumberInt(0), 
+        "Usedpages" : NumberInt(0), 
+        "Pages" : NumberInt(0), 
+        "HighWater" : NumberInt(0), 
+        "SizeMB" : NumberInt(16)
+    }, 
+    "MEM_LINUX" : {
+        "Real total(MB)" : 7872.3, 
+        "hightotal" : NumberInt(0), 
+        "lowtotal" : NumberInt(0), 
+        "Virtual total(MB)" : NumberInt(8192), 
+        "Real free(MB)" : 653.3, 
+        "highfree" : NumberInt(0), 
+        "lowfree" : NumberInt(0), 
+        "Virtual free(MB)" : 6449.6, 
+        "memshared" : NumberInt(0), 
+        "cached" : 962.4, 
+        "active" : 5433.7, 
+        "bigfree" : NumberInt(-1), 
+        "buffers" : 24.6, 
+        "swapcached" : 344.1, 
+        "inactive" : 1486.5
+    }, 
+    "VM_LINUX" : {
+        "host" : "Memory", 
+        "datetime" : 1438628402000.0, 
+        "nr_dirty" : NumberInt(49), 
+        "nr_writeback" : NumberInt(0), 
+        "nr_unstable" : NumberInt(0), 
+        "nr_page_table_pages" : NumberInt(13463), 
+        "nr_mapped" : NumberInt(22069), 
+        "nr_slab" : NumberInt(-1), 
+        "pgpgin" : NumberInt(11100), 
+        "pgpgout" : NumberInt(5632), 
+        "pswpin" : NumberInt(10), 
+        "pswpout" : NumberInt(1322), 
+        "pgfree" : NumberInt(9837), 
+        "pgactivate" : NumberInt(5982), 
+        "pgdeactivate" : NumberInt(7250), 
+        "pgfault" : NumberInt(24995), 
+        "pgmajfault" : NumberInt(129), 
+        "pginodesteal" : NumberInt(0), 
+        "slabs_scanned" : NumberInt(0), 
+        "kswapd_steal" : NumberInt(3270), 
+        "kswapd_inodesteal" : NumberInt(0), 
+        "pageoutrun" : NumberInt(42), 
+        "allocstall" : NumberInt(0), 
+        "pgrotated" : NumberInt(1264), 
+        "pgalloc_high" : NumberInt(0), 
+        "pgalloc_normal" : NumberInt(0), 
+        "pgalloc_dma" : NumberInt(0), 
+        "pgrefill_high" : NumberInt(0), 
+        "pgrefill_normal" : NumberInt(0), 
+        "pgrefill_dma" : NumberInt(32), 
+        "pgsteal_high" : NumberInt(0), 
+        "pgsteal_normal" : NumberInt(0), 
+        "pgsteal_dma" : NumberInt(1), 
+        "pgscan_kswapd_high" : NumberInt(0), 
+        "pgscan_kswapd_normal" : NumberInt(0), 
+        "pgscan_kswapd_dma" : NumberInt(32), 
+        "pgscan_direct_high" : NumberInt(0), 
+        "pgscan_direct_normal" : NumberInt(0), 
+        "pgscan_direct_dma" : NumberInt(0)
+    }
+}
