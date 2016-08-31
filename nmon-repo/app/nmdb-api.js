@@ -204,13 +204,18 @@ function get_titles(req, res) {
 
 /*
  * Get fields
+ * Nmon perf log fields
  *
  * TODO: change to restful API
  */
 function get_fields(req, res) {
     var url_info = url.parse(req.url, true);
+    // m holds parsed data from /<host-name>/<resource_type>/
+    // ex) 
+    //    ["/nmon-base/CPU_ALL","nmon-base","CPU_ALL"]
+    //    ["/nmon-base/MEM","nmon-base","MEM"]
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
-
+    // At this time, results returns array of array staring with headers
     var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
@@ -221,16 +226,20 @@ function get_fields(req, res) {
         average.push(data[i]);
     }
     results.push(average);
+
+    // build query...
     var query = {};
-    if (m[1] !== 'All') {
+    if (m[1] !== 'All') {      // if host is not set to 'All', then limit to some host
         query['host'] = m[1];
     }
     if (typeof date !== 'undefined') {
         query['datetime'] = { $gt : date[0], $lt : date[1] };
     }
+
     nmondbZZZZ.count(query, function(err, doc) {
         if (err)
             return error_handler(res, err, 500);
+
         if (doc) {
             var granularity = Math.ceil(doc / graph_row_number);
             var cnt = 0;
@@ -238,15 +247,19 @@ function get_fields(req, res) {
             for (var i = 0; i < data.length; i++) {
                 average.push(0.0);
             }
+
             nmondbZZZZ.find(query, fields).sort({datetime:1}).forEach(function(err, doc) {
                 if( err )
                     return error_handler(res, err, 500);
+
                 if( doc ) {
                     cnt++;
-                    average[0] += doc['datetime'];
+                    average[0] = +doc['datetime'];
+
                     for (var i = 0; i < data.length; i++) {
                         average[i+1] += doc[m[2]][data[i]];
                     }
+
                     if (cnt % granularity == 0) {
                         average[0] = parseInt(average[0] /  granularity);
                         for (var i = 0; i < data.length; i++) {
@@ -321,7 +334,7 @@ function get_top_fields(req, res) {
 }
 
 /*
- * Get host fields
+ * Get host utilization fields for server insight
  *
  * TODO: change to restful API
  */
