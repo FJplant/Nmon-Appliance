@@ -222,7 +222,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["MEM"] = true;
         console.log("[" + start.toLocaleString() + "] Requesting MEM data. ");
         $.ajax({
-            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
+            url: "/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
             data: {},
             success: function(data) {
                 var result = eval(data);
@@ -242,7 +242,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["SWAP"] = true;
         console.log("[" + start.toLocaleString() + "] Requesting SWAP data. ");
         $.ajax({
-            url: "/" + hostname + "/MEM?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
+            url: "/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
             data: {},
             success: function(data) {
                 var result = eval(data);
