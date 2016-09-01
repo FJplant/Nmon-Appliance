@@ -65,14 +65,12 @@ text {
 }
 
 // adjust text color by ymk, 2016.9.2.
-// override dc.js text color from #ffffff to black 
-.dc-chart g.row text {
-    fill: black;
-    font-size: 12px;
-    stroke-width: 2;
-}
+// override dc.js text color from #ffffff to black <== this does now work!!!
+// Decided to use dc.min.css 
+//.dc-chart g.row text {
+//    fill: black;
+//}
 
-// below does not work for pie label
-.dc-chart g.pie-label-group text {
-    fill: black;
-}
+//.dc-chart g.pie-label-group pie-slice pie-label {
+//    fill: black;
+//}
