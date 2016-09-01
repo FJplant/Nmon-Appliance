@@ -2,7 +2,7 @@
     var numberFormat = d3.format('.2f');
     var dateFormat = d3.time.format('%Y-%m-%d');
 
-    var svg = dimple.newSvg("#server_insight_chart", 590, 480);
+    var svg = dimple.newSvg("#server_insight_chart", 600, 480);
 
     // TODO: get nmon log data from server
     d3.tsv("dist/csv/server-insight-sample.tsv", function (data) {
