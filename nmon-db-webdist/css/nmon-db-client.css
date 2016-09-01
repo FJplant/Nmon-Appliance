@@ -49,3 +49,28 @@ text {
 .nvd3 .nv-axis.nv-x path.domain {
   stroke-opacity: 1;
 }
+
+// adjust text color another way by ymk, 2016.9.2.
+// dc.js just change class in function, so setting chart css class is useless
+.insight-graph path {
+    cursor: pointer;
+    stroke: black;
+    stroke-width: 2;
+}
+
+.insight-graph text {
+    font-size: 11px;
+    fill: black;
+    cursor: pointer;
+}
+
+// adjust text color by ymk, 2016.9.2.
+// override dc.js text color from #ffffff to black <== this does now work!!!
+// Decided to use dc.min.css 
+//.dc-chart g.row text {
+//    fill: black;
+//}
+
+//.dc-chart g.pie-label-group pie-slice pie-label {
+//    fill: black;
+//}
