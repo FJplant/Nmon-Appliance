@@ -258,12 +258,31 @@ NmonParser.prototype.parseNmonBBBP = function(chunk) {
         
     // BBBP section 
     //    linux only supports BBBP section
+    //    to write BBBP one line per one time then set isAggregatedBBBP = true;
+    var isAggregatedBBBP = false;
+
     var bbbp = {};
     bbbp['seq'] = parseInt(chunk[1]);
     bbbp['item'] = chunk[2];
     bbbp['content'] = ( typeof chunk[3] === 'undefined' ) ? '' : chunk[3];
-    this._docBBBP.push(bbbp);
-        
+
+    if ( isAggregatedBBBP ) {
+        if ((this._docBBBP.length > 0 ) &&
+            //(typeof this._docBBBP[this._docBBBP.length - 1]['item'] !== 'undefined') &&
+            (this._docBBBP[this._docBBBP.length - 1]['item'] === bbbp['item'])) {
+            if (this._docBBBP[this._docBBBP.length - 1].content != '' ) 
+                this._docBBBP[this._docBBBP.length - 1].content += '\n';
+
+            // if meet same item, then just append it
+            this._docBBBP[this._docBBBP.length - 1].content += bbbp['content'];
+        }
+        else {
+            bbbp['content'] = '';
+            this._docBBBP.push(bbbp);
+        }
+    } else    
+      this._docBBBP.push(bbbp);
+
     this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
     this.log('['+ this._hostname + ':' + chunk[0] + ':' + chunk[1] + ']\033[m ' + chunk[2] + ',' + chunk[3]);
 }
