@@ -51,17 +51,23 @@ function getHosts(category) {
 // Draw Stacked Area or Stacked Bar chart for CPU, Memory, Virtual Memory, Disk, Network
 //
 // TODO: Add view finder window
-function drawAreaChart(did, data, xlabel, ylabel, isBarChart) {
+function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
 
+    console.log(JSON.stringify(data[0]));
     var d3data = [ ];
     for(var i = 1; i < data[0].length; i++)
         d3data.push({key: data[0][i], values:[]});
 
-    for(var j = i; j < data.length; j++)
-        for(var i = 1; i < data[0].length; i++)
-            d3data[i-1].values.push([data[j][0], data[j][i]]);
+    for(var j = 1; j < data.length; j++)
+        for(var i = 1; i < data[0].length; i++) {
+            // Disk and network chart draws write or send amount as minus value
+            if ( i == 2 && data[0][i] === 'write' || data[0][i] === 'send' )
+                d3data[i-1].values.push([data[j][0], -data[j][i]]);
+            else 
+                d3data[i-1].values.push([data[j][0], data[j][i]]);
+        }
 
     nv.addGraph(function() {
         // CPU, Disk, I/O => stracked bar chart
@@ -70,17 +76,17 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart) {
 
         chart.x(function(d) { return d[0] })   // We can modify the data accessor functions...
              .y(function(d) { return d[1] })   // ...in case your data is formatted differently.
-             .showControls(true)               // Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
              .useInteractiveGuideline(true)    // Tooltips which show all data points. Very nice!
+             .showControls(false)              // Disallow user to choose 'Stacked', 'Stream', 'Expanded' mode.
              .color(d3.scale.category10().range())
              .clipEdge(true);
 
         if ( isBarChart ) {
-            chart.showControls(false)
-                 .multibar.stacked(true)
+            chart.multibar.stacked(true);
         }
-        else 
+        else {
             chart.interpolate('cardinal-open');
+        }
 
         //Format x-axis labels with custom function.
         chart.xAxis
@@ -288,7 +294,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
         reqStatus["NET"] = true;
         console.log("[" + start.toLocaleString() + "] Requesting NET data. ");
         $.ajax({
-            url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
+            url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['recv', 'send']",
             data: {},
             success: function(data) {
                 var result = eval(data);
