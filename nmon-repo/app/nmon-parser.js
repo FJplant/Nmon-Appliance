@@ -645,8 +645,8 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
         this._docZZZZ['NET'] = this._netstats;
 
         // TODO: remove folllowing lines after chaning logic
-        this._docZZZZ['NET_ALL']['read'] = read;
-        this._docZZZZ['NET_ALL']['write'] = write;
+        this._docZZZZ['NET_ALL']['recv'] = read;
+        this._docZZZZ['NET_ALL']['send'] = write;
     }
     else if (h[0] === 'NETPACKET') {
         this._docZZZZ['NETPACKET'] = this._netstats;
