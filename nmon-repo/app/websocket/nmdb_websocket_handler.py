@@ -6,9 +6,9 @@ from tornado import websocket, web, ioloop
 from datetime import timedelta
 from random import randint
 
-processTypes = ["user", "kernel"]
-processesArray = ['oracle', 'node', 'java', 'python']
-serversArray = ['nmon-tokyo', 'nmon-base', 'nmrep-dev', 'bexsvr']
+processTypes = ["user", "kernel","app"]
+processesArray = ['oracle', 'node', 'java', 'python','mongod','postmaster', 'httpd']
+serversArray = ['nmon-tokyo', 'nmon-base', 'nmon-mongo', 'nmrep-dev', 'bexsvr', 'edufine', 'jira']
 
 class WebSocketHandler(websocket.WebSocketHandler):
   #on open of this socket
@@ -34,10 +34,10 @@ class WebSocketHandler(websocket.WebSocketHandler):
     qty = random.randrange(1,4)
     total = random.randrange(30,1000)
     tip = random.randrange(10, 100)
-    processType = processTypes[random.randrange(0,2)]
-    process = processesArray[random.randrange(0,4)]
+    processType = processTypes[random.randrange(0,3)]
+    process = processesArray[random.randrange(0,7)]
     cpu_usage = random.randrange(0,100);
-    server = serversArray[random.randrange(0,4)]
+    server = serversArray[random.randrange(0,7)]
     #create a new data point
     point_data = {
     	'quantity': qty,

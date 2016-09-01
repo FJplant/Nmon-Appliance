@@ -36,10 +36,10 @@
 
     var connection = new WebSocket('ws://nmrep-dev.fjint.com:8001/websocket');
     var data1 = [
-        {process: 'oracle', cpu_usage: 30.5, server: 'nmon-tokyo', 'total':1},
+        //{process: 'oracle', cpu_usage: 30.5, server: 'nmon-tokyo', 'total':1},
         {process: 'node', cpu_usage: 25.3, server: 'nmrep-dev', 'total':2},
         {process: 'python', cpu_usage: 17.5, server: 'nmon-base', 'total':2},
-        {process: 'java', cpu_usage: 7.2, server: 'nmrep-dev', 'total':1},
+        //{process: 'java', cpu_usage: 7.2, server: 'nmrep-dev', 'total':1},
     ];
     // set crossfilter with first dataset
     var xfilter = crossfilter(data1),
