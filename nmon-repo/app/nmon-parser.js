@@ -100,6 +100,10 @@ util.inherits(NmonParser, Transform);
 // NmonParser.prototype._transform function
 //   is callback funtion of Transform stream handler
 NmonParser.prototype._transform = function(chunk, encoding, callback) {
+    // Bug fix for: NMIO-208  CRLF problem for nmon file from windows
+    // remove the '\r' from last last chunk data of nmon file from windows platform
+    chunk[chunk.length - 1] = chunk[chunk.length - 1].replace('\r', '');
+
     if( chunk[0].substring(0, 3) === 'AAA' )                // Process AAA line
         this.parseNmonAAA(chunk);
     else if( chunk[0].substring(0, 4) === 'BBBP' )          // Process BBBP line
