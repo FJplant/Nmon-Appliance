@@ -25,15 +25,19 @@
     "dist/js/nmon-db-theme.js"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.7",
-    "colorbrewer": "latest",
     "jquery": "latest",
     "jquery-ui": "latest",
+    "bootstrap": "~3.3.7",
+    "bootstrap-social": "~5.0.0",
+    "bootstrap-daterangepicker": "~2.1.x",
+    "moment-timezone": "~0.5.5",
+    "moment": "~2.9.x",
     "d3": "~3.x.x",
+    "colorbrewer": "latest",
     "crossfilter": "~1.3.12",
+    "nvd3": "~1.8.4",
     "dcjs": "~2.0.x",
     "dimple": "~2.2.x",
-    "nvd3": "~1.8.4",
     "datatables": "~1.10.4",
     "datatables-plugins": "~1.0.1",
     "flot": "~0.8.3",
@@ -42,7 +46,6 @@
     "metisMenu": "~1.1.3",
     "morrisjs": "~0.5.1",
     "datatables-responsive": "1.0.6",
-    "bootstrap-social": "~5.0.0",
     "flot.tooltip": "~0.8.4",
     "raphael": "~2.2.1"
   }
