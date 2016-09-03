@@ -226,7 +226,7 @@ $(document).ready(function(){
   $('#analyze-period').daterangepicker({
     "autoApply": false,
     "ranges": {
-        'Today': [moment(), moment()],
+        'Today': [moment().startOf('day'), moment().endOf('hour')],
         'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
         'Last 7 Days': [moment().subtract(6, 'days'), moment()],
         'Last 30 Days': [moment().subtract(29, 'days'), moment()],
@@ -237,7 +237,7 @@ $(document).ready(function(){
         'This Year': [moment().startOf('year'), moment().endOf('year')]
     },
     "locale": {
-        "format": "YYYY-MM-DD",
+        "format": "YYYY-MM-DD HH:mm",
         "separator": " - ",
         "applyLabel": "Apply",
         "cancelLabel": "Cancel",
@@ -272,8 +272,10 @@ $(document).ready(function(){
     },
     "alwaysShowCalendars": true,
     "opens" : "center",
-    "startDate": moment().subtract(2, 'weeks').format('YYYY-MM-DD'),
-    "endDate": moment().endOf('day').format('YYYY-MM-DD')
+    "startDate": moment().subtract(2, 'weeks').startOf('day').format('YYYY-MM-DD HH:mm'),
+    "endDate": moment().endOf('hour').format('YYYY-MM-DD HH:mm'),
+    timePicker: true,
+    timePickerIncrement: 10
   }, function(start, end, label) {
     //console.log('New date range selected: ' + start.format('YYYY-MM-DD') 
     //          + ' to ' + end.format('YYYY-MM-DD') 
