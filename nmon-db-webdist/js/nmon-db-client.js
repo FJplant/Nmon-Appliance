@@ -79,6 +79,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
              .y(function(d) { return d[1] })   // ...in case your data is formatted differently.
              .useInteractiveGuideline(true)    // Tooltips which show all data points. Very nice!
              .showControls(false)              // Disallow user to choose 'Stacked', 'Stream', 'Expanded' mode.
+             .duration(500)                    // Set transition time to 500ms
              .color(d3.scale.category10().range())
              .clipEdge(true);
 
