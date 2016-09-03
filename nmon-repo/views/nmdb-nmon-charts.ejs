@@ -5,7 +5,7 @@
     <% include partials/nmdb-head %>
     <link href="dist/lib/jquery.filer/css/jquery.filer.css" type="text/css" rel="stylesheet" />
     <link href="dist/lib/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css?v=1.2" type="text/css" rel="stylesheet" />
-    <link href="dist/lib/jQRangeSlider/css/iThing.css" type="text/css" rel="stylesheet" />
+    <link href="dist/css/nmon-db-rangeslider.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
     <div id="wrapper">
@@ -43,7 +43,7 @@
                         <div class="panel-body">
                           <div class="row">
                             <div class="col-md-6 col-sm-6">
-                              <b>Select analyze period</b>
+                              <b>Select analyze period ( default: recent 2 hours )</b>
                               <div class="inner-addon left-addon">
                                 <input type="text" id="analyze-period" class="form-control">
                                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
@@ -272,7 +272,7 @@ $(document).ready(function(){
     },
     "alwaysShowCalendars": true,
     "opens" : "center",
-    "startDate": moment().subtract(2, 'weeks').startOf('day').format('YYYY-MM-DD HH:mm'),
+    "startDate": moment().subtract(2, 'hours').format('YYYY-MM-DD HH:mm'),
     "endDate": moment().endOf('hour').format('YYYY-MM-DD HH:mm'),
     timePicker: true,
     timePickerIncrement: 10
