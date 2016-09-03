@@ -35,8 +35,8 @@ module.exports = {
         NMDB_WEB_PUBLIC:  '/web-static',
         NMDB_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmdb-api.log'),
         NMDB_LOG_LEVEL: 'debug', 
-        //NMDB_GRAPH_ROW_NUMBER: 600.0,
-        NMDB_GRAPH_ROW_NUMBER: 1200.0,
+        NMDB_GRAPH_ROW_NUMBER: 180.0,
+        //NMDB_GRAPH_ROW_NUMBER: 1200.0,
 
         // NMREP_* - nmon-rep component section
         NMREP_LISTEN_PORT: 6900,
