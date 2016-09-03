@@ -243,7 +243,7 @@ function get_fields(req, res) {
         if (doc) {
             var granularity = Math.ceil(doc / graph_row_number);
             // to see granularity, uncomment 
-            console.log( 'doc: ' + doc + ', granul: ' + granularity);
+            //console.log( 'doc: ' + doc + ', granul: ' + granularity);
             var cnt = 0;
             average = [0];
             for (var i = 0; i < data.length; i++) {
