@@ -2,8 +2,12 @@
     var numberFormat = d3.format('.2f');
     var dateFormat = d3.time.format('%Y-%m-%d');
 
-    var svg = dimple.newSvg("#server_insight_chart", 600, 480);
+    var svg1 = dimple.newSvg("#server_insight_chart1", 450, 480);
+    var svg2 = dimple.newSvg("#server_insight_chart2", 450, 480);
 
+    var nmonData = null;
+
+    // populate data with d3
     // TODO: get nmon log data from server
     d3.tsv("dist/csv/server-insight-sample.tsv", function (data) {
       // split parsed data
@@ -19,9 +23,16 @@
         d.cpu_util= +d.cpu_util;
         d.mem_used= +d.mem_used;
         d.disk_bytes = +d.disk_bytes;
-        //console.log(JSON.stringify(d));
+        d.net_bytes = +d.net_bytes;
+        console.log(JSON.stringify(d));
       });
 
+      nmonData = data;
+      buildServerInsight('disk_bytes', 'cpu_util', svg1, nmonData);
+      buildServerInsight('net_bytes', 'cpu_util', svg2, nmonData);
+    });
+
+    function buildServerInsight(x_series, y_series, svg, data) {
       // Only show servers to show which are selected
       // Reduce the number of servers as this chart can get a bit busy
       data = dimple.filterData(data, "server", [
@@ -50,16 +61,20 @@
       // their borders set to white, which looks better on this chart
       charts.forEach(function (chart, i) {
         var x, y, z;
-        chart.setBounds(60, 30, 510, 410);
-        x = chart.addMeasureAxis("x", "disk_bytes"); // set measured values for x-Axis
+        chart.setBounds(60, 30, 360, 410);
+        x = chart.addMeasureAxis("x", x_series); // set measured values for x-Axis
         // TODO: set override Max to max of current background chart
-        x.overrideMax = 60000000;    // fix x axis range
-        //x.tickFormat = ',.1f';
-        //x.hidden = (i === 0);        // hide background chart x-axis
-        y = chart.addMeasureAxis("y", "cpu_util");   // set measured values for y-Axis
-        y.overrideMax = 100;         // fix y axis range
-        y.tickFormat = ',.1f';
-        y.hidden = (i === 0);        // hide background chart x-axis
+        if (x_series === 'disk_bytes' || x_series === 'net_bytes') x.overrideMax = 60000000;    // fix x axis range
+        else if (x_series === 'cpu_util') x.overrideMax = 100;
+
+        //x.tickFormat = 'm,.1f';
+        x.hidden = (i === 0);        // hide background chart x-axis
+        y = chart.addMeasureAxis("y", y_series);   // set measured values for y-Axis
+        if (y_series === 'cpu_util') y.overrideMax = 100;         // fix y axis range
+        else if (y_series === 'net_bytes') y.overrideMax = 60000000;
+
+        //y.tickFormat = ',.1f';
+        y.hidden = (i === 0);        // hide background chart y-axis
         z = chart.addLogAxis("z", "cpu_cnt", 2);   // set logged values for z-Axis
         z.overrideMax = 128;           // fix max z values which supports max 256 cpus
         z.overrideMin = 0; 
@@ -128,7 +143,7 @@
 
 
       // Add legened
-      var myLegend = charts[1].addLegend(500, 50, 80, 300, "Right"); // x, y, width, height, horizontalAlign, series
+      var myLegend = charts[1].addLegend(350, 50, 80, 300, "Right"); // x, y, width, height, horizontalAlign, series
 
       // Draw the main chart
       charts[1].draw(); // only draw foreground chart because charts[0] do not have data
@@ -149,7 +164,7 @@
         .data([/*"Click legend to show/hide",*/ "Servers"])
         .enter()
         .append("text")
-          .attr("x", 490)
+          .attr("x", 330)
           .attr("y", function (d, i) { return 45 + i * 14; })
           .style("font-family", "sans-serif")
           .style("font-size", "12px")
@@ -196,4 +211,4 @@
       // Add some border weight to the main series so it separates a bit from
       // the former period shadows
       d3.selectAll("circle").style("stroke-width", 1);
-    });
+    }

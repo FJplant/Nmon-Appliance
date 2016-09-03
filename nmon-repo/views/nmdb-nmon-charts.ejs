@@ -15,8 +15,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header"><i class="fa fa-area-chart fa-fw"></i> Nmon Charts</h1>
-                </div>
-                <!-- /.col-lg-12 -->
+                </div> <!-- /.col-lg-12 -->
             </div>
             <div class="row">
                 <div class="col-lg-12">
@@ -38,8 +37,7 @@
                                     </ul>
                                 </div>
                             </div>
-                        </div>
-                        <!-- /.panel-heading -->
+                        </div> <!-- /.panel-heading -->
                         <div class="panel-body">
                           <div class="row">
                             <div class="col-md-6 col-sm-6">
@@ -57,7 +55,7 @@
 
                             </div>
                           </div>
-<!--
+<!-- TODO: old codes... need to be removed
      <table>
         <tr>
             <th>Date&nbsp;</th>
@@ -115,64 +113,48 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-    <table>
-        <tr>
-            <th>
-                <label for="hosts">Hosts &nbsp;</label>
-            </th>
-            <td>
-                <select name="hosts" id="hosts"></select>
-            </td>
-            <td>&nbsp;</td>
-            <td align="center">
-                <button type="button" id="view">View</button>
-            </td>
-            <td>&nbsp;</td>
-            <td align="left">
-                <a href="/detail" style="float: right;">Detailed View</a>
-            </td>
-        </tr>
-     </table>
-
-<table style="display: inline-block; height: 669px;">
-<td >
-<div id="tabs">
-    <ul>
-        <!--<li><a href="#hosts_chart">Hosts</a>-->
-        <li><a href="#cpu_chart">CPU</a>
-        <li><a href="#mem_chart">Memory</a>
-        <li><a href="#swap_chart">Swap</a>
-        <li><a href="#disk_chart">Disk</a>
-        <li><a href="#network_chart">Network</a>
-        <li><a href="#nfs_chart">NFS</a>
-        <li><a href="#process_cpu_chart">Process CPU Usage</a>
-        <li><a href="#process_mem_chart">Process Memory Usage</a>
-        <li><a href="#process_bubble_chart">Process Bubble Chart</a>
-    </ul>
-    <div id="cpu_chart" class="nmon-chart">
-        <svg></svg>
-    </div>
-    <div id="mem_chart" class="nmon-chart">&nbsp;</div>
-    <div id="swap_chart" class="nmon-chart">&nbsp;</div>
-    <div id="disk_chart" class="nmon-chart">&nbsp;</div>
-    <div id="network_chart" class="nmon-chart">&nbsp;</div>
-    <div id="nfs_chart" class="nmon-chart">&nbsp;</div>
-    <div id="process_cpu_chart" class="nmon-chart">&nbsp;</div>
-    <div id="process_mem_chart" class="nmon-chart">&nbsp;</div>
-    <!-- Sample process bubble chart 
-       - Simple bubble chart test case from http://bl.ocks.org/mbostock/4063269
-       - mbostock's block #4063269 -->
-    <div id="process_bubble_chart" class="nmon-chart">
-    </div>
-</div>
-</td></table>
-
+                            <div class="row">
+                                <label for="hosts">&nbsp; Host &nbsp;</label>
+                                <select name="hosts" id="hosts"></select>&nbsp;
+                                <button type="button" id="view">View</button>&nbsp;
+                                <a href="/detail" style="float: right;">Detailed View &nbsp;</a>
+                            </div> <!-- end of .row -->
+                            <div class="row">
+                                <div id="tabs">
+                                    <ul>
+                                        <!--<li><a href="#hosts_chart">Hosts</a>-->
+                                        <li><a href="#cpu_chart">CPU</a>
+                                        <li><a href="#mem_chart">Memory</a>
+                                        <li><a href="#swap_chart">Swap</a>
+                                        <li><a href="#disk_chart">Disk</a>
+                                        <li><a href="#network_chart">Network</a>
+                                        <li><a href="#nfs_chart">NFS</a>
+                                        <li><a href="#process_cpu_chart">Process CPU Usage</a>
+                                        <li><a href="#process_mem_chart">Process Memory Usage</a>
+                                        <li><a href="#process_bubble_chart">Process Bubble Chart</a>
+                                    </ul>
+                                    <div id="cpu_chart" class="nmon-chart"></div>
+                                    <div id="mem_chart" class="nmon-chart"></div>
+                                    <div id="swap_chart" class="nmon-chart"></div>
+                                    <div id="disk_chart" class="nmon-chart"></div>
+                                    <div id="network_chart" class="nmon-chart"></div>
+                                    <div id="nfs_chart" class="nmon-chart"></div>
+                                    <div id="process_cpu_chart" class="nmon-chart"></div>
+                                    <div id="process_mem_chart" class="nmon-chart"></div>
+                                    <!-- Sample process bubble chart 
+                                       - Simple bubble chart test case from http://bl.ocks.org/mbostock/4063269
+                                       - mbostock's block #4063269 -->
+                                    <div id="process_bubble_chart" class="nmon-chart">
+                                    </div>
+                                </div>
+                            </div> <!-- end of .row -->
                         </div>
                         <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-12 -->
+                        <div class="panel-footer">
+                            Panel Footer
+                        </div> <!-- /.panel-footer -->
+                    </div> <!-- /.panel -->
+                </div> <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
             <div class="row">
@@ -324,24 +306,8 @@ $(document).ready(function(){
 
 </script>
     <!-- nmon-db-client.js -->
-    <script src="dist/lib/jquery.filer/js/jquery.filer.js"></script>
-    <script src="dist/lib/jQRangeSlider/jQRangeSliderMouseTouch.js"></script>
-    <script src="dist/lib/jQRangeSlider/jQRangeSliderDraggable.js"></script>
-    <script src="dist/lib/jQRangeSlider/jQRangeSliderHandle.js"></script>
-    <script src="dist/lib/jQRangeSlider/jQRangeSliderBar.js"></script>
-    <script src="dist/lib/jQRangeSlider/jQRangeSliderLabel.js"></script>
-    <script src="dist/lib/jQRangeSlider/jQRangeSlider.js"></script>
-
-    <script src="dist/lib/jQRangeSlider/jQDateRangeSliderHandle.js"></script>
-    <script src="dist/lib/jQRangeSlider/jQDateRangeSlider.js"></script>
-
-    <script src="dist/lib/jQRangeSlider/jQEditRangeSliderLabel.js"></script>
-    <script src="dist/lib/jQRangeSlider/jQEditRangeSlider.js"></script>
-
-    <script src="dist/lib/jQRangeSlider/jQDateRangeSliderHandle.js"></script>
-    <script src="dist/lib/jQRangeSlider/jQDateRangeSlider.js"></script>
-    <script src="dist/js/nmon-data-files-upload.js"></script>
-    <script src="dist/js/nmon-db-client.js"></script>
     <% include partials/nmdb-footer %>
+    <script src="dist/js/nmon-db-client.js"></script>
+    <script src="dist/js/nmon-data-files-upload.js"></script>
 </body>
 </html>
