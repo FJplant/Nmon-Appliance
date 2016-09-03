@@ -4,6 +4,14 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 body {
+  background: #6F7B8B; /* old browsers */
+  background: -moz-linear-gradient(top, #6F7B8B 20%, #8D96A5 58%); /* firefox */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(20%,#6F7B8B), color-stop(58%,#8D96A5)); /* webkit */
+
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6F7B8B', endColorstr='#8D96A5',GradientType=0 ); /* ie */
+  padding: 15px 10px 15px 10px;
+//  margin: 100px 10px 10px 10px auto;
+
   background-color: #f8f8f8;
 }
 #wrapper {
@@ -13,13 +21,18 @@ body {
   padding: 0 15px;
   min-height: 568px;
   background-color: white;
+    -webkit-box-shadow: inset 0px 2px 8px RGBA(0,0,0,0.5);
+    -moz-box-shadow: inset 0px 2px 8px RGBA(0,0,0,0.5);
 }
 @media (min-width: 768px) {
   #page-wrapper {
     position: inherit;
     margin: 0 0 0 250px;
-    padding: 0 30px;
+    padding: 0 15px;
     border-left: 1px solid #e7e7e7;
+    background-color: white;
+      -webkit-box-shadow: inset 0px 2px 8px RGBA(0,0,0,0.5);
+      -moz-box-shadow: inset 0px 2px 8px RGBA(0,0,0,0.5);
   }
 }
 .navbar-top-links {
