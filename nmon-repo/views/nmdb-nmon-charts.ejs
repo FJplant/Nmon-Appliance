@@ -5,7 +5,7 @@
     <% include partials/nmdb-head %>
     <link href="dist/lib/jquery.filer/css/jquery.filer.css" type="text/css" rel="stylesheet" />
     <link href="dist/lib/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css?v=1.2" type="text/css" rel="stylesheet" />
-    <link href="dist/css/nmon-db-file-uploader.css" type="text/css" rel="stylesheet" />
+    <link href="dist/lib/jQRangeSlider/css/iThing.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
     <div id="wrapper">
@@ -22,7 +22,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-calendar fa-fw"></i> Time window
+                            <i class="fa fa-calendar fa-fw"></i> Analyze period
                             <div class="pull-right">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -41,21 +41,39 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-     <div>
+                          <div class="row">
+                            <div class="col-md-6 col-sm-6">
+                              <b>Select analyze period</b>
+                              <div class="inner-addon left-addon">
+                                <input type="text" id="analyze-period" class="form-control">
+                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12 col-sm-12">
+                              <b>Navigate in analyze period</b>
+                              <div id="period-navigator"></div>
+
+                            </div>
+                          </div>
+<!--
      <table>
-        <tr>
-            <td>&nbsp;</td>
-            <th><label for="from">From</label></th>
-            <th><label for="to"> To </label></th>
-            <th>&nbsp;&nbsp;</th>
-            <th width="300">Range</th>
-        </tr>
         <tr>
             <th>Date&nbsp;</th>
             <td><input type="text" id="from" maxlength="10" size="10"></td>
             <td><input type="text" id="to" maxlength="10" size="10"></td>
             <td>&nbsp;&nbsp;</td>
             <td><div id="slider-range-date"></div></td>
+        </tr>
+        <tr>
+
+        <tr>
+            <td>&nbsp;</td>
+            <th><label for="from">From</label></th>
+            <th><label for="to"> To </label></th>
+            <th>&nbsp;&nbsp;</th>
+            <th width="300">Range</th>
         </tr>
         <tr>
             <th>Time&nbsp;</th>
@@ -65,7 +83,7 @@
             <td><div id="slider-range-time"></div></td>
         </tr>
     </table>
-    </div>
+-->
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -103,8 +121,7 @@
                 <label for="hosts">Hosts &nbsp;</label>
             </th>
             <td>
-                <select name="hosts" id="hosts">
-                </select>
+                <select name="hosts" id="hosts"></select>
             </td>
             <td>&nbsp;</td>
             <td align="center">
@@ -204,11 +221,125 @@
     </div>
     <!-- /#wrapper -->
 
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#analyze-period').daterangepicker({
+    "autoApply": false,
+    "ranges": {
+        'Today': [moment(), moment()],
+        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        'Last Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'This Year': [moment().startOf('year'), moment().endOf('year')]
+    },
+    "locale": {
+        "format": "YYYY-MM-DD",
+        "separator": " - ",
+        "applyLabel": "Apply",
+        "cancelLabel": "Cancel",
+        "fromLabel": "From",
+        "toLabel": "To",
+        "customRangeLabel": "Custom",
+        "weekLabel": "W",
+        "daysOfWeek": [
+            "Su",
+            "Mo",
+            "Tu",
+            "We",
+            "Th",
+            "Fr",
+            "Sa"
+        ],
+        "monthNames": [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ],
+        "firstDay": 1
+    },
+    "alwaysShowCalendars": true,
+    "opens" : "center",
+    "startDate": moment().subtract(2, 'weeks').format('YYYY-MM-DD'),
+    "endDate": moment().endOf('day').format('YYYY-MM-DD')
+  }, function(start, end, label) {
+    //console.log('New date range selected: ' + start.format('YYYY-MM-DD') 
+    //          + ' to ' + end.format('YYYY-MM-DD') 
+    //          + ' (predefined range: ' + label + ')');
+  });
+
+  $('#analyze-period').on('apply.daterangepicker', function(ev, picker) {
+    //console.log(picker.startDate.format('YYYY-MM-DD HH:mm:ss.SSS'));
+    //console.log(picker.endDate.format('YYYY-MM-DD HH:mm:ss.SSS'));
+    createSlider('#period-navigator');
+  });
+
+  if (DEBUG) console.log($('#analyze-period').data('daterangepicker').startDate + ','
+                       + $('#analyze-period').data('daterangepicker').endDate);
+
+
+  // dateRangeSlider's bounds method does now work
+  // so destroy it and create it again
+  var isDateRangeSliderCreated = {};
+  function createSlider(did) {
+    // destroy if already exist.
+    if (isDateRangeSliderCreated[did]) $(did).dateRangeSlider('destroy');
+
+    $(did).dateRangeSlider({
+      defaultValues: {
+        min: $('#analyze-period').data('daterangepicker').startDate, 
+        max: $('#analyze-period').data('daterangepicker').endDate
+      },
+      bounds: {
+        min: $('#analyze-period').data('daterangepicker').startDate, 
+        max: $('#analyze-period').data('daterangepicker').endDate
+      },
+      durationIn: 1000,
+      durationOut: 1000,
+      valueLabels:"show",      // set 'change' to automatically hide
+      formatter:function(val){
+        return moment(val).format('YYYY-MM-DD HH:mm');
+      }
+    });
+
+    isDateRangeSliderCreated[did] = true;
+  }
+
+  createSlider('#period-navigator');
+});
+
+</script>
     <!-- nmon-db-client.js -->
-    <script src="dist/js/nmon-db-client.js"></script>
     <script src="dist/lib/jquery.filer/js/jquery.filer.js"></script>
+    <script src="dist/lib/jQRangeSlider/jQRangeSliderMouseTouch.js"></script>
+    <script src="dist/lib/jQRangeSlider/jQRangeSliderDraggable.js"></script>
+    <script src="dist/lib/jQRangeSlider/jQRangeSliderHandle.js"></script>
+    <script src="dist/lib/jQRangeSlider/jQRangeSliderBar.js"></script>
+    <script src="dist/lib/jQRangeSlider/jQRangeSliderLabel.js"></script>
+    <script src="dist/lib/jQRangeSlider/jQRangeSlider.js"></script>
+
+    <script src="dist/lib/jQRangeSlider/jQDateRangeSliderHandle.js"></script>
+    <script src="dist/lib/jQRangeSlider/jQDateRangeSlider.js"></script>
+
+    <script src="dist/lib/jQRangeSlider/jQEditRangeSliderLabel.js"></script>
+    <script src="dist/lib/jQRangeSlider/jQEditRangeSlider.js"></script>
+
+    <script src="dist/lib/jQRangeSlider/jQDateRangeSliderHandle.js"></script>
+    <script src="dist/lib/jQRangeSlider/jQDateRangeSlider.js"></script>
     <script src="dist/js/nmon-data-files-upload.js"></script>
+    <script src="dist/js/nmon-db-client.js"></script>
     <% include partials/nmdb-footer %>
 </body>
-
 </html>
