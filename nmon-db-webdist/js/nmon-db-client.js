@@ -61,7 +61,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
     for(var i = 1; i < data[0].length; i++)
         d3data.push({key: data[0][i], values:[]});
 
-    for(var j = 1; j < data.length; j++)
+    for(var j = 1; j < data.length; j++) {
         for(var i = 1; i < data[0].length; i++) {
             // Disk and network chart draws write or send amount as minus value
             if ( i == 2 && data[0][i] === 'write' || data[0][i] === 'send' )
@@ -69,6 +69,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
             else 
                 d3data[i-1].values.push([data[j][0], data[j][i]]);
         }
+    }
 
     nv.addGraph(function() {
         // CPU, Disk, I/O => stracked bar chart
@@ -94,7 +95,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
         chart.xAxis
              .axisLabel(xlabel)
              .tickFormat(function(d) { 
-                 return d3.time.format('%m/%d %H:%M')(new Date(d));
+                 return d3.time.format('%m-%d %H:%M')(new Date(d));
         });
 
         chart.yAxis
