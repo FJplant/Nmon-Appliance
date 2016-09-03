@@ -127,10 +127,10 @@ function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());
   focus.select(".area").attr("d", area);
   focus.select(".x.axis").call(xAxis);
-  console.log("brushed called");
-  console.log("extent: " + brush.extent());
-  console.log("  area: " + area);
-  console.log(" xAxis: " + xAxis);
+  //console.log("brushed called");
+  //console.log("extent: " + brush.extent());
+  //console.log("  area: " + area);
+  //console.log(" xAxis: " + xAxis);
 }
 
 function type(d) {

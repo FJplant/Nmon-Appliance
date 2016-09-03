@@ -3,6 +3,7 @@
  */
 var HOSTS_BACK_TIME = 1000*60*1;    // in milli seconds, 1 minutes
 var REFRESH_INTERVAL = 2000;        // in milli seconds
+var DEBUG = false;                  // for debug purpose
 
 var curResType = "CPU";
 var reqStatus = {
@@ -55,12 +56,12 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
 
-    console.log(JSON.stringify(data[0]));
+    //console.log(JSON.stringify(data[0]));
     var d3data = [ ];
     for(var i = 1; i < data[0].length; i++)
         d3data.push({key: data[0][i], values:[]});
 
-    for(var j = 1; j < data.length; j++)
+    for(var j = 1; j < data.length; j++) {
         for(var i = 1; i < data[0].length; i++) {
             // Disk and network chart draws write or send amount as minus value
             if ( i == 2 && data[0][i] === 'write' || data[0][i] === 'send' )
@@ -68,6 +69,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
             else 
                 d3data[i-1].values.push([data[j][0], data[j][i]]);
         }
+    }
 
     nv.addGraph(function() {
         // CPU, Disk, I/O => stracked bar chart
@@ -78,6 +80,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
              .y(function(d) { return d[1] })   // ...in case your data is formatted differently.
              .useInteractiveGuideline(true)    // Tooltips which show all data points. Very nice!
              .showControls(false)              // Disallow user to choose 'Stacked', 'Stream', 'Expanded' mode.
+             .duration(500)                    // Set transition time to 500ms
              .color(d3.scale.category10().range())
              .clipEdge(true);
 
@@ -92,7 +95,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
         chart.xAxis
              .axisLabel(xlabel)
              .tickFormat(function(d) { 
-                 return d3.time.format('%m/%d %H:%M')(new Date(d));
+                 return d3.time.format('%m-%d %H:%M')(new Date(d));
         });
 
         chart.yAxis
@@ -204,7 +207,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // hosts - always update this area
     if (restype == "HOSTS" || restype == "ALL" ) {
         reqStatus["HOSTS"] = true;
-        console.log("[" + start.toLocaleString() + "] Requesting HOSTS data.");
+        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting HOSTS data.");
         $.ajax({
             url: "/" + hostname + "/HOST?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
             data: {},
@@ -212,7 +215,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 var result = eval(data);
                 reqStatus["HOSTS"] = false;
                 drawScatterChart("hosts_chart", data, 'Disk (KB/s)', 'CPU (%)');
-                console.log(' HOSTS chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                if (DEBUG) console.log(' HOSTS chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
     }
@@ -220,7 +223,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // cpu
     if (restype == "CPU" || restype == "ALL") {
         reqStatus["CPU"] = true;
-        console.log("[" + start.toLocaleString() + "] Requesting CPU data. ");
+        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting CPU data. ");
         $.ajax({
             url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User', 'Sys', 'Wait']",
             data: {},
@@ -228,7 +231,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 var result = eval(data);
                 reqStatus["CPU"] = false;
                 drawAreaChart("cpu_chart", result, 'Time', '%', true);
-                console.log('  CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                if (DEBUG) console.log('  CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
     }
@@ -236,7 +239,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // memory
     if (restype == "MEM" || restype == "ALL") {
         reqStatus["MEM"] = true;
-        console.log("[" + start.toLocaleString() + "] Requesting MEM data. ");
+        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting MEM data. ");
         $.ajax({
             url: "/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
             data: {},
@@ -248,7 +251,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                     result[i][1] = result[i][1] - result[i][2];
                 }
                 drawAreaChart("mem_chart", result, 'Time', 'MB');
-                console.log('  MEM chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                if (DEBUG) console.log('  MEM chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
     }
@@ -256,7 +259,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // swap
     if (restype == "SWAP" || restype == "ALL") {
         reqStatus["SWAP"] = true;
-        console.log("[" + start.toLocaleString() + "] Requesting SWAP data. ");
+        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting SWAP data. ");
         $.ajax({
             url: "/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
             data: {},
@@ -268,7 +271,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                     result[i][1] = result[i][1] - result[i][2];
                 }
                 drawAreaChart("swap_chart", result, 'Time', 'MB');
-                console.log('  SWAP chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                if (DEBUG) console.log('  SWAP chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
     }
@@ -276,7 +279,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // disk
     if (restype == "DISK" || restype == "ALL") {
         reqStatus["DISK"] = true;
-        console.log("[" + start.toLocaleString() + "] Requesting DISK data. ");
+        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting DISK data. ");
         $.ajax({
             url: "/" + hostname + "/DISK_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
             data: {},
@@ -284,7 +287,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 var result = eval(data);
                 reqStatus["DISK"] = false;
                 drawAreaChart("disk_chart", result, 'Time', 'KB/s', true);
-                console.log(' DISK chart response:' + ((+new Date() - +start)) / 1000 + ' secs');
+                if (DEBUG) console.log(' DISK chart response:' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
     }
@@ -292,7 +295,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // network
     if (restype == "NET" || restype == "ALL") {
         reqStatus["NET"] = true;
-        console.log("[" + start.toLocaleString() + "] Requesting NET data. ");
+        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting NET data. ");
         $.ajax({
             url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['recv', 'send']",
             data: {},
@@ -300,7 +303,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 var result = eval(data);
                 reqStatus["NET"] = false;
                 drawAreaChart("network_chart", result, 'Time', 'KB/s', true);
-                console.log(' NET chart response :' + ((+new Date() - +start)) / 1000 + ' secs');
+                if (DEBUG) console.log(' NET chart response :' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
     }
@@ -308,7 +311,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // process cpu usage
     if (restype == "PROCESS_CPU" || restype == "ALL") {
         reqStatus["PROCESS_CPU"] = true;
-        console.log("[" + start.toLocaleString() + "] Requesting PROCESS_CPU data. ");
+        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting PROCESS_CPU data. ");
         $.ajax({
             url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=cpu",
             data: {},
@@ -316,7 +319,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 var result = eval(data);
                 reqStatus["PROCESS_CPU"] = false;
                 drawPieChart("process_cpu_chart", data);
-                console.log(' PROCESS_CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                if (DEBUG) console.log(' PROCESS_CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
     }
@@ -324,7 +327,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // process mem usage
     if (restype == "PROCESS_MEM" || restype == "ALL") {
         reqStatus["PROCESS_MEM"] = true;
-        console.log("[" + start.toLocaleString() + "] Requesting PROCESS_MEM data. ");
+        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting PROCESS_MEM data. ");
         $.ajax({
             url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=mem",
             data: {},
@@ -332,7 +335,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
                 var result = eval(data);
                 reqStatus["PROCESS_MEM"] = false;
                 drawPieChart("process_mem_chart", data, "Process usage by MEM");
-                console.log(' PROCESS_MEM chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                if (DEBUG) console.log(' PROCESS_MEM chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
             }
         });
     }
@@ -344,24 +347,28 @@ function refresh_charts() {
     var fromDate, toDate,
         now = new Date();
 
+    /*
     fromDate = new Date($("#from").val() + " " + $("#from_time").val());
 
     if ($("#to").val() !== "now")
         toDate = new Date($("#to").val() + " " + $("#to_time").val());
     else
         toDate = new Date();
-
+    */
+    fromDate = $('#period-navigator').dateRangeSlider('values').min;
+    toDate = $('#period-navigator').dateRangeSlider('values').max;
+    //console.log('fromDate:' + fromDate + ', toDate: ' + toDate);
     if ( !isLoading("HOSTS") || !isLoading(getCurResType()) ) {
         if ( !isLoading("HOSTS") ) {
             updateGraph("All", "HOSTS", new Date(now.getTime() - HOSTS_BACK_TIME ), now); // Draw last HOST_BACK_TIME
-            console.log("[" + (new Date()).toLocaleString() + "] " + "Server insights chart refreshed." );
+            if (DEBUG) console.log("[" + (new Date()).toLocaleString() + "] " + "Server insights chart refreshed." );
         } 
         if ( !isLoading(getCurResType()) ) {
             updateGraph($("#hosts").val(), getCurResType(), fromDate, toDate);
-            console.log("[" + (new Date()).toLocaleString() + "] " + getCurResType() + " chart refreshed." );
+            if (DEBUG) console.log("[" + (new Date()).toLocaleString() + "] " + getCurResType() + " chart refreshed." );
         }
     } else {
-      console.log("[" + (new Date()).toLocaleString() + "] " + "previous refresh is on-going ");
+      if (DEBUG) console.log("[" + (new Date()).toLocaleString() + "] " + "previous refresh is on-going ");
     }
 
     // Try to Refresh every 2 seconds
@@ -560,11 +567,14 @@ $(function() {
                     break;
             }
 
+            if (DEBUG) {
             console.log("[Calling updateGraph from UI-tab] " +
                 "Hosts: " + $("#hosts").val() +
                 ", Tab: " + curRes +
                 ", From: " + fromDate.toLocaleString() +
                 ", To: " + toDate.toLocaleString());
+            }
+            
             updateGraph($("#hosts").val(), curRes, fromDate, toDate);
         }
     });
@@ -592,7 +602,7 @@ function setLoading(areaid, reqResType, message) {
         complete: function() {
             progressLabel.text("Complete!");
             progressBar.progressbar("value", 100);
-            console.log('[Progress Bar]' + reqResType + ' loading is completed... from progress bar');
+            if (DEBUG) console.log('[Progress Bar]' + reqResType + ' loading is completed... from progress bar');
         }
     });
     progressBarValue = progressBar.find(".ui-progressbar-value");
@@ -609,7 +619,7 @@ function setLoading(areaid, reqResType, message) {
         if (isLoading(reqResType) == true || val < 100) {
             setTimeout(loading, 100);
         } else {
-            console.log('[Progress Bar]' + reqResType + ' loading is completed... from progress bar');
+            if (DEBUG) console.log('[Progress Bar]' + reqResType + ' loading is completed... from progress bar');
         }
     }
 
@@ -636,7 +646,7 @@ function draw_bubble_chart() {
         .attr("height", diameter)
         .attr("class", "bubble");
 
-    console.log("Drawing bubble chart");
+    if (DEBUG) console.log("Drawing bubble chart");
     // get process.json file
     d3.json("dist/json/process.json", function(error, root) {
         if (error) throw error;
