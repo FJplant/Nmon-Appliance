@@ -242,6 +242,8 @@ function get_fields(req, res) {
 
         if (doc) {
             var granularity = Math.ceil(doc / graph_row_number);
+            // to see granularity, uncomment 
+            console.log( 'doc: ' + doc + ', granul: ' + granularity);
             var cnt = 0;
             average = [0];
             for (var i = 0; i < data.length; i++) {
@@ -256,14 +258,18 @@ function get_fields(req, res) {
                     cnt++;
                     average[0] = +doc['datetime'];
 
+                    // calc average
                     for (var i = 0; i < data.length; i++) {
                         average[i+1] += doc[m[2]][data[i]];
                     }
 
+                    // Strange calculation is here average just keep by granularity 
                     if (cnt % granularity == 0) {
-                        average[0] = parseInt(average[0] /  granularity);
+                        // Bug fix: NMIO-227 date error => comment out following line
+                        //average[0] = parseInt(average[0] /  granularity);
                         for (var i = 0; i < data.length; i++) {
-                            average[i+1] = average[i+1] / parseFloat(granularity);
+                            // NMIO-227 round up.
+                            average[i+1] = Math.round(average[i+1] / parseFloat(granularity) * 100) / 100;
                         }
                         results.push(average);
                         average = [0];
