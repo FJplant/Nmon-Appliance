@@ -38,6 +38,12 @@ module.exports = {
         NMDB_GRAPH_ROW_NUMBER: 180.0,
         //NMDB_GRAPH_ROW_NUMBER: 1200.0,
 
+        // file upload
+        NMDB_UPLOAD_CSV_MAX_COUNT : 100,
+        NMDB_UPLOAD_NMONDATA_MAX_COUNT : 500,
+
+        NMDB_MONGO_BULKOP_SIZE: 10,   // size for ZZZZ batch processing unit
+
         // NMREP_* - nmon-rep component section
         NMREP_LISTEN_PORT: 6900,
         NMREP_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-api.log'),

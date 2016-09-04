@@ -131,8 +131,8 @@ $(document).ready(function(){
             }
         },
         dragDrop: filer_default_opts.dragDrop,
-        limit: 20,
-        maxSize: 200,
+        limit: 500,
+        maxSize: 2048,
         showThumbs: true,
         uploadFile: filer_default_opts.uploadFile,
         uploadFile: {

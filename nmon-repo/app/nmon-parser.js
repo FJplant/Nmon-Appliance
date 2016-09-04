@@ -164,7 +164,11 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
 } // enf of NmonParser.prototype._transform 
 
 NmonParser.prototype._flush = function(callback) {
-    this._flushSave();
+    // Fix the bug: NMIO-158-nmon-data-parsing-nmon-perf
+    // TODO: may be related to strange ZZZZ output log
+    if (typeof this._docZZZZ['snapframe'] !== 'undefined') 
+      this._flushSave(); 
+
     callback();
 }
 
@@ -299,8 +303,9 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk) {
     // call flushSave when new 'ZZZZ' has arrived
     // this can be a blocker not sending current data until getting next ZZZZ
     // Fix the bug: NMIO-158-nmon-data-parsing-nmon-perf
-    if (typeof this._docZZZZ['snapframe'] !== 'undefined')
-        this._flushSave(); 
+    // TODO: may be related to strange ZZZZ output log
+    if (typeof this._docZZZZ['snapframe'] !== 'undefined') 
+      this._flushSave(); 
 
     if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
         this.logZZZZ('\n\n==========================================================');

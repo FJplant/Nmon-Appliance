@@ -1,5 +1,5 @@
 /*
- * nmon-this.js is
+ * nmon-writer.js is
  *    an nmon writer class written in Node.js
  *   and written by amoriya ( Junkoo Hea, junkoo.hea@gmail.com )
  *                  ymk     ( Youngmo Kwon, youngmo.kwon777@gmail.com )
@@ -23,11 +23,11 @@ var mongojs = require('mongojs');
 var  mongodb = mongojs(nmdb.env.NMDB_NMONDB_URL);
 
 mongodb.on('error', function(err) {
-    console.log('Nmon-db database error.', err);
+    console.log('nmon-writer.js: database error.', err);
 });
 
-mongodb.on('ready', function() {
-    console.log('Nmon-db database connected.');
+mongodb.on('connect', function() {
+    console.log('nmon-writer.js: database connected.');
 });
 
 var nmondbCategories = mongodb.collection('nmon-categories'),
@@ -80,7 +80,7 @@ NmonWriter.prototype.writeZZZZ = function(zzzz) {
 
         bulkop.execute(function(err, res) {
             if (err)
-                console.err(err.toString());
+                console.error(err.toString());
             this._header = [];
         });
     }
@@ -101,6 +101,7 @@ NmonWriter.prototype.writeZZZZ = function(zzzz) {
 
     // flush writer if there is more data than bulk unit
     if (this._bulk.length >= this._bulk_unit) {
+        // save the accumulated _bulk
         this._flushSave();
 
         // clear _bulk buffer
@@ -110,20 +111,29 @@ NmonWriter.prototype.writeZZZZ = function(zzzz) {
 }
 
 // Insert accumulated Nmon ZZZZ data
+// TODO: bulkop operation have some bug when bulk unit is big
 NmonWriter.prototype._flushSave = function() {
     //process.stdout.write('F');
     // store remained nmon data to mongo db
     if( this._bulk.length > 0 ) {
         var bulkop = nmondbZZZZ.initializeOrderedBulkOp();
         for(var i = 0; i < this._bulk.length; i++) {
-            //console.log('Insert #' + (i + 1) + ' item in _fluashSave()');
+            //console.log('Item #' + (i + 1) + ' inserted to bulkop in_fluashSave()');
             bulkop.insert(this._bulk[i]);
         }
 
+        console.log('Execute bulk operation to database: ' + this._bulk.length + ' items');
+
         // execute bulk operation to database
         bulkop.execute(function(err, res) {
-            if (err)
+            if (err) {
+                console.error('MongoDB erorr while operating with error: ');
+                // this._bulk[0] is out OUT of scope, so find other way
+                //console.error('ZZZZ from: ' + this._bulk[0]['host'] + ', '  + this._bulk[0]['snapframe'])
+                //console.error('      ,to: ' + this._buik[this._bulk.length - 1]['host'] + ', ' 
+                //                            + this._bulk[this._bulk.length - 1]['snapframe']);
                 console.error(err.toString());
+            }
             else {
                 //console.log('Successful inserted item counts to db: ' + res['nInserted']);
             }
