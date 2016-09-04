@@ -18,7 +18,7 @@ var winston = require('winston'),
 
 var nmdb = require('../config/nmdb-config.js');
 var upload = multer({ 
-//    dest: './uploads/'     // to use memory file, dest should be null
+    dest: './uploads/'     // to use memory file, dest should be null
 });
 var NmonParser = require('./nmon-parser.js');
 
@@ -118,8 +118,8 @@ module.exports = function(app, passport) {
     });
 
     var cpUpload = upload.fields([
-       { name: 'csv-files', maxCount: 10 }, 
-       { name: 'nmon-data-files[]', maxCount: 10 }
+       { name: 'csv-files', maxCount: nmdb.env.NMDB_UPLOAD_CSV_MAX_COUNT }, 
+       { name: 'nmon-data-files[]', maxCount: nmdb.env.NMDB_UPLOAD_NMONDATA_MAX_COUNT }
     ]);
 
     app.post('/nmonlog_attach', cpUpload, function(req, res) {

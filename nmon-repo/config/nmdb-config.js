@@ -38,7 +38,11 @@ module.exports = {
         NMDB_GRAPH_ROW_NUMBER: 180.0,
         //NMDB_GRAPH_ROW_NUMBER: 1200.0,
 
-        NMDB_MONGO_BULKOP_SIZE: 10,
+        // file upload
+        NMDB_UPLOAD_CSV_MAX_COUNT : 100,
+        NMDB_UPLOAD_NMONDATA_MAX_COUNT : 500,
+
+        NMDB_MONGO_BULKOP_SIZE: 10,   // size for ZZZZ batch processing unit
 
         // NMREP_* - nmon-rep component section
         NMREP_LISTEN_PORT: 6900,
@@ -48,6 +52,5 @@ module.exports = {
         NMREP_PARSER_LOG_LEVEL: 'verbose',
         NMREP_PARSER_ZZZZ_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-parser-zzzz.log'),
         NMREP_PARSER_ZZZZ_LOG_LEVEL: 'verbose'
-
     }
 };
