@@ -80,7 +80,7 @@ NmonWriter.prototype.writeZZZZ = function(zzzz) {
 
         bulkop.execute(function(err, res) {
             if (err)
-                console.err(err.toString());
+                console.error(err.toString());
             this._header = [];
         });
     }
@@ -110,6 +110,7 @@ NmonWriter.prototype.writeZZZZ = function(zzzz) {
 }
 
 // Insert accumulated Nmon ZZZZ data
+// TODO: bulkop operation have some bug when bulk unit is big
 NmonWriter.prototype._flushSave = function() {
     //process.stdout.write('F');
     // store remained nmon data to mongo db
@@ -122,8 +123,13 @@ NmonWriter.prototype._flushSave = function() {
 
         // execute bulk operation to database
         bulkop.execute(function(err, res) {
-            if (err)
-                console.error(err.toString());
+            if (err) {
+                console.error('MongoDB erorr while operating: ')
+                console.error('  from: ' + this.bulk[0]['host'] + ', '  + this.bulk[0]['snapframe'])
+                console.error('   ,to: ' + this.buik[this._bulk.length - 1]['host'] + ', ' 
+                                         + this.bulk[this._bulk.length - 1]['snapframe']);
+                console.error('with error: ' + err.toString());
+            }
             else {
                 //console.log('Successful inserted item counts to db: ' + res['nInserted']);
             }

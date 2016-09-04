@@ -38,6 +38,8 @@ module.exports = {
         NMDB_GRAPH_ROW_NUMBER: 180.0,
         //NMDB_GRAPH_ROW_NUMBER: 1200.0,
 
+        NMDB_MONGO_BULKOP_SIZE: 10,
+
         // NMREP_* - nmon-rep component section
         NMREP_LISTEN_PORT: 6900,
         NMREP_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-api.log'),
@@ -46,5 +48,6 @@ module.exports = {
         NMREP_PARSER_LOG_LEVEL: 'verbose',
         NMREP_PARSER_ZZZZ_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-parser-zzzz.log'),
         NMREP_PARSER_ZZZZ_LOG_LEVEL: 'verbose'
+
     }
 };

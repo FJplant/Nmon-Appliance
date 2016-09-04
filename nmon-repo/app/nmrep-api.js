@@ -149,7 +149,8 @@ module.exports = function(app, passport) {
                + req.connection.remoteAddress 
                + ' ==> '
                + req.url, process.pid);
-        put_nmonlog(req, res, 100, true);
+        // monojs's bulk operation has some bugs so, adjust bulk op size
+        put_nmonlog(req, res, nmdb.env.NMDB_MONGO_BULKOP_SIZE, true);
     });
 }
 
