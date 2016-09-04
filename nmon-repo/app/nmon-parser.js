@@ -69,6 +69,7 @@ function NmonParser(options) {
     this._rawHeader = {};
     this._cntTU = 0; // counter for parser log formatting
 
+    // Options
     // NmonWriter
     this._writer = new NmonWriter({
         bulkUnit: options['bulkUnit']
@@ -80,20 +81,33 @@ function NmonParser(options) {
     this._loggerParserZZZZ = null;
     this._loglevelParserZZZZ = 'info';
 
+    // Output
+    this._output = 'db';
+    this._outputfile = null;
+
     // Set log stream
     // Initilize parser log
     //     flags: 'a' - append mode
-    if ( typeof options['logfile'] != 'undefined' ) {
+    if ( typeof options['logfile'] != 'undefined' )
         this._loggerParser =  fs.createWriteStream( options['logfile'], { flags: 'a' } );
-    }
+
+    if ( typeof options['loglevel'] != 'undefined' )
+        this._loglevelParser = options['loglevel'] 
+
+    // Set zzzz log stream
     if ( typeof options['logfileZZZZ'] != 'undefined' )
         this._loggerParserZZZZ =  fs.createWriteStream( options['logfileZZZZ'], { flags: 'a' } );
 
-    // Set log level
-    if ( typeof options['loglevel'] != 'undefined' )
-        this._loglevelParser = options['loglevel'] 
     if ( typeof options['loglevelZZZZ'] != 'undefined' )
         this._loglevelParserZZZZ = options['loglevelZZZZ'] 
+
+    // Set write mode
+    if ( typeof options['output'] != 'undefined' ) {
+        this._output = options['output'];
+        console.log('output mode: ' + this._output);
+        if (this._output === 'file') 
+            this._outputfile = fs.createWriteStream( '_nmonparserfile.tmp', { flags: 'a' } );
+    }
 }
 util.inherits(NmonParser, Transform);
 
@@ -174,8 +188,22 @@ NmonParser.prototype._flush = function(callback) {
 
 NmonParser.prototype._flushSave = function() {
     if (Object.keys(this._docZZZZ).length !== 0 ) {
-        this._writer.writeZZZZ(this._docZZZZ);
-    } else {
+        if (this._output === 'db') {
+            this._writer.writeZZZZ(this._docZZZZ);
+        }
+        else if (this._output === 'file') {
+            // log some periodic message
+            console.log('ZZZZ section written: ' + this._docZZZZ['host']
+                      + ', Snapframe: ' + this._docZZZZ['snapframe']
+                      + ', Snaptime: ' + this._docZZZZ['snaptime']
+                      + ', Keys: ' + Object.keys(this._docZZZZ).length);
+
+            this._outputfile.write(JSON.stringify(this._docZZZZ));
+        }
+        else if (this._otuput === 'pipe')
+            this.push(['performance', this._docZZZZ]);
+    }
+    else {
         console.error('Strange _docZZZZ occurred: '  + JSON.stringify(this._docZZZZ));
     }
 }
