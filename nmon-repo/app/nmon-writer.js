@@ -134,7 +134,7 @@ NmonWriter.prototype._flushSave = function(cb) {
     if (this._bulk_unit == 1 && this._bulk.length == 1){ 
         for(var i = 0; i < this._bulk.length; i++) {
             nmondbZZZZ.insert(this._bulk[i], function(err, res) {
-                if (!err) {
+                if (err) {
                     console.log('nmon-writer.js: database single insert error.');
                     // this._bulk[0] is out OUT of scope, so find other way
                     //console.error('ZZZZ from: ' + this._bulk[0]['host'] + ', '  + this._bulk[0]['snapframe'])
@@ -143,8 +143,7 @@ NmonWriter.prototype._flushSave = function(cb) {
                     console.log('            ==> ' + err.toString());
                 }
                 else {
-                    console.log('[nmon-writer.js] ' + res['nInserted'] + ' items are successfully inserted db.');
-                    console.log('                 ' + JSON.stringify(res));
+                    //console.log('[nmon-writer.js] ' + ' 1 item was successfully inserted db.');
                 }
 
             });
@@ -161,7 +160,7 @@ NmonWriter.prototype._flushSave = function(cb) {
         }
 
         bulkop.execute(function(err, res) {
-            if (!err) {
+            if (err) {
                 console.log('nmon-writer.js: database single insert error.');
                 // this._bulk[0] is out OUT of scope, so find other way
                 console.log('ZZZZ from: ' + this._bulk[0]['host'] + ', '  + this._bulk[0]['snapframe'])
