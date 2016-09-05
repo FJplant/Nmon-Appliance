@@ -24,7 +24,7 @@
         d.mem_used= +d.mem_used;
         d.disk_bytes = +d.disk_bytes;
         d.net_bytes = +d.net_bytes;
-        console.log(JSON.stringify(d));
+        //console.log(JSON.stringify(d));
       });
 
       nmonData = data;

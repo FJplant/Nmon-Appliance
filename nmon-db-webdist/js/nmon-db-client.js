@@ -56,17 +56,16 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
 
-    //console.log(JSON.stringify(data[0]));
-    console.log('data rows: ' + data.length);
     var d3data = [ ];
-    for(var i = 1; i < data[0].length; i++)
-        d3data.push({key: data[0][i], values:[]});
+    for(var i = 1; i < data[0].length; i++) {
+        d3data.push({key: data[0][i], values:[]}); // series name ( header )
+    }
 
-    for(var j = 1; j < data.length; j++) {
-        for(var i = 1; i < data[0].length; i++) {
+    for(var j = 1; j < data.length; j++) { // rows
+        for(var i = 1; i < data[0].length; i++) { // series
             // Disk and network chart draws write or send amount as minus value
-            if ( i == 2 && data[0][i] === 'write' || data[0][i] === 'send' )
-                d3data[i-1].values.push([data[j][0], -data[j][i]]);
+            if ( i == 2 && (data[0][i] === 'write' || data[0][i] === 'send'))
+                d3data[i-1].values.push([data[j][0], -data[j][i]]); // push key value order and insert d3data from 0 row
             else 
                 d3data[i-1].values.push([data[j][0], data[j][i]]);
         }
