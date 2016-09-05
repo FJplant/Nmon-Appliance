@@ -308,7 +308,7 @@ function get_top_fields(req, res) {
 
     var date = eval(url_info.query['date']);
 
-    // db type changed from UTC time number to UTC string
+    // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
     date[0] = new Date( parseInt(date[0]));
     date[1] = new Date( parseInt(date[1]));
 
@@ -358,6 +358,10 @@ function get_host_fields(req, res) {
     var results = {};
     var date = eval(url_info.query['date']);
 
+    // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
+    date[0] = new Date( parseInt(date[0]));
+    date[1] = new Date( parseInt(date[1]));
+
     var match = {};
     if (typeof date !== 'undefined')
         match['datetime'] = { $gt : date[0], $lt : date[1] };
@@ -399,7 +403,7 @@ function get_host_fields(req, res) {
                             results[doc[i]._id.host] = { disk : doc[i].val };
                     }
                     var group3 = { _id: { host: '$host'} };
-                    group3['val'] = { $avg : { $add: ["$NET_ALL.read", "$NET_ALL.write"] } };
+                    group3['val'] = { $avg : { $add: ["$NET_ALL.recv", "$NET_ALL.send"] } };
                     nmondbZZZZ.aggregate(
                         {'$match' : match}, 
                         {'$project': {host:1, NET_ALL:1}},

@@ -2,7 +2,7 @@
  * Constants first
  */
 var HOSTS_BACK_TIME = 1000*60*1;    // in milli seconds, 1 minutes
-var REFRESH_INTERVAL = 1000;        // in milli seconds
+var REFRESH_INTERVAL = 2000;        // in milli seconds
 var DEBUG = false;                  // for debug purpose
 
 var curResType = "HOSTS";
@@ -148,6 +148,7 @@ function drawScatterChart(did, data, xlabel, ylabel) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
 
+    console.log(JSON.stringify(data));
     var d3data = [];
     for(var i = 1; i < data.length; i++) {
         d3data.push({
@@ -155,6 +156,7 @@ function drawScatterChart(did, data, xlabel, ylabel) {
             values: [{x: data[i][1], y: data[i][2], size: data[i][4], network: data[i][3] }]
         });
     }
+    console.log(JSON.stringify(d3data));
 
     nv.addGraph(function() {
         var chart = nv.models.scatterChart()
@@ -205,7 +207,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     var start = new Date();
 
     // hosts - always update this area
-    if (restype == "HOSTS" || restype == "ALL" ) {
+    if (restype == "HOSTS" || restype == "ALL" || document.getElementById('hosts_chart')) {
         reqStatus["HOSTS"] = true;
         if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting HOSTS data.");
         $.ajax({
