@@ -1,6 +1,6 @@
 /*
- * nmon-writer.js is
- *    an nmon writer class written in Node.js
+ * nmon-zzzz-writer.js is
+ *    an nmon zzzz section stream writer class written in Node.js
  *   and written by amoriya ( Junkoo Hea, junkoo.hea@gmail.com )
  *                  ymk     ( Youngmo Kwon, youngmo.kwon777@gmail.com )
  *
@@ -8,10 +8,13 @@
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
 
-module.exports = NmonWriter;
+module.exports = NmonZZZZWriter;
 
 var MongoClient = require('mongodb').MongoClient,
-    mongojs = require('mongojs');
+    mongojs = require('mongojs'),
+    util = require('util');
+
+const Transform = require('stream').Transform;
 
 // TODO: remove nmdb environment. This is not realted to generic nmon-parser.js
 // var nmdb = require('../config/nmdb-config.js');
@@ -24,16 +27,14 @@ var MongoClient = require('mongodb').MongoClient,
 var  mongodb = mongojs(nmdb.env.NMDB_NMONDB_URL);
 
 mongodb.on('connect', function() {
-    console.log('nmon-writer.js: database connected.');
+    console.log('nmon-zzzz-writer.js: database connected.');
 });
 
 var dbMongo = null;
 
-var nmondbCategories = mongodb.collection('nmon-categories'),
-    nmondbMETA = mongodb.collection('nmon-meta'),
-    nmondbZZZZ = mongodb.collection('nmon-perf'),
-    nmondbUARG = mongodb.collection('nmon-uarg'),
+var nmondbZZZZ = mongodb.collection('nmon-perf'),
     nmondbMC = null;
+
 
 MongoClient.connect(nmdb.env.NMDB_NMONDB_URL, function(err, db) {
     if (!err) {
@@ -56,69 +57,58 @@ MongoClient.connect(nmdb.env.NMDB_NMONDB_URL, function(err, db) {
 });
 
 // Constructor
-function NmonWriter(options) {
+function NmonZZZZWriter(options) {
     // allow use without new
-    if (!(this instanceof NmonWriter)) {
-        return new NmonWriter(options);
+    if (!(this instanceof NmonZZZZWriter)) {
+        return new NmonZZZZWriter(options);
     }
+
+    // init Transform
+    Transform.call(this, options);
 
     // Nmon Writer instance variables
     this._bulk = [];
     this._bulk_unit = 1;
 
-    if (typeof options['bulkUnit'] !== 'undefined') 
+    if (typeof options['bulkUnit'] != 'undefined') 
         this._bulk_unit = parseInt( options['bulkUnit'] );
 }
+util.inherits(NmonZZZZWriter, Transform);
 
 // TODO: DB error handling
-NmonWriter.prototype.writeMETA = function(meta) {
-    nmondbMETA.insert(meta);
-}
-
-// TODO: DB error handling
-NmonWriter.prototype.writeUARG = function(uarg) {
-    nmondbUARG.insert(uarg);
-}
-
-// TODO: header should be moved to parser
-NmonWriter.prototype.addCategory = function(category) {
-    var bulkop = nmondbCategories.initializeOrderedBulkOp();
-    bulkop.find(category).upsert().update({ $set: category});
-
-    bulkop.execute(function(err, res) {
-        if (err) console.error(err.toString());
-        else console.log('META data written...');
-    });
-}
-
-// TODO: DB error handling
-NmonWriter.prototype.writeZZZZ = function(zzzz) {
+NmonZZZZWriter.prototype._transform = function(chunk, encoding, callback) {
     // push new zzzz
-    this._bulk.push(zzzz);
-    //console.log(JSON.stringify(zzzz));
+    if (chunk[0] === 'performance') {
+        var zzzz = chunk[1];
+        this._bulk.push(zzzz);
+        //console.log(JSON.stringify(zzzz));
     
-    // flush writer if there is more data than bulk unit
-    // for debug purpose
-    if (this._bulk_unit == 1 || (this._bulk_unit > 1 && this._bulk.length >= this._bulk_unit)) {
-        // save the accumulated _bulk
-        this._flushSave();
+        // flush writer if there is more data than bulk unit
+        // for debug purpose
+        if (this._bulk_unit == 1 || (this._bulk_unit > 1 && this._bulk.length >= this._bulk_unit)) {
+            // save the accumulated _bulk
+            this._flushSave();
 
-        // log some periodic message
-        console.log('Pushed host: ' + zzzz['host']
-                  + ', Snapframe: ' + zzzz['snapframe']
-                  + ', Snaptime: ' + zzzz['snaptime']
-                  + ', Keys: ' + Object.keys(zzzz).length
-                  + ', Bulk Unit: ' + this._bulk_unit
-                  + ', Document count: ' + this._bulk.length);
+            // log some periodic message
+            console.log('Pushed host: ' + zzzz['host']
+                      + ', Snapframe: ' + zzzz['snapframe']
+                      + ', Snaptime: ' + zzzz['snaptime']
+                      + ', Keys: ' + Object.keys(zzzz).length
+                      + ', Bulk Unit: ' + this._bulk_unit
+                      + ', Document count: ' + this._bulk.length);
 
-        // clear _bulk buffer
-        this._bulk = [];
+            // clear _bulk buffer
+            this._bulk = [];
+        }
+    } else {
+        console.log(JSON.stringify(chunk[0]) + ' is not supported');
     }
+    callback();
 }
 
 // Insert accumulated Nmon ZZZZ data
 // TODO: bulkop operation have some bug when bulk unit is big
-NmonWriter.prototype._flushSave = function() {
+NmonZZZZWriter.prototype._flushSave = function() {
     //process.stdout.write('F');
     // store remained nmon data to mongo db
     // 
@@ -151,7 +141,7 @@ NmonWriter.prototype._flushSave = function() {
     } 
 }
 
-NmonWriter.prototype._bulkOpCallback = function(err, res) {
+NmonZZZZWriter.prototype._bulkOpCallback = function(err, res) {
     if (err) {
         console.log('nmon-writer.js: database single insert error.');
         // this._bulk[0] is out OUT of scope, so find other way
@@ -166,7 +156,7 @@ NmonWriter.prototype._bulkOpCallback = function(err, res) {
     }
 }
 
-NmonWriter.prototype._insertCallback = function(err, res) {
+NmonZZZZWriter.prototype._insertCallback = function(err, res) {
     if (err) {
         console.log('nmon-writer.js: database single insert error.');
         // this._bulk[0] is out OUT of scope, so find other way

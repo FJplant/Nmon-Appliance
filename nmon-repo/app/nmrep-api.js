@@ -20,7 +20,8 @@ var nmdb = require('../config/nmdb-config.js');
 var upload = multer({ 
 //    dest: './uploads/'     // to use memory file, dest should be null
 });
-var NmonParser = require('./nmon-parser.js');
+var NmonParser = require('./nmon-parser.js'),
+    NmonZZZZWriter = require('./nmon-zzzz-writer.js');
 
 /*
  * Initialize winston logger
@@ -118,8 +119,8 @@ module.exports = function(app, passport) {
     });
 
     var cpUpload = upload.fields([
-       { name: 'csv-files', maxCount: 10 }, 
-       { name: 'nmon-data-files[]', maxCount: 10 }
+       { name: 'csv-files', maxCount: nmdb.env.NMDB_UPLOAD_CSV_MAX_COUNT }, 
+       { name: 'nmon-data-files[]', maxCount: nmdb.env.NMDB_UPLOAD_NMONDATA_MAX_COUNT }
     ]);
 
     app.post('/nmonlog_attach', cpUpload, function(req, res) {
@@ -149,7 +150,8 @@ module.exports = function(app, passport) {
                + req.connection.remoteAddress 
                + ' ==> '
                + req.url, process.pid);
-        put_nmonlog(req, res, 100, true);
+        // monojs's bulk operation has some bugs so, adjust bulk op size
+        put_nmonlog(req, res, nmdb.env.NMDB_MONGO_BULKOP_SIZE, true);
     });
 }
 
@@ -169,10 +171,16 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
     var nmonParser = new NmonParser({
         objectMode: true,
         bulkUnit: bulk_unit,
+        output: 'db',
         logfile: nmdb.env.NMREP_PARSER_LOG_FILE,
         loglevel: nmdb.env.NMREP_PARSER_LOG_LEVEL,
         logfileZZZZ: nmdb.env.NMREP_PARSER_ZZZZ_LOG_FILE,
         loglevelZZZZ: nmdb.env.NMREP_PARSER_ZZZZ_LOG_FILE
+    });
+
+    var nmonZZZZWriter = new NmonZZZZWriter({
+        objectMode: true,
+        bulkUnit: bulk_unit
     });
 
     //  set response timeout to 0 
@@ -182,10 +190,15 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
     // in order of request -> parser -> writer
     nmonParser.on('finish', function() {
         // nmonParser._flushSave();  // TODO: check this code is necessary
-        log.info('Parsing and storing of nmon data file finished.');
+        log.info('Parsing of nmon data file finished.');
         // send HTTP 200 OK
         res.writeHead(200);
         res.end();
+    });
+
+    nmonZZZZWriter.on('finish', function() {
+        // nmonParser._flushSave();  // TODO: check this code is necessary
+        log.info('Storing of nmon data file finished.');
     });
 
     var debug = new Transform( {
@@ -217,17 +230,17 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
                            + ', size of: ' + nmonfiles[i].size);
                 nmonStream.push(nmonfiles[i].buffer);
                 nmonStream.push(null);
-                nmonStream.pipe(csvToJson).pipe(nmonParser);
+                nmonStream.pipe(csvToJson).pipe(nmonParser).pipe(nmonZZZZWriter);
             }
         }
         else {
             nmonStream.push(req.body['nmonlog']);
             nmonStream.push(null);
-            nmonStream.pipe(csvToJson).pipe(nmonParser);
+            nmonStream.pipe(csvToJson).pipe(nmonParser); //.pipe(nmonZZZZWriter);
             // Following is debug purpose. 
-            // nmonStream.pipe(csvToJson).pipe(debug).pipe(nmonParser);
+            // nmonStream.pipe(csvToJson).pipe(debug).pipe(nmonParser).pipe(nmonZZZZWriter);
         }
     } else {
-        req.pipe(csvToJson).pipe(nmonParser);
+        req.pipe(csvToJson).pipe(nmonParser).pipe(nmonZZZZWriter);
     }
 }
