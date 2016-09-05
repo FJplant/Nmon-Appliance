@@ -36,6 +36,7 @@ function NmonParser(options) {
     this._docAAA = {
         'nmon-data-id':'', 
         'database-version': '1.0',
+        'insertdt': new Date(),
         'datetime':0, 
         'timezone':'UTC', // default to UTC
         'progname': '',
@@ -237,7 +238,7 @@ NmonParser.prototype.parseNmonAAA = function(chunk) {
 
         // if parser meet AAA,date then, time field is already filled
         var beginDateTime = this._docAAA['date'] + ' ' + this._docAAA['time'];
-        this._docAAA['datetime'] = (new Date(beginDateTime)).getTime();
+        this._docAAA['datetime'] = new Date(beginDateTime);
 
         //console.log('beginDateTime: ' + beginDateTime + ', datetime: ' + (new Date(beginDateTime)).getTime());
 
@@ -351,6 +352,7 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk) {
     this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
     this.log('['+ this._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
     this._docZZZZ['nmon-data-id'] = this._nmondataid;
+    this._docZZZZ['insertdt'] = new Date();
     this._docZZZZ['host'] = this._hostname;
 
     //    chunk[2] - Time, 15:44:04
@@ -362,8 +364,8 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk) {
     var snapDateTime = chunk[2] + ' ' + (typeof chunk[3] == "undefined" ? '1-JAN-1970' : chunk[3]);
     // TODO: 1. support time zone manipulation. temporary convert nmon-tokyo to KST ( UTC + 9 hours )
     this._docZZZZ['datetime'] = (this._docZZZZ['host'] === 'nmon-tokyo') ? 
-                                    (new Date(snapDateTime)).getTime() + 9*60*60*1000 : 
-                                    (new Date(snapDateTime)).getTime();
+                                    new Date((new Date(snapDateTime)).getTime() + 9*60*60*1000): 
+                                    new Date(snapDateTime);
 
     // Initialize for db insert ordering 
     this._docZZZZ['CPU'] = [];
@@ -393,6 +395,7 @@ NmonParser.prototype.parseNmonUARG = function(chunk) {
     var docUARG = {};
 
     docUARG['nmon-data-id'] = this._nmondataid;	// nmondataid to compare and search
+    docUARG['insertdt'] = new Date();
     docUARG['host'] = this._hostname; // redundant but will be convenient 
     docUARG['snapframe'] = chunk[1];     // store T0001 ~ Txxxx
     docUARG['snapdate'] = this._docZZZZ['snapdate'];  // add redundant snapdate

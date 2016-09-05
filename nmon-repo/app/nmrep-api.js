@@ -171,7 +171,7 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
     var nmonParser = new NmonParser({
         objectMode: true,
         bulkUnit: bulk_unit,
-        output: 'file',
+        output: 'db',
         logfile: nmdb.env.NMREP_PARSER_LOG_FILE,
         loglevel: nmdb.env.NMREP_PARSER_LOG_LEVEL,
         logfileZZZZ: nmdb.env.NMREP_PARSER_ZZZZ_LOG_FILE,
