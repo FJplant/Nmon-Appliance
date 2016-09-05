@@ -156,7 +156,7 @@ function drawScatterChart(did, data, xlabel, ylabel) {
             values: [{x: data[i][1], y: data[i][2], size: data[i][4], network: data[i][3] }]
         });
     }
-    console.log(JSON.stringify(d3data));
+    //console.log(JSON.stringify(d3data));
 
     nv.addGraph(function() {
         var chart = nv.models.scatterChart()
