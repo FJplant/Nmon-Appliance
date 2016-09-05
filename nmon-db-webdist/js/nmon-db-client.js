@@ -2,7 +2,7 @@
  * Constants first
  */
 var HOSTS_BACK_TIME = 1000*60*1;    // in milli seconds, 1 minutes
-var REFRESH_INTERVAL = 2000;        // in milli seconds
+var REFRESH_INTERVAL = 1000;        // in milli seconds
 var DEBUG = false;                  // for debug purpose
 
 var curResType = "HOSTS";
@@ -57,6 +57,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
         $('#' + did).html('<svg></svg>');
 
     //console.log(JSON.stringify(data[0]));
+    console.log('data rows: ' + data.length);
     var d3data = [ ];
     for(var i = 1; i < data[0].length; i++)
         d3data.push({key: data[0][i], values:[]});
