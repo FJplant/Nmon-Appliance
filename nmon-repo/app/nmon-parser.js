@@ -119,10 +119,14 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
     // remove the '\r' from last last chunk data of nmon file from windows platform
     chunk[chunk.length - 1] = chunk[chunk.length - 1].replace('\r', '');
 
-    if( chunk[0].substring(0, 3) === 'AAA' )                // Process AAA line
+    if( chunk[0].substring(0, 3) === 'AAA' ) {              // Process AAA line
         this.parseNmonAAA(chunk);
-    else if( chunk[0].substring(0, 4) === 'BBBP' )          // Process BBBP line
+        callback();
+    }
+    else if( chunk[0].substring(0, 4) === 'BBBP' ) {        // Process BBBP line
         this.parseNmonBBBP(chunk);
+        callback();
+    }
     else if (chunk[0].substring(0, 4) === 'ZZZZ' ) {        // Process ZZZZ line
         // if parser meets ZZZZ section 
         // insert AAA and BBB document once
@@ -133,14 +137,23 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
             this._writer.writeMETA(this._docAAA);           // insert _docAAA to database
         }
 
-        this.parseNmonZZZZ(chunk);
+        this.parseNmonZZZZ(chunk, callback);
     }
-    else if (chunk[0] === 'UARG' && chunk[1] != '+Time')    // Process UARG line
+    else if (chunk[0] === 'UARG' && chunk[1] != '+Time') {   // Process UARG line
         this.parseNmonUARG(chunk);
-    else                                                    // Process other perf log line CPUxxx, MEM, and so on
+        callback();
+    }
+    else {                                                   // Process other perf log line CPUxxx, MEM, and so on
         this.parseNmonPerf(chunk);
-    
-    callback();  // last call for callback()
+        callback();
+    }
+
+    // The callback function must be called only when the current chunk is completely consumed.
+    // The first argument passed to the callback must be an Error object if an error occurred
+    // while processing the input or null otherwise. If a second argument is passed to the callback,
+    // it will be forwarded on to the readable.push() method. 
+
+    //callback();  // last call for callback()
 
     // AIX SECTIONS ( Total 33 sections )
     // AAA
@@ -181,16 +194,17 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
 NmonParser.prototype._flush = function(callback) {
     // Fix the bug: NMIO-158-nmon-data-parsing-nmon-perf
     // TODO: may be related to strange ZZZZ output log
+    //console.log('Flush called');
     if (typeof this._docZZZZ['snapframe'] !== 'undefined') 
-      this._flushSave(); 
+      this._flushSave(callback); 
 
-    callback();
+    //callback();
 }
 
-NmonParser.prototype._flushSave = function() {
+NmonParser.prototype._flushSave = function(callback) {
     if (Object.keys(this._docZZZZ).length !== 0 ) {
         if (this._output === 'db') {
-            this._writer.writeZZZZ(this._docZZZZ);
+            this._writer.writeZZZZ(this._docZZZZ,callback);
         }
         else if (this._output === 'file') {
             // log some periodic message
@@ -199,13 +213,14 @@ NmonParser.prototype._flushSave = function() {
                       + ', Snaptime: ' + this._docZZZZ['snaptime']
                       + ', Keys: ' + Object.keys(this._docZZZZ).length);
 
-            this._outputfile.write(JSON.stringify(this._docZZZZ));
+            this._outputfile.write(JSON.stringify(this._docZZZZ), callback);
         }
         else if (this._otuput === 'pipe')
             this.push(['performance', this._docZZZZ]);
     }
     else {
         console.error('Strange _docZZZZ occurred: '  + JSON.stringify(this._docZZZZ));
+        callback();
     }
 }
 
@@ -229,23 +244,23 @@ NmonParser.prototype.parseNmonAAA = function(chunk) {
         
     if (chunk[1] === 'time') {
         var time = chunk[2];
-        this._docAAA['time'] = time.replace(/\./gi,':');  // fix leading "." before seconds in linux nmon file             
+        this._docAAA['snaptime'] = time.replace(/\./gi,':');  // fix leading "." before seconds in linux nmon file             
     } 
     else if (chunk[1] === 'date') {
-        this._docAAA['date'] = chunk[2];
+        this._docAAA['snapdate'] = chunk[2];
 
         //console.log('date: ' + this._docAAA['date'] + ', time: ' + this._docAAA['time'] );
 
         // if parser meet AAA,date then, time field is already filled
-        var beginDateTime = this._docAAA['date'] + ' ' + this._docAAA['time'];
+        var beginDateTime = this._docAAA['snapdate'] + ' ' + this._docAAA['snaptime'];
         this._docAAA['datetime'] = new Date(beginDateTime);
 
         //console.log('beginDateTime: ' + beginDateTime + ', datetime: ' + (new Date(beginDateTime)).getTime());
 
         // TODO: change nmondataid generation policy
         this._nmondataid = this._docAAA['host'] + '$' + 
-                           this._docAAA['date'] + '$' + 
-                           this._docAAA['time'] + '$' + 
+                           this._docAAA['snapdate'] + '$' + 
+                           this._docAAA['snaptime'] + '$' + 
                            this._docAAA['timezone'] + '$' + 
                            this._docAAA['command']; 
         this._docAAA['nmon-data-id'] = this._nmondataid;
@@ -324,7 +339,7 @@ NmonParser.prototype.parseNmonBBBP = function(chunk) {
     this.log('['+ this._hostname + ':' + chunk[0] + ':' + chunk[1] + ']\033[m ' + chunk[2] + ',' + chunk[3]);
 }
 
-NmonParser.prototype.parseNmonZZZZ = function(chunk) {
+NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
     // Process lines which starts with 'ZZZZ'
     //   'ZZZZ' section is a leading line for iterations of current resource utilization
 
@@ -334,7 +349,9 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk) {
     // Fix the bug: NMIO-158-nmon-data-parsing-nmon-perf
     // TODO: may be related to strange ZZZZ output log
     if (typeof this._docZZZZ['snapframe'] !== 'undefined') 
-      this._flushSave(); 
+      this._flushSave(callback); 
+    else
+      callback();
 
     if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
         this.logZZZZ('\n\n==========================================================');
@@ -392,12 +409,13 @@ NmonParser.prototype.parseNmonUARG = function(chunk) {
     // UARG only apear once when TOP meets a new process or already running process.
     // So, just write UARG to db whenever meet.
 
+    // TODO: AIX nmon file is different from Linux by column order
     var docUARG = {};
 
     docUARG['nmon-data-id'] = this._nmondataid;	// nmondataid to compare and search
     docUARG['insertdt'] = new Date();
     docUARG['host'] = this._hostname; // redundant but will be convenient 
-    docUARG['snapframe'] = chunk[1];     // store T0001 ~ Txxxx
+    docUARG['snapframe'] = this._docZZZZ['snapframe'];// store T0001 ~ Txxxx
     docUARG['snapdate'] = this._docZZZZ['snapdate'];  // add redundant snapdate
     docUARG['snaptime'] = this._docZZZZ['snaptime'];  // add redundant snaptime
     docUARG['datetime'] = this._docZZZZ['datetime'];  // add redundant datetime
@@ -435,8 +453,9 @@ NmonParser.prototype.parseNmonPerf = function(chunk) {
     //     'UARG': user process command parameter and informations
     if( chunk[0] in this._rawHeader )    // process Nmon Perf log
         this.parseNmonPerfLog(chunk);
-    else 
+    else {
         this.parseNmonPerfHeader(chunk); // process Nmon Perf header
+    }
 }
 
 // NmonParser.prototype.parseNmonPerfHeader

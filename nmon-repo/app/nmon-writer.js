@@ -11,7 +11,8 @@
 module.exports = NmonWriter;
 
 var MongoClient = require('mongodb').MongoClient,
-    mongojs = require('mongojs');
+    mongojs = require('mongojs'),
+    util = require('util');
 
 // TODO: remove nmdb environment. This is not realted to generic nmon-parser.js
 // var nmdb = require('../config/nmdb-config.js');
@@ -72,12 +73,16 @@ function NmonWriter(options) {
 
 // TODO: DB error handling
 NmonWriter.prototype.writeMETA = function(meta) {
+    // TODO: call callack when completed
     nmondbMETA.insert(meta);
+    console.log("Meta data written: " + meta['host'] + ', ' + meta['snapdate'] + ' ' + meta['snaptime']);
 }
 
 // TODO: DB error handling
 NmonWriter.prototype.writeUARG = function(uarg) {
+    // TODO: call callack when completed
     nmondbUARG.insert(uarg);
+    console.log("UARG written: " + uarg['host'] + ', ' + uarg['snapdate'] + ' ' + uarg['snaptime'] +  ', ' + uarg['FullCommand']);
 }
 
 // TODO: header should be moved to parser
@@ -87,21 +92,21 @@ NmonWriter.prototype.addCategory = function(category) {
 
     bulkop.execute(function(err, res) {
         if (err) console.error(err.toString());
-        else console.log('META data written...');
+        else console.log('Category data written...');
     });
 }
 
 // TODO: DB error handling
-NmonWriter.prototype.writeZZZZ = function(zzzz) {
+NmonWriter.prototype.writeZZZZ = function(zzzz, callback) {
+    //console.log(JSON.stringify(zzzz));
     // push new zzzz
     this._bulk.push(zzzz);
-    //console.log(JSON.stringify(zzzz));
     
     // flush writer if there is more data than bulk unit
     // for debug purpose
     if (this._bulk_unit == 1 || (this._bulk_unit > 1 && this._bulk.length >= this._bulk_unit)) {
         // save the accumulated _bulk
-        this._flushSave();
+        this._flushSave(callback);
 
         // log some periodic message
         console.log('Pushed host: ' + zzzz['host']
@@ -113,12 +118,13 @@ NmonWriter.prototype.writeZZZZ = function(zzzz) {
 
         // clear _bulk buffer
         this._bulk = [];
-    }
+    } else
+        callback(); // notify I/O operation has finished. because we don't have to make an real I/O
 }
 
 // Insert accumulated Nmon ZZZZ data
 // TODO: bulkop operation have some bug when bulk unit is big
-NmonWriter.prototype._flushSave = function() {
+NmonWriter.prototype._flushSave = function(cb) {
     //process.stdout.write('F');
     // store remained nmon data to mongo db
     // 
@@ -127,8 +133,24 @@ NmonWriter.prototype._flushSave = function() {
     //if( this._bulk.length > 0 ) {
     if (this._bulk_unit == 1 && this._bulk.length == 1){ 
         for(var i = 0; i < this._bulk.length; i++) {
-            nmondbZZZZ.insert(this._bulk[i], this._insertCallback);
+            nmondbZZZZ.insert(this._bulk[i], function(err, res) {
+                if (!err) {
+                    console.log('nmon-writer.js: database single insert error.');
+                    // this._bulk[0] is out OUT of scope, so find other way
+                    //console.error('ZZZZ from: ' + this._bulk[0]['host'] + ', '  + this._bulk[0]['snapframe'])
+                    //console.error('      ,to: ' + this._buik[this._bulk.length - 1]['host'] + ', ' 
+                    //                            + this._bulk[this._bulk.length - 1]['snapframe']);
+                    console.log('            ==> ' + err.toString());
+                }
+                else {
+                    console.log('[nmon-writer.js] ' + res['nInserted'] + ' items are successfully inserted db.');
+                    console.log('                 ' + JSON.stringify(res));
+                }
+
+            });
         }
+
+        cb(); // notify db insert completion
     }
     else if( this._bulk_unit > 1 && this._bulk.length > 1 ) {
         /*
@@ -138,21 +160,39 @@ NmonWriter.prototype._flushSave = function() {
             bulkop.insert(this._bulk[i]);
         }
 
-        bulkop.execute(this._bulkOpCallBack);
+        bulkop.execute(function(err, res) {
+            if (!err) {
+                console.log('nmon-writer.js: database single insert error.');
+                // this._bulk[0] is out OUT of scope, so find other way
+                console.log('ZZZZ from: ' + this._bulk[0]['host'] + ', '  + this._bulk[0]['snapframe'])
+                console.log('      ,to: ' + this._buik[this._bulk.length - 1]['host'] + ', ' 
+                                          + this._bulk[this._bulk.length - 1]['snapframe']);
+                console.log('           ' + err.toString());
+            }
+            else {
+                console.log('[nmon-writer.js] ' + res['nInserted'] + ' items are successfully inserted db.');
+                console.log('             ==> ' + JSON.stringify(res));
+            }
+
+            cb();  // notify db insert completion
+        }
         */
         nmondbMC.insertMany(this._bulk, function(err, r) {
             if (!err) {
-//                console.log('Bulk operation to database excuted with: ' + JSON.stringify(r.result));
+                console.log('nmondbMC BulkOp excution result: ' + JSON.stringify(r.result));
             } else {
                 console.log('nmondbMC insertMany error: code=' + err.code + ', index=' + err.index);
                 console.log('    ' + err.errmsg);
             }
+
+            console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
+            cb();  // notify db insert completion
         });
     } 
 }
 
 NmonWriter.prototype._bulkOpCallback = function(err, res) {
-    if (err) {
+    if (!err) {
         console.log('nmon-writer.js: database single insert error.');
         // this._bulk[0] is out OUT of scope, so find other way
         //console.error('ZZZZ from: ' + this._bulk[0]['host'] + ', '  + this._bulk[0]['snapframe'])
@@ -164,19 +204,6 @@ NmonWriter.prototype._bulkOpCallback = function(err, res) {
         console.log('[nmon-writer.js] ' + res['nInserted'] + ' items are successfully inserted db.');
         console.log('             ==> ' + JSON.stringify(res));
     }
-}
 
-NmonWriter.prototype._insertCallback = function(err, res) {
-    if (err) {
-        console.log('nmon-writer.js: database single insert error.');
-        // this._bulk[0] is out OUT of scope, so find other way
-        //console.error('ZZZZ from: ' + this._bulk[0]['host'] + ', '  + this._bulk[0]['snapframe'])
-        //console.error('      ,to: ' + this._buik[this._bulk.length - 1]['host'] + ', ' 
-        //                            + this._bulk[this._bulk.length - 1]['snapframe']);
-        console.log('            ==> ' + err.toString());
-    }
-    else {
-        //console.log('[nmon-writer.js] ' + res['nInserted'] + ' items are successfully inserted db.');
-        //console.log('                 ' + JSON.stringify(res));
-    }
+    cb();  // notify db insert completion
 }
