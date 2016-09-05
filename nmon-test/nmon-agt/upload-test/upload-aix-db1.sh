@@ -1,9 +1,8 @@
 #!/bin/bash
 # aix-db1
-export NMON_AGT_HOME=../../../nmon-agt
+export NMON_AGT_HOME="../../../nmon-agt"
 
 echo "[`date`] Uploading aix-db1..."
-cd ../bin/
 $NMON_AGT_HOME/bin/nmon-upldr.sh nmonlog upload "/DATA/nmon-capture/aix-db.fjint.com/aix-db1_150401_0800.nmon"
 $NMON_AGT_HOME/bin/nmon-upldr.sh nmonlog upload "/DATA/nmon-capture/aix-db.fjint.com/aix-db1_150402_0800.nmon"
 $NMON_AGT_HOME/bin/nmon-upldr.sh nmonlog upload "/DATA/nmon-capture/aix-db.fjint.com/aix-db1_150403_0800.nmon"
