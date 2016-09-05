@@ -219,6 +219,9 @@ function get_fields(req, res) {
     var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
+    
+    date[0] = new Date( parseInt(date[0]));
+    date[1] = new Date( parseInt(date[1]));
     var fields = {datetime:1, _id: 0};
     var average = ['Time'];
     for (var i = 0; i < data.length; i++) {
@@ -256,7 +259,8 @@ function get_fields(req, res) {
 
                 if( doc ) {
                     cnt++;
-                    average[0] = +doc['datetime'];
+                    // Bug fix after datetime type change from int to Date, d3 likes number time
+                    average[0] = + doc['datetime'].getTime();
 
                     // calc average
                     for (var i = 0; i < data.length; i++) {
@@ -303,6 +307,11 @@ function get_top_fields(req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
 
     var date = eval(url_info.query['date']);
+
+    // db type changed from UTC time number to UTC string
+    date[0] = new Date( parseInt(date[0]));
+    date[1] = new Date( parseInt(date[1]));
+
     var type = url_info.query['type'];
 
     var match = {};
@@ -426,6 +435,7 @@ function get_host_fields(req, res) {
  * Callback: error_handler 
  */
 function error_handler(res, err, code) {
+    //console.log(err);
     log.error(err.toString());
     res.writeHead(code);
     res.end();
