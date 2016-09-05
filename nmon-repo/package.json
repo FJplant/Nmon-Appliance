@@ -4,28 +4,27 @@
   "dependencies": {
     "JSONStream": "latest",
     "bcrypt-nodejs": "latest",
+    "body-parser": "~1.15.2",
     "cluster": "latest",
     "connect-flash": "~0.1.1",
     "connect-mongo": "latest",
+    "cookie-parser": "~1.4.3",
     "csv-streamify": "latest",
     "ejs": "~1.0.0",
     "express": "latest",
     "express-session": "latest",
     "file-stream-rotator": "latest",
     "forever": "latest",
+    "method-override": "~2.3.6",
     "mongojs": "latest",
     "mongoose": "~4.4",
+    "morgan": "~1.7.0",
     "multer": "latest",
     "passport": "~0.1.17",
     "passport-facebook": "~1.0.2",
     "passport-google-oauth": "~0.1.5",
     "passport-local": "~0.1.6",
     "passport-twitter": "~1.0.2",
-    "swig": "latest",
-    "winston": "latest",
-    "morgan": "~1.7.0",
-    "body-parser": "~1.15.2",
-    "cookie-parser": "~1.4.3",
-    "method-override": "~2.3.6"
+    "winston": "latest"
   }
 }

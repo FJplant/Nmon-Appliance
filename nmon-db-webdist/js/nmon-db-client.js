@@ -2,10 +2,10 @@
  * Constants first
  */
 var HOSTS_BACK_TIME = 1000*60*1;    // in milli seconds, 1 minutes
-var REFRESH_INTERVAL = 2000;        // in milli seconds
+var REFRESH_INTERVAL = 1000;        // in milli seconds
 var DEBUG = false;                  // for debug purpose
 
-var curResType = "CPU";
+var curResType = "HOSTS";
 var reqStatus = {
     "HOSTS": false,
     "CPU": false,
@@ -57,6 +57,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
         $('#' + did).html('<svg></svg>');
 
     //console.log(JSON.stringify(data[0]));
+    console.log('data rows: ' + data.length);
     var d3data = [ ];
     for(var i = 1; i < data[0].length; i++)
         d3data.push({key: data[0][i], values:[]});
@@ -344,8 +345,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
 // Issue periodic chart refresh
 //
 function refresh_charts() {
-    var fromDate, toDate,
-        now = new Date();
+    var fromDate, toDate, now = new Date();
 
     /*
     fromDate = new Date($("#from").val() + " " + $("#from_time").val());
@@ -380,33 +380,27 @@ function refresh_charts() {
 $(function() {
     getHosts('CPU_ALL');
 
-    var today = new Date();
-    $("#from").val((today.getMonth() + 1) + "/" + today.getDate() + "/" + today.getFullYear());
-    $("#to").val("now");
+    $("#hosts").on('change', (function(event) {
+        // TODO: consider other resource was set .
+        if (curResType === 'HOSTS') {
+           setCurResType('CPU');
+        }
+    }));
+
     $("#view").click(function(event) {
-        var fromDate, toDate;
-
-        fromDate = new Date($("#from").val() + " " + $("#from_time").val());
-
-        if ($("#to").val() !== "now")
-            toDate = new Date($("#to").val() + " " + $("#to_time").val());
-        else
-            toDate = new Date();
-        updateGraph($("#hosts").val(), curResType, fromDate, toDate)
+        setCurResType('CPU');
     });
-
-    var fromDate = new Date($("#from").val());
-    var now = new Date();
-
-    // 2016.8.20. 
-    // Do not call at first time
-    // First Tab is "HOSTS" and CPU so just call both of them
-    // updateGraph("All", "HOSTS", new Date(now.getTime() - HOSTS_BACK_TIME ), now);	// Draw last HOST_BACK_TIME
-    // updateGraph("All", "CPU", fromDate, now);
 
     // Initiate first refresh_charts call
     // Refresh every REFRESH_INTERVAL milli seconds
-    setTimeout( refresh_charts, REFRESH_INTERVAL );
+    // excute when #cpu_chart or #hosts_chart div id exist
+    if (document.getElementById('cpu_chart') || document.getElementById('hosts_chart')) {
+        setTimeout( refresh_charts, REFRESH_INTERVAL );
+        if (DEBUG) console.log('cpu_chart exists');
+    }
+    else {
+        if (DEBUG) console.log('no cpu charts');
+    }
 });
 
 // JQuery UI Date picker event handler
@@ -575,7 +569,9 @@ $(function() {
                 ", To: " + toDate.toLocaleString());
             }
             
-            updateGraph($("#hosts").val(), curRes, fromDate, toDate);
+            refresh_charts();
+            // TODO: remove old code
+            //updateGraph($("#hosts").val(), curRes, fromDate, toDate);
         }
     });
 });

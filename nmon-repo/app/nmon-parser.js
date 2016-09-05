@@ -36,6 +36,7 @@ function NmonParser(options) {
     this._docAAA = {
         'nmon-data-id':'', 
         'database-version': '1.0',
+        'insertdt': new Date(),
         'datetime':0, 
         'timezone':'UTC', // default to UTC
         'progname': '',
@@ -69,6 +70,7 @@ function NmonParser(options) {
     this._rawHeader = {};
     this._cntTU = 0; // counter for parser log formatting
 
+    // Options
     // NmonWriter
     this._writer = new NmonWriter({
         bulkUnit: options['bulkUnit']
@@ -80,20 +82,33 @@ function NmonParser(options) {
     this._loggerParserZZZZ = null;
     this._loglevelParserZZZZ = 'info';
 
+    // Output
+    this._output = 'db';
+    this._outputfile = null;
+
     // Set log stream
     // Initilize parser log
     //     flags: 'a' - append mode
-    if ( typeof options['logfile'] != 'undefined' ) {
+    if ( typeof options['logfile'] != 'undefined' )
         this._loggerParser =  fs.createWriteStream( options['logfile'], { flags: 'a' } );
-    }
+
+    if ( typeof options['loglevel'] != 'undefined' )
+        this._loglevelParser = options['loglevel'] 
+
+    // Set zzzz log stream
     if ( typeof options['logfileZZZZ'] != 'undefined' )
         this._loggerParserZZZZ =  fs.createWriteStream( options['logfileZZZZ'], { flags: 'a' } );
 
-    // Set log level
-    if ( typeof options['loglevel'] != 'undefined' )
-        this._loglevelParser = options['loglevel'] 
     if ( typeof options['loglevelZZZZ'] != 'undefined' )
         this._loglevelParserZZZZ = options['loglevelZZZZ'] 
+
+    // Set write mode
+    if ( typeof options['output'] != 'undefined' ) {
+        this._output = options['output'];
+        console.log('output mode: ' + this._output);
+        if (this._output === 'file') 
+            this._outputfile = fs.createWriteStream( '_nmonparserfile.tmp', { flags: 'a' } );
+    }
 }
 util.inherits(NmonParser, Transform);
 
@@ -164,14 +179,32 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
 } // enf of NmonParser.prototype._transform 
 
 NmonParser.prototype._flush = function(callback) {
-    this._flushSave();
+    // Fix the bug: NMIO-158-nmon-data-parsing-nmon-perf
+    // TODO: may be related to strange ZZZZ output log
+    if (typeof this._docZZZZ['snapframe'] !== 'undefined') 
+      this._flushSave(); 
+
     callback();
 }
 
 NmonParser.prototype._flushSave = function() {
     if (Object.keys(this._docZZZZ).length !== 0 ) {
-        this._writer.writeZZZZ(this._docZZZZ);
-    } else {
+        if (this._output === 'db') {
+            this._writer.writeZZZZ(this._docZZZZ);
+        }
+        else if (this._output === 'file') {
+            // log some periodic message
+            console.log('ZZZZ section written: ' + this._docZZZZ['host']
+                      + ', Snapframe: ' + this._docZZZZ['snapframe']
+                      + ', Snaptime: ' + this._docZZZZ['snaptime']
+                      + ', Keys: ' + Object.keys(this._docZZZZ).length);
+
+            this._outputfile.write(JSON.stringify(this._docZZZZ));
+        }
+        else if (this._otuput === 'pipe')
+            this.push(['performance', this._docZZZZ]);
+    }
+    else {
         console.error('Strange _docZZZZ occurred: '  + JSON.stringify(this._docZZZZ));
     }
 }
@@ -205,7 +238,7 @@ NmonParser.prototype.parseNmonAAA = function(chunk) {
 
         // if parser meet AAA,date then, time field is already filled
         var beginDateTime = this._docAAA['date'] + ' ' + this._docAAA['time'];
-        this._docAAA['datetime'] = (new Date(beginDateTime)).getTime();
+        this._docAAA['datetime'] = new Date(beginDateTime);
 
         //console.log('beginDateTime: ' + beginDateTime + ', datetime: ' + (new Date(beginDateTime)).getTime());
 
@@ -299,8 +332,9 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk) {
     // call flushSave when new 'ZZZZ' has arrived
     // this can be a blocker not sending current data until getting next ZZZZ
     // Fix the bug: NMIO-158-nmon-data-parsing-nmon-perf
-    if (typeof this._docZZZZ['snapframe'] !== 'undefined')
-        this._flushSave(); 
+    // TODO: may be related to strange ZZZZ output log
+    if (typeof this._docZZZZ['snapframe'] !== 'undefined') 
+      this._flushSave(); 
 
     if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
         this.logZZZZ('\n\n==========================================================');
@@ -318,6 +352,7 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk) {
     this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
     this.log('['+ this._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
     this._docZZZZ['nmon-data-id'] = this._nmondataid;
+    this._docZZZZ['insertdt'] = new Date();
     this._docZZZZ['host'] = this._hostname;
 
     //    chunk[2] - Time, 15:44:04
@@ -329,8 +364,8 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk) {
     var snapDateTime = chunk[2] + ' ' + (typeof chunk[3] == "undefined" ? '1-JAN-1970' : chunk[3]);
     // TODO: 1. support time zone manipulation. temporary convert nmon-tokyo to KST ( UTC + 9 hours )
     this._docZZZZ['datetime'] = (this._docZZZZ['host'] === 'nmon-tokyo') ? 
-                                    (new Date(snapDateTime)).getTime() + 9*60*60*1000 : 
-                                    (new Date(snapDateTime)).getTime();
+                                    new Date((new Date(snapDateTime)).getTime() + 9*60*60*1000): 
+                                    new Date(snapDateTime);
 
     // Initialize for db insert ordering 
     this._docZZZZ['CPU'] = [];
@@ -360,6 +395,7 @@ NmonParser.prototype.parseNmonUARG = function(chunk) {
     var docUARG = {};
 
     docUARG['nmon-data-id'] = this._nmondataid;	// nmondataid to compare and search
+    docUARG['insertdt'] = new Date();
     docUARG['host'] = this._hostname; // redundant but will be convenient 
     docUARG['snapframe'] = chunk[1];     // store T0001 ~ Txxxx
     docUARG['snapdate'] = this._docZZZZ['snapdate'];  // add redundant snapdate
