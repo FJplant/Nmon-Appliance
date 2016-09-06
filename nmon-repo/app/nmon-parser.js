@@ -30,8 +30,9 @@ function NmonParser(options) {
 
     // NmonParser state variables
     this.state = {
-        _hostname : '* N/A *',
         _nmondataid : null,
+        _hostname : '* N/A *',
+        _ostype : null,
         _isDocAAAInserted : false,
         _cntTU : 0     // counter for parser log formatting
     }
@@ -43,6 +44,8 @@ function NmonParser(options) {
         'insertdt': new Date(),
         'datetime':0, 
         'timezone':'UTC', // default to UTC
+        'hostname': null,
+        'ostype': null,
         'AAA' : {},
         'BBBB' : [],
         'BBBD' : [],
@@ -230,7 +233,7 @@ NmonParser.prototype._flushSave = function(callback) {
         }
         else if (this._output === 'file') {
             // log some periodic message
-            console.log('ZZZZ section written: ' + this._docZZZZ['host']
+            console.log('ZZZZ section written: ' + this._docMETA['hostname']
                       + ', Snapframe: ' + this._docZZZZ['snapframe']
                       + ', Snaptime: ' + this._docZZZZ['snaptime']
                       + ', Keys: ' + Object.keys(this._docZZZZ).length);
@@ -289,9 +292,8 @@ NmonParser.prototype.parseNmonAAA = function(chunk) {
     }
     else if (chunk[1] === 'host') {
         this.state._hostname = chunk[2];
-        // add host prefix to _nmondataid
-            
-        this._docAAA['host'] = chunk[2]; 
+        this._docAAA['host'] = this._docMETA['hostname'] = this.state._hostname;
+
         // TODO: 1. support time zone manipulation
         if ( this.state._hostname === 'nmon-tokyo' )
             this._docMETA['timezone'] = 'UTC'; // TODO: this is temporary
@@ -300,8 +302,13 @@ NmonParser.prototype.parseNmonAAA = function(chunk) {
     }
     else if ( chunk[1] === 'max_disks' || chunk[1] === 'disks' ) 
         this._docAAA[chunk[1]] = parseInt(chunk[2]) +',' + chunk[3];
-    else if ( chunk[1] === 'OS' )
-        this._docAAA[chunk[1]] = chunk[2] +',' + chunk[3] + chunk[4];
+    else if ( chunk[1] === 'OS') {   // Only Linux is OS and AIX have AIX
+        this._docAAA[chunk[1]] = chunk[2] +',' + chunk[3] + ',' + chunk[4];
+        this._docMETA['ostype'] = this.state._ostype = chunk[2];
+    }
+    else if ( chunk[1] === 'AIX' ) {
+        this._docMETA['ostype'] = this.state._ostype = chunk[1];
+    }
     else if ( chunk[1] === 'x86' ) {
         if ( chunk[2] === 'MHz' || chunk[2] === 'bogomips' )
             this._docAAA['x86'][chunk[2]] = parseFloat(chunk[3]);
@@ -390,7 +397,7 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
     // ordering of _flushSave() and following line
     this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
     this.log('['+ this.state._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
-    this._docZZZZ['nmon-data-id'] = this._nmondataid;
+    this._docZZZZ['nmon-data-id'] = this.state._nmondataid;
     this._docZZZZ['insertdt'] = new Date();
     this._docZZZZ['host'] = this.state._hostname;
 
@@ -402,7 +409,7 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
 
     var snapDateTime = chunk[2] + ' ' + (typeof chunk[3] == "undefined" ? '1-JAN-1970' : chunk[3]);
     // TODO: 1. support time zone manipulation. temporary convert nmon-tokyo to KST ( UTC + 9 hours )
-    this._docZZZZ['datetime'] = (this._docZZZZ['host'] === 'nmon-tokyo') ? 
+    this._docZZZZ['datetime'] = (this._docMETA['hostname'] === 'nmon-tokyo') ? 
                                     new Date((new Date(snapDateTime)).getTime() + 9*60*60*1000): 
                                     new Date(snapDateTime);
 
@@ -434,7 +441,7 @@ NmonParser.prototype.parseNmonUARG = function(chunk) {
     // TODO: AIX nmon file is different from Linux by column order
     var docUARG = {};
 
-    docUARG['nmon-data-id'] = this._nmondataid;	// nmondataid to compare and search
+    docUARG['nmon-data-id'] = this.state._nmondataid;	// nmondataid to compare and search
     docUARG['insertdt'] = new Date();
     docUARG['host'] = this.state._hostname; // redundant but will be convenient 
     docUARG['snapframe'] = this._docZZZZ['snapframe'];// store T0001 ~ Txxxx
