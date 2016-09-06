@@ -399,11 +399,10 @@ function drawChart(did) {
 
 function resizeChart() {
     //console.log('window resized');
-
+    // Manual resize is buggy let it be refreshed by timer now.
     for ( i = 0; i < chartByDid.length; i++ ) {
         if ( typeof chartByDid[i] == 'function' ) {
-            nv.utils.windowResize(chartByDid[i].update);
-            //console.log('chart resized');
+            //nv.utils.windowResize(chartByDid[i].update);
         }
     }
 }
