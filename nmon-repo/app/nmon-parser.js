@@ -48,6 +48,7 @@ function NmonParser(options) {
         'ostype': null,
         'AAA' : {},
         'BBBB' : [],
+        'BBBC' : [],
         'BBBD' : [],
         'BBBN' : [],
         'BBBV' : [],
@@ -79,6 +80,7 @@ function NmonParser(options) {
     };
 
     this._docBBBB = [];
+    this._docBBBC = [];
     this._docBBBD = [];
     this._docBBBN = [];
     this._docBBBV = [];
@@ -137,8 +139,38 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
     // remove the '\r' from last last chunk data of nmon file from windows platform
     chunk[chunk.length - 1] = chunk[chunk.length - 1].replace('\r', '');
 
+    // TODO: AIX BBB section
+    // Process lines which starts with 'BBB'
+    //   for AIX
+    //   'BBBB' and 'BBBC' line has system component configurations
+    //   'BBBV' line has volume configurations
+    //   'BBBN' line has network configurations
+    //   'BBBD' line has Disk Adapter Information
+    //   'BBBP' line has result of system command like lsconf, lsps, lparstat, emstat, no,
+    //          mpstat, vmo, ioo and so on.
+        
     if( chunk[0].substring(0, 3) === 'AAA' ) {              // Process AAA line
         this.parseNmonAAA(chunk);
+        callback();
+    }
+    else if( chunk[0].substring(0, 4) === 'BBBB' ) {        // Process BBBB line
+        this.parseNmonBBBB(chunk);
+        callback();
+    }
+    else if( chunk[0].substring(0, 4) === 'BBBC' ) {        // Process BBBC line
+        this.parseNmonBBBC(chunk);
+        callback();
+    }
+    else if( chunk[0].substring(0, 4) === 'BBBD' ) {        // Process BBBD line
+        this.parseNmonBBBD(chunk);
+        callback();
+    }
+    else if( chunk[0].substring(0, 4) === 'BBBN' ) {        // Process BBBN line
+        this.parseNmonBBBN(chunk);
+        callback();
+    }
+    else if( chunk[0].substring(0, 4) === 'BBBV' ) {        // Process BBBV line
+        this.parseNmonBBBV(chunk);
         callback();
     }
     else if( chunk[0].substring(0, 4) === 'BBBP' ) {        // Process BBBP line
@@ -152,6 +184,7 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
             this.state._isDocAAAInserted = true;
             this._docMETA['AAA'] = this._docAAA;            // assign _docAAA to _docMETA
             this._docMETA['BBBB'] = this._docBBBB;
+            this._docMETA['BBBC'] = this._docBBBC;
             this._docMETA['BBBD'] = this._docBBBD;
             this._docMETA['BBBN'] = this._docBBBN;
             this._docMETA['BBBV'] = this._docBBBV;
@@ -325,18 +358,70 @@ NmonParser.prototype.parseNmonAAA = function(chunk) {
         this._docAAA[chunk[1]] = chunk[2];
 }
 
-NmonParser.prototype.parseNmonBBBP = function(chunk) {
-    // TODO: AIX BBB section
-    // Process lines which starts with 'BBB'
-    //   for AIX
-    //   'BBBB' and 'BBBC' line has system component configurations
-    //   'BBBV' line has volume configurations
-    //   'BBBN' line has network configurations
-    //   'BBBD' line has Disk Adapter Information
-    //   'BBBP' line has result of system command like lsconf, lsps, lparstat, emstat, no,
-    //          mpstat, vmo, ioo and so on.
+NmonParser.prototype.parseNmonBBBB = function(chunk) {
+    var bbbb = {};
+ 
+    var seq = parseInt(chunk[1]);
+ 
+    if (seq >=1) {
+        bbbb['seq'] = parseInt(chunk[1]);
+        bbbb['name'] = chunk[2];
+        bbbb['Size(GB)'] = chunk[3];
+        bbbb['disc attach type'] = chunk[4];
+        this._docBBBB.push(bbbb);
+    }
+}
 
-        
+NmonParser.prototype.parseNmonBBBC = function(chunk) {
+    var bbbc = {};
+ 
+    var seq = parseInt(chunk[1]);
+ 
+    if (seq >=1) {
+        bbbc['seq'] = parseInt(chunk[1]);
+        bbbc['content'] = chunk[2];
+        this._docBBBC.push(bbbc);
+    }
+}
+
+NmonParser.prototype.parseNmonBBBD = function(chunk) {
+    var bbbd = {};
+    var seq = parseInt(chunk[1]);
+ 
+    if (seq >=2) {
+        bbbd['Adapter_number'] = chunk[2];
+        bbbd['Name'] = chunk[3];
+        bbbd['Disks'] = parseInt(chunk[4]);
+        bbbd['Description'] = chunk[5];
+        this._docBBBD.push(bbbd);
+    }
+}
+
+NmonParser.prototype.parseNmonBBBN = function(chunk) {
+    var bbbn = {};
+    var seq = parseInt(chunk[1]);
+ 
+    if (seq >=1) {
+        bbbn['NetworkName'] = chunk[2];
+        bbbn['MTU'] = chunk[3];
+        bbbn['Mbits'] = parseInt(chunk[4]);
+        bbbn['Name'] = chunk[5];
+        this._docBBBN.push(bbbn);
+    }
+}
+
+NmonParser.prototype.parseNmonBBBV = function(chunk) {
+    var bbbv = {};
+    var seq = parseInt(chunk[1]);
+ 
+    if (seq >=1) {
+        bbbv['seq'] = seq;
+        bbbv['content'] = chunk[2];
+        this._docBBBV.push(bbbv);
+    }
+}
+
+NmonParser.prototype.parseNmonBBBP = function(chunk) {
     // BBBP section 
     //    linux only supports BBBP section
     //    to write BBBP one line per one time then set isAggregatedBBBP = true;
@@ -364,8 +449,8 @@ NmonParser.prototype.parseNmonBBBP = function(chunk) {
     } else    
       this._docBBBP.push(bbbp);
 
-    this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
-    this.log('['+ this.state._hostname + ':' + chunk[0] + ':' + chunk[1] + ']\033[m ' + chunk[2] + ',' + chunk[3]);
+    //this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
+    //this.log('['+ this.state._hostname + ':' + chunk[0] + ':' + chunk[1] + ']\033[m ' + chunk[2] + ',' + chunk[3]);
 }
 
 NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
