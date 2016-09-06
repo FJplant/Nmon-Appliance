@@ -28,17 +28,31 @@ function NmonParser(options) {
     // init Transform
     Transform.call(this, options);
 
-    // NmonParser Instance variables
-    this._hostname = '* N/A *';
+    // NmonParser state variables
+    this.state = {
+        _hostname : '* N/A *',
+        _nmondataid : null,
+        _isDocAAAInserted : false,
+        _cntTU : 0     // counter for parser log formatting
+    }
 
-    this._nmondataid = null;
     // to preserve data storing order, list all AAA items in advance
-    this._docAAA = {
+    this._docMETA = {
         'nmon-data-id':'', 
         'database-version': '1.0',
         'insertdt': new Date(),
         'datetime':0, 
         'timezone':'UTC', // default to UTC
+        'AAA' : {},
+        'BBBB' : [],
+        'BBBD' : [],
+        'BBBN' : [],
+        'BBBV' : [],
+        'BBBP' : [],
+        'BBBP-ending':[]
+    }
+
+    this._docAAA = {
         'progname': '',
         'command': '',
         'version': '',
@@ -61,14 +75,15 @@ function NmonParser(options) {
         'note2': ''
     };
 
-    // TODO: change to state machine notation
-    this._isDocAAAInserted = false;
+    this._docBBBB = [];
+    this._docBBBD = [];
+    this._docBBBN = [];
+    this._docBBBV = [];
     this._docBBBP = [];
     this._docZZZZ = {};
-    this._diskstats = [];
-    this._netstats = [];
+    this._DISKSTATS = [];
+    this._NETSTATS = [];
     this._rawHeader = {};
-    this._cntTU = 0; // counter for parser log formatting
 
     // Options
     // NmonWriter
@@ -130,14 +145,21 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
     else if (chunk[0].substring(0, 4) === 'ZZZZ' ) {        // Process ZZZZ line
         // if parser meets ZZZZ section 
         // insert AAA and BBB document once
-        if ( !this._isDocAAAInserted ) {                    // if _docAAA was not assigned, assign _docAAA
-            this._isDocAAAInserted = true;
-            this._docAAA['BBBP'] = this._docBBBP;           // assign _docBBBP to _docAAA
-
-            this._writer.writeMETA(this._docAAA);           // insert _docAAA to database
+        if ( !this.state._isDocAAAInserted ) {              // if _docAAA was not assigned, assign _docAAA
+            this.state._isDocAAAInserted = true;
+            this._docMETA['AAA'] = this._docAAA;            // assign _docAAA to _docMETA
+            this._docMETA['BBBB'] = this._docBBBB;
+            this._docMETA['BBBD'] = this._docBBBD;
+            this._docMETA['BBBN'] = this._docBBBN;
+            this._docMETA['BBBV'] = this._docBBBV;
+            this._docMETA['BBBP'] = this._docBBBP;          // assign _docBBBP to _docMETA
+            this._writer.writeMETA(this._docMETA, callback);
+            this.parseNmonZZZZ(chunk, function() {
+                // empty callback
+            });
         }
-
-        this.parseNmonZZZZ(chunk, callback);
+        else 
+            this.parseNmonZZZZ(chunk, callback);
     }
     else if (chunk[0] === 'UARG' && chunk[1] != '+Time') {   // Process UARG line
         this.parseNmonUARG(chunk);
@@ -240,41 +262,41 @@ NmonParser.prototype.parseNmonAAA = function(chunk) {
     // Process lines which starts with 'AAA'
     //   'AAA' section is system generic information
     this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
-    this.log('['+ this._hostname + ':AAA]\033[m ' + chunk[1] + ',' + chunk[2] );
+    this.log('['+ this.state._hostname + ':AAA]\033[m ' + chunk[1] + ',' + chunk[2] );
         
     if (chunk[1] === 'time') {
         var time = chunk[2];
-        this._docAAA['snaptime'] = time.replace(/\./gi,':');  // fix leading "." before seconds in linux nmon file             
+        this._docAAA['time'] = time.replace(/\./gi,':');  // fix leading "." before seconds in linux nmon file             
     } 
     else if (chunk[1] === 'date') {
-        this._docAAA['snapdate'] = chunk[2];
+        this._docAAA['date'] = chunk[2];
 
         //console.log('date: ' + this._docAAA['date'] + ', time: ' + this._docAAA['time'] );
 
         // if parser meet AAA,date then, time field is already filled
-        var beginDateTime = this._docAAA['snapdate'] + ' ' + this._docAAA['snaptime'];
-        this._docAAA['datetime'] = new Date(beginDateTime);
+        var beginDateTime = this._docAAA['date'] + ' ' + this._docAAA['time'];
+        this._docMETA['datetime'] = new Date(beginDateTime);
 
         //console.log('beginDateTime: ' + beginDateTime + ', datetime: ' + (new Date(beginDateTime)).getTime());
 
         // TODO: change nmondataid generation policy
-        this._nmondataid = this._docAAA['host'] + '$' + 
-                           this._docAAA['snapdate'] + '$' + 
-                           this._docAAA['snaptime'] + '$' + 
-                           this._docAAA['timezone'] + '$' + 
-                           this._docAAA['command']; 
-        this._docAAA['nmon-data-id'] = this._nmondataid;
+        this.state._nmondataid = this._docAAA['host']
+                         + ',' + this._docAAA['date']
+                         + ' ' + this._docAAA['time']
+                         //+ ':' + this._docAAA['command']
+                         + ' ' + this._docMETA['timezone'];
+        this._docMETA['nmon-data-id'] = this.state._nmondataid;
     }
     else if (chunk[1] === 'host') {
-        this._hostname = chunk[2];
+        this.state._hostname = chunk[2];
         // add host prefix to _nmondataid
             
         this._docAAA['host'] = chunk[2]; 
         // TODO: 1. support time zone manipulation
-        if ( this._hostname === 'nmon-tokyo' )
-            this._docAAA['timezone'] = 'UTC'; // TODO: this is temporary
+        if ( this.state._hostname === 'nmon-tokyo' )
+            this._docMETA['timezone'] = 'UTC'; // TODO: this is temporary
         else 
-            this._docAAA['timezone'] = 'KST'; // TODO: this is temporary
+            this._docMETA['timezone'] = 'KST'; // TODO: this is temporary
     }
     else if ( chunk[1] === 'max_disks' || chunk[1] === 'disks' ) 
         this._docAAA[chunk[1]] = parseInt(chunk[2]) +',' + chunk[3];
@@ -336,7 +358,7 @@ NmonParser.prototype.parseNmonBBBP = function(chunk) {
       this._docBBBP.push(bbbp);
 
     this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
-    this.log('['+ this._hostname + ':' + chunk[0] + ':' + chunk[1] + ']\033[m ' + chunk[2] + ',' + chunk[3]);
+    this.log('['+ this.state._hostname + ':' + chunk[0] + ':' + chunk[1] + ']\033[m ' + chunk[2] + ',' + chunk[3]);
 }
 
 NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
@@ -356,7 +378,7 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
     if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
         this.logZZZZ('\n\n==========================================================');
         this.logZZZZ('\n---- Processing new ZZZZ section');
-        this.logZZZZ('\n---- hostname: ' + this._hostname);
+        this.logZZZZ('\n---- hostname: ' + this.state._hostname);
         this.logZZZZ('\n---- ' + chunk[0] + ',' + chunk[1] + ',' + chunk[2] + ',' + chunk[3]);
         this.logZZZZ('\n==========================================================');
     }
@@ -367,10 +389,10 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
     // Strange writing of only datetime is related to 
     // ordering of _flushSave() and following line
     this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
-    this.log('['+ this._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
+    this.log('['+ this.state._hostname + ':ZZZZ:' + chunk[1] + ']\033[m ');
     this._docZZZZ['nmon-data-id'] = this._nmondataid;
     this._docZZZZ['insertdt'] = new Date();
-    this._docZZZZ['host'] = this._hostname;
+    this._docZZZZ['host'] = this.state._hostname;
 
     //    chunk[2] - Time, 15:44:04
     //    chunk[3] - Date, 24-AUG-2046
@@ -402,7 +424,7 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
     this._docZZZZ['NET_ALL'] = {};
         
     // reset _cntTU
-    this._cntTU = 0;
+    this.state._cntTU = 0;
 }
 
 NmonParser.prototype.parseNmonUARG = function(chunk) {
@@ -414,7 +436,7 @@ NmonParser.prototype.parseNmonUARG = function(chunk) {
 
     docUARG['nmon-data-id'] = this._nmondataid;	// nmondataid to compare and search
     docUARG['insertdt'] = new Date();
-    docUARG['host'] = this._hostname; // redundant but will be convenient 
+    docUARG['host'] = this.state._hostname; // redundant but will be convenient 
     docUARG['snapframe'] = this._docZZZZ['snapframe'];// store T0001 ~ Txxxx
     docUARG['snapdate'] = this._docZZZZ['snapdate'];  // add redundant snapdate
     docUARG['snaptime'] = this._docZZZZ['snaptime'];  // add redundant snaptime
@@ -432,7 +454,7 @@ NmonParser.prototype.parseNmonUARG = function(chunk) {
     if (nmdb.env.NMREP_PARSER_ZZZZ_LOG_LEVEL == 'verbose' ) {
         this.logZZZZ('\n' + chunk[0] + ',' + chunk[1] + ',' + chunk[2] + ',' + chunk[3] + ',' + chunk[4]);
     }
-    this._cntTU++;
+    this.state._cntTU++;
 }
 
 // NmonParser.prototype.parseNmonPerf
@@ -471,7 +493,7 @@ NmonParser.prototype.parseNmonPerfHeader = function(chunk) {
         // This is necessary because DISKSTSTS spans to multi rows. 
         if ( chunk[0] === 'DISKBUSY' ) { 
             for ( var i = 2; i < chunk.length; i++ ) {
-                this._diskstats.push( {
+                this._DISKSTATS.push( {
                     'diskid' : chunk[i],
                     '%Busy' : 0.,
                     'ReadKB' : 0.,
@@ -484,9 +506,9 @@ NmonParser.prototype.parseNmonPerfHeader = function(chunk) {
         else
         if ( chunk[0] === 'NET' ) { 
             var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
-            this._netstats = [];   // initialize _netstats buffer
+            this._NETSTATS = [];   // initialize _NETSTATS buffer
             for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
-                this._netstats.push( {
+                this._NETSTATS.push( {
                     'adapter_id' : chunk[i].split('-')[0],
                     'read-KB/s' : 0.,
                     'write-KB/s' : 0.
@@ -496,9 +518,9 @@ NmonParser.prototype.parseNmonPerfHeader = function(chunk) {
         else
         if ( chunk[0] === 'NETPACKET' ) { 
             var netadapter_cnt = (chunk.length - 3)/2;   // due to trailing , chunk.length -3 not -2
-            this._netstats = [];   // initialize _netstats buffer
+            this._NETSTATS = [];   // initialize _NETSTATS buffer
             for ( var i = 2; i < netadapter_cnt + 2; i++ ) {
-                this._netstats.push( {
+                this._NETSTATS.push( {
                     'adapter_id' : chunk[i].split('-')[0],
                     'read/s' : 0.,
                     'write/s' : 0.
@@ -539,7 +561,7 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
             case 'JFSFILE': logtype = 'J'; break;
             case 'TOP': 
                 logtype = 'T';
-                this._cntTU++;
+                this.state._cntTU++;
                 break;
             default: logtype = '?'; break;
         }
@@ -550,9 +572,9 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
         this.logZZZZ('\n' + chunk[0] + ',' + chunk[1] + ',');
 
     // line break for parser log 
-    if ((h[0] === 'TOP' || h[0] === 'UARG') && this._cntTU % 80 == 0) {
+    if ((h[0] === 'TOP' || h[0] === 'UARG') && this.state._cntTU % 80 == 0) {
         this.log('\n\033[1;34m[' + (new Date()).toLocaleTimeString() + ']-');
-        this.log('['+ this._hostname + ':ZZZZ:' + 
+        this.log('['+ this.state._hostname + ':ZZZZ:' + 
                            ((h[0] === 'TOP')? chunk[2] : chunk[1]) + ']\033[m ');
     }
 
@@ -618,13 +640,13 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
             else if (h[0] === 'NET') {
                 if( h[i].indexOf('read') != -1 ) {
                     var adapter_idx = i - 2;
-                    this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
+                    this._NETSTATS[adapter_idx]['read/s'] = parseFloat(chunk[i]);
 
                     read += parseFloat(chunk[i]);
                 }
                 else if( h[i].indexOf('write') != -1) {
-                    var adapter_idx = (i - 2) - this._netstats.length;
-                    this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
+                    var adapter_idx = (i - 2) - this._NETSTATS.length;
+                    this._NETSTATS[adapter_idx]['write/s'] = parseFloat(chunk[i]);
                     
                     write += parseFloat(chunk[i]);
                 }
@@ -632,32 +654,32 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
             else if (h[0] === 'NETPACKET') {
                 if( h[i].indexOf('read/s') != -1 ) {
                     var adapter_idx = i - 2;
-                    this._netstats[adapter_idx]['read/s'] = parseFloat(chunk[i]);
+                    this._NETSTATS[adapter_idx]['read/s'] = parseFloat(chunk[i]);
                 }
                 else if( h[i].indexOf('write/s') != -1) {
-                    var adapter_idx = (i - 2) - this._netstats.length;
-                    this._netstats[adapter_idx]['write/s'] = parseFloat(chunk[i]);
+                    var adapter_idx = (i - 2) - this._NETSTATS.length;
+                    this._NETSTATS[adapter_idx]['write/s'] = parseFloat(chunk[i]);
                 }
             }
-            //       have to index (i-2) to _diskstats because here is more column before real data
+            //       have to index (i-2) to _DISKSTATS because here is more column before real data
             else if (h[0].indexOf("DISKBUSY")== 0 && h[i].match(/.+\d*$/)) {
-                this._diskstats[i-2]['%Busy'] = parseFloat(chunk[i]);
+                this._DISKSTATS[i-2]['%Busy'] = parseFloat(chunk[i]);
             }
             else if (h[0].indexOf("DISKREAD")== 0 && h[i].match(/.+\d*$/)) {
-                this._diskstats[i-2]['ReadKB'] = parseFloat(chunk[i]);
+                this._DISKSTATS[i-2]['ReadKB'] = parseFloat(chunk[i]);
 
                 val += parseFloat(chunk[i]);
             }
             else if (h[0].indexOf("DISKWRITE")== 0 && h[i].match(/.+\d*$/)) {
-                this._diskstats[i-2]['WriteKB'] = parseFloat(chunk[i]);
+                this._DISKSTATS[i-2]['WriteKB'] = parseFloat(chunk[i]);
 
                 val += parseFloat(chunk[i]);
             }
             else if (h[0].indexOf("DISKXFER")== 0 && h[i].match(/.+\d*$/)) {
-                this._diskstats[i-2]['tps'] = parseFloat(chunk[i]);
+                this._DISKSTATS[i-2]['tps'] = parseFloat(chunk[i]);
             }
             else if (h[0].indexOf("DISKBSIZE")== 0 && h[i].match(/.+\d*$/)) {
-                this._diskstats[i-2]['BlockSize'] = parseFloat(chunk[i]);
+                this._DISKSTATS[i-2]['BlockSize'] = parseFloat(chunk[i]);
             }
             else if (h[0].indexOf("JFSFILE")== 0) {
                 fields[h[i]] = parseFloat(chunk[i]);
@@ -707,7 +729,7 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
     }
 
     if (h[0] === 'DISKBSIZE')         // set disk stats
-        this._docZZZZ['DISKSTATS'] = this._diskstats;
+        this._docZZZZ['DISKSTATS'] = this._DISKSTATS;
 
     // Set summary data
     if( h[0] === 'DISKREAD' ) {
@@ -720,14 +742,14 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
         this._docZZZZ['DISK_ALL']['iops'] = iops;
     }
     else if (h[0] === 'NET') {
-        this._docZZZZ['NET'] = this._netstats;
+        this._docZZZZ['NET'] = this._NETSTATS;
 
         // TODO: remove folllowing lines after chaning logic
         this._docZZZZ['NET_ALL']['recv'] = read;
         this._docZZZZ['NET_ALL']['send'] = write;
     }
     else if (h[0] === 'NETPACKET') {
-        this._docZZZZ['NETPACKET'] = this._netstats;
+        this._docZZZZ['NETPACKET'] = this._NETSTATS;
     }
     // end of set summary data
 }
