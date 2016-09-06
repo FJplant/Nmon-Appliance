@@ -246,7 +246,6 @@ function refreshDataCompleted(restype, did, data, start) {
         updateChartData(did, result, false);
 
     if (DEBUG) console.log(' ' + restype + ' chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
-    console.log(start);
 }
 
 // Periodic server performance data fetch
