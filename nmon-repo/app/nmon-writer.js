@@ -72,10 +72,21 @@ function NmonWriter(options) {
 }
 
 // TODO: DB error handling
-NmonWriter.prototype.writeMETA = function(meta) {
+NmonWriter.prototype.writeMETA = function(meta, callback) {
     // TODO: call callack when completed
-    nmondbMETA.insert(meta);
-    console.log("Meta data written: " + meta['host'] + ', ' + meta['snapdate'] + ' ' + meta['snaptime']);
+    nmondbMETA.insert(meta, function(err, res) {
+        if (err) {
+            console.log('[nmon-writer.js] database meta data insert error.');
+            console.log('            ==> ' + err.toString());
+        }
+        else {
+            var AAA = meta['AAA'];
+            console.log('[nmon-writer.js] '  + 'host: ' + AAA['host'] + ', snap datetime: ' + AAA['snapdate'] + ' ' + AAA['snaptime']
+                      + ', meta data was successfully inserted db.');
+        }
+
+        callback();
+    });
 }
 
 // TODO: DB error handling
