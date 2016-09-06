@@ -140,10 +140,16 @@ function drawScatterChart(did, xlabel, ylabel) {
 
     nv.addGraph(function() {
         var chart = nv.models.scatterChart()
+                    //.xScale(d3.scale.log())
+                    .forceX([0,2000]) // scale error so fix to 2 Mbytes/sec for demo
+                    .forceY([0,25])   // scale error so fix to 25 % usage:w
                     .showDistX(true)  //showDist, when true, will display those little distribution lines on the axis.
                     .showDistY(true)
                     //.transitionDuration(350) // transitionDuration is not a function error
+                    .duration(800)   // substition for transitionDuration()
                     .color(d3.scale.category10().range());
+
+        chart.xAxis.tickValues([0,1,10,100,1000,10000,100000,1000000]);
 
         // nvd3.js 1.8.1
         chart.tooltip.contentGenerator(function(obj) {
@@ -362,10 +368,6 @@ function refresh_charts() {
     fromDate = $('#period-navigator').dateRangeSlider('values').min;
     toDate = $('#period-navigator').dateRangeSlider('values').max;
     //console.log('fromDate:' + fromDate + ', toDate: ' + toDate);
-    if (document.getElementById('hosts_chart') && !isLoading("HOSTS")) {
-        console.log('test');
-        reqStatus['HOSTS'] = true;
-    }
 
     if ( !isLoading("HOSTS") && !isLoading(getCurResType()) ) {
         if ( !isLoading("HOSTS") && document.getElementById('hosts_chart') != null) {
