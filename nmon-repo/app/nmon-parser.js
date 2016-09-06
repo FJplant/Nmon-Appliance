@@ -529,14 +529,25 @@ NmonParser.prototype.parseNmonUARG = function(chunk) {
     docUARG['nmon-data-id'] = this.state._nmondataid;	// nmondataid to compare and search
     docUARG['insertdt'] = new Date();
     docUARG['host'] = this.state._hostname; // redundant but will be convenient 
-    docUARG['snapframe'] = this._docZZZZ['snapframe'];// store T0001 ~ Txxxx
+    docUARG['snapframe'] = chunk[1];// store T0001 ~ Txxxx
     docUARG['snapdate'] = this._docZZZZ['snapdate'];  // add redundant snapdate
     docUARG['snaptime'] = this._docZZZZ['snaptime'];  // add redundant snaptime
     docUARG['datetime'] = this._docZZZZ['datetime'];  // add redundant datetime
 
-    docUARG['PID'] = parseInt(chunk[2]); // store process ID
-    docUARG['Comand'] = chunk[3];        // store Command
-    docUARG['FullCommand'] = chunk[4];   // store FullCommand 
+    if (this.state._ostype === 'Linux') {
+        docUARG['PID'] = parseInt(chunk[2]); // store process ID
+        docUARG['Comand'] = chunk[3];        // store Command
+        docUARG['FullCommand'] = chunk[4];   // store FullCommand 
+    } 
+    else if (this.state._ostype === 'AIX') {
+        docUARG['PID'] = parseInt(chunk[2]); // store process ID
+        docUARG['PPID'] = parseInt(chunk[3]);// store parent process ID
+        docUARG['Comand'] = chunk[4];        // store Command
+        docUARG['THCOUNT'] = chunk[5];       // store Thread Count 
+        docUARG['USER'] = chunk[6];          // store User Id
+        docUARG['GROUP'] = chunk[7];         // store Group Id
+        docUARG['FullCommand'] = chunk[8];   // store FullCommand 
+    }
 
     // just write to mongodb without bulk operation
     this._writer.writeUARG(docUARG);
