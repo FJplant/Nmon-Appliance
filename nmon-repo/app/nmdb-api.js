@@ -219,6 +219,9 @@ function get_fields(req, res) {
     var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
+    
+    date[0] = new Date( parseInt(date[0]));
+    date[1] = new Date( parseInt(date[1]));
     var fields = {datetime:1, _id: 0};
     var average = ['Time'];
     for (var i = 0; i < data.length; i++) {
@@ -256,7 +259,8 @@ function get_fields(req, res) {
 
                 if( doc ) {
                     cnt++;
-                    average[0] = +doc['datetime'];
+                    // Bug fix after datetime type change from int to Date, d3 likes number time
+                    average[0] = + doc['datetime'].getTime();
 
                     // calc average
                     for (var i = 0; i < data.length; i++) {
@@ -303,6 +307,11 @@ function get_top_fields(req, res) {
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
 
     var date = eval(url_info.query['date']);
+
+    // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
+    date[0] = new Date( parseInt(date[0]));
+    date[1] = new Date( parseInt(date[1]));
+
     var type = url_info.query['type'];
 
     var match = {};
@@ -349,6 +358,10 @@ function get_host_fields(req, res) {
     var results = {};
     var date = eval(url_info.query['date']);
 
+    // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
+    date[0] = new Date( parseInt(date[0]));
+    date[1] = new Date( parseInt(date[1]));
+
     var match = {};
     if (typeof date !== 'undefined')
         match['datetime'] = { $gt : date[0], $lt : date[1] };
@@ -356,6 +369,8 @@ function get_host_fields(req, res) {
     var group = { _id : { host: '$host' } };
     group['val'] = { $avg : { $add: ["$CPU_ALL.User", "$CPU_ALL.Sys"] } };
     group['no'] = { $avg : "$CPU_ALL.CPUs"};
+
+    var sort = {'host' : 1}
     nmondbZZZZ.aggregate(
         {'$match' : match}, 
         {'$project': {host:1, CPU_ALL:1}}, 
@@ -390,11 +405,12 @@ function get_host_fields(req, res) {
                             results[doc[i]._id.host] = { disk : doc[i].val };
                     }
                     var group3 = { _id: { host: '$host'} };
-                    group3['val'] = { $avg : { $add: ["$NET_ALL.read", "$NET_ALL.write"] } };
+                    group3['val'] = { $avg : { $add: ["$NET_ALL.recv", "$NET_ALL.send"] } };
                     nmondbZZZZ.aggregate(
                         {'$match' : match}, 
                         {'$project': {host:1, NET_ALL:1}},
                         {'$group': group3}, 
+                        {'$sort' : sort},
                         function (err, doc) {
                         if( err )
                             return error_handler(res, err, 500);
@@ -407,7 +423,8 @@ function get_host_fields(req, res) {
                             }
 
                             var data = [['Host', 'Disk (KB/s)', 'CPU (%)', 'Network (KB/s)', 'No of CPUs']];
-                            var hosts = Object.keys(results);
+                            var hosts = Object.keys(results).sort();
+                            console.log(JSON.stringify(hosts));
                             for(var i = 0; i < hosts.length; i++) {
                                 data.push([hosts[i], results[hosts[i]]['disk'], results[hosts[i]]['cpu'], results[hosts[i]]['net'], results[hosts[i]]['no']]);
                             }
@@ -426,6 +443,7 @@ function get_host_fields(req, res) {
  * Callback: error_handler 
  */
 function error_handler(res, err, code) {
+    //console.log(err);
     log.error(err.toString());
     res.writeHead(code);
     res.end();

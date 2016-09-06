@@ -42,7 +42,7 @@ module.exports = {
         NMDB_UPLOAD_CSV_MAX_COUNT : 100,
         NMDB_UPLOAD_NMONDATA_MAX_COUNT : 500,
 
-        NMDB_MONGO_BULKOP_SIZE: 10,   // size for ZZZZ batch processing unit
+        NMDB_MONGO_BULKOP_SIZE: 20,   // size for ZZZZ batch processing unit
 
         // NMREP_* - nmon-rep component section
         NMREP_LISTEN_PORT: 6900,
