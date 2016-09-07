@@ -195,7 +195,7 @@ NmonWriter.prototype._flushSave = function(cb) {
                 console.log('    ' + err.errmsg);
             }
 
-            console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
+            //console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
             cb();  // notify db insert completion
         });
     } 
