@@ -122,6 +122,7 @@ NmonWriter.prototype.writeZZZZ = function(zzzz, callback) {
         // log some periodic message
         console.log('Pushed host: ' + zzzz['host']
                   + ', Snapframe: ' + zzzz['snapframe']
+                  + ', Snapdate: ' + zzzz['snapdate']
                   + ', Snaptime: ' + zzzz['snaptime']
                   + ', Keys: ' + Object.keys(zzzz).length
                   + ', Bulk Unit: ' + this._bulk_unit
