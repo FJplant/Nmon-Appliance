@@ -93,7 +93,7 @@ NmonWriter.prototype.writeMETA = function(meta, callback) {
 NmonWriter.prototype.writeUARG = function(uarg) {
     // TODO: call callack when completed
     nmondbUARG.insert(uarg);
-    console.log("UARG written: " + uarg['host'] + ', ' + uarg['snapdate'] + ' ' + uarg['snaptime'] +  ', ' + uarg['FullCommand']);
+//    console.log("UARG written: " + uarg['host'] + ', ' + uarg['snapdate'] + ' ' + uarg['snaptime'] +  ', ' + uarg['FullCommand']);
 }
 
 // TODO: header should be moved to parser
