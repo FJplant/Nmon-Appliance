@@ -424,7 +424,7 @@ function get_host_fields(req, res) {
 
                             var data = [['Host', 'Disk (KB/s)', 'CPU (%)', 'Network (KB/s)', 'No of CPUs']];
                             var hosts = Object.keys(results).sort();
-                            console.log(JSON.stringify(hosts));
+                            //console.log(JSON.stringify(hosts));
                             for(var i = 0; i < hosts.length; i++) {
                                 data.push([hosts[i], results[hosts[i]]['disk'], results[hosts[i]]['cpu'], results[hosts[i]]['net'], results[hosts[i]]['no']]);
                             }
