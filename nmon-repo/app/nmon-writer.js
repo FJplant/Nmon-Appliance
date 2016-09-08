@@ -93,7 +93,7 @@ NmonWriter.prototype.writeMETA = function(meta, callback) {
 NmonWriter.prototype.writeUARG = function(uarg) {
     // TODO: call callack when completed
     nmondbUARG.insert(uarg);
-    console.log("UARG written: " + uarg['host'] + ', ' + uarg['snapdate'] + ' ' + uarg['snaptime'] +  ', ' + uarg['FullCommand']);
+//    console.log("UARG written: " + uarg['host'] + ', ' + uarg['snapdate'] + ' ' + uarg['snaptime'] +  ', ' + uarg['FullCommand']);
 }
 
 // TODO: header should be moved to parser
@@ -122,6 +122,7 @@ NmonWriter.prototype.writeZZZZ = function(zzzz, callback) {
         // log some periodic message
         console.log('Pushed host: ' + zzzz['host']
                   + ', Snapframe: ' + zzzz['snapframe']
+                  + ', Snapdate: ' + zzzz['snapdate']
                   + ', Snaptime: ' + zzzz['snaptime']
                   + ', Keys: ' + Object.keys(zzzz).length
                   + ', Bulk Unit: ' + this._bulk_unit
@@ -195,7 +196,7 @@ NmonWriter.prototype._flushSave = function(cb) {
                 console.log('    ' + err.errmsg);
             }
 
-            console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
+            //console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
             cb();  // notify db insert completion
         });
     } 

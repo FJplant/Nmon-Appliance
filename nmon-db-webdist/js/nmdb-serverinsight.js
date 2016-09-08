@@ -64,7 +64,9 @@
         chart.setBounds(60, 30, 360, 410);
         x = chart.addMeasureAxis("x", x_series); // set measured values for x-Axis
         // TODO: set override Max to max of current background chart
-        if (x_series === 'disk_bytes' || x_series === 'net_bytes') x.overrideMax = 60000000;    // fix x axis range
+        // fix x axis range
+        if (x_series === 'disk_bytes') x.overrideMax = 60000000;
+        else if (x_series === 'net_bytes') x.overrideMax = 30000000;
         else if (x_series === 'cpu_util') x.overrideMax = 100;
 
         //x.tickFormat = 'm,.1f';
