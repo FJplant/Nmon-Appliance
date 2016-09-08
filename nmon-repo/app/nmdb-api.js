@@ -369,6 +369,8 @@ function get_host_fields(req, res) {
     var group = { _id : { host: '$host' } };
     group['val'] = { $avg : { $add: ["$CPU_ALL.User", "$CPU_ALL.Sys"] } };
     group['no'] = { $avg : "$CPU_ALL.CPUs"};
+
+    var sort = {'host' : 1}
     nmondbZZZZ.aggregate(
         {'$match' : match}, 
         {'$project': {host:1, CPU_ALL:1}}, 
@@ -408,6 +410,7 @@ function get_host_fields(req, res) {
                         {'$match' : match}, 
                         {'$project': {host:1, NET_ALL:1}},
                         {'$group': group3}, 
+                        {'$sort' : sort},
                         function (err, doc) {
                         if( err )
                             return error_handler(res, err, 500);
@@ -420,7 +423,8 @@ function get_host_fields(req, res) {
                             }
 
                             var data = [['Host', 'Disk (KB/s)', 'CPU (%)', 'Network (KB/s)', 'No of CPUs']];
-                            var hosts = Object.keys(results);
+                            var hosts = Object.keys(results).sort();
+                            //console.log(JSON.stringify(hosts));
                             for(var i = 0; i < hosts.length; i++) {
                                 data.push([hosts[i], results[hosts[i]]['disk'], results[hosts[i]]['cpu'], results[hosts[i]]['net'], results[hosts[i]]['no']]);
                             }

@@ -125,6 +125,12 @@ module.exports = function(app, passport) {
         });
     });
 
+    app.get('/nmon-db/v1/nmon-upload', isLoggedIn, function(req, res) {
+        res.render('nmdb-nmon-upload.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
     app.get('/nmon-db/v1/nmon-reports', isLoggedIn, function(req, res) {
         res.render('nmdb-nmon-reports.ejs', {
             user : req.user // get the user out of session and pass to template

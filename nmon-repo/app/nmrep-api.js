@@ -189,7 +189,10 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
     // processing nmon log upload by http request chaining 
     // in order of request -> parser -> writer
     nmonParser.on('finish', function() {
-        // nmonParser._flushSave();  // TODO: check this code is necessary
+        // This code is necessary due to remained snap frames
+        nmonParser._flushSave(function() {
+            // dummy callback
+        });
         log.info('Parsing of nmon data file finished.');
         // send HTTP 200 OK
         res.writeHead(200);
@@ -197,7 +200,7 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
     });
 
     nmonZZZZWriter.on('finish', function() {
-        // nmonParser._flushSave();  // TODO: check this code is necessary
+        //nmonParser._flushSave();  // TODO: check this code is necessary
         log.info('Storing of nmon data file finished.');
     });
 

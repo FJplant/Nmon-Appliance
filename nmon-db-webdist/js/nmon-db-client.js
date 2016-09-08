@@ -5,6 +5,9 @@ var HOSTS_BACK_TIME = 1000*60*1;    // in milli seconds, 1 minutes
 var REFRESH_INTERVAL = 2000;        // in milli seconds
 var DEBUG = false;                  // for debug purpose
 
+var fromDate = null,                // page global fromDate and toDate
+    toDate = null;               
+
 var curResType = "HOSTS";
 var reqStatus = {
     "HOSTS": false,
@@ -16,6 +19,19 @@ var reqStatus = {
     "PROCESS_CPU": false,
     "PROCESS_MEM": false
 };
+
+var curChart = null;
+var chartByDid = {
+    'hosts_chart' : null,
+    'cpu_chart' : null, 
+    'disk_chart' : null,
+    'network_chart' : null,
+    'nfs_chart' : null,
+    'mem_chart' : null,
+    'swap_chart': null,
+    'process_cpu_chart': null,
+    'process_mem_chart': null
+}
 
 function isLoading(restype) {
     return reqStatus[restype];
@@ -52,29 +68,14 @@ function getHosts(category) {
 // Draw Stacked Area or Stacked Bar chart for CPU, Memory, Virtual Memory, Disk, Network
 //
 // TODO: Add view finder window
-function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
+function drawAreaChart(did, xlabel, ylabel, isBarChart) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
-
-    var d3data = [ ];
-    for(var i = 1; i < data[0].length; i++) {
-        d3data.push({key: data[0][i], values:[]}); // series name ( header )
-    }
-
-    for(var j = 1; j < data.length; j++) { // rows
-        for(var i = 1; i < data[0].length; i++) { // series
-            // Disk and network chart draws write or send amount as minus value
-            if ( i == 2 && (data[0][i] === 'write' || data[0][i] === 'send'))
-                d3data[i-1].values.push([data[j][0], -data[j][i]]); // push key value order and insert d3data from 0 row
-            else 
-                d3data[i-1].values.push([data[j][0], data[j][i]]);
-        }
-    }
 
     nv.addGraph(function() {
         // CPU, Disk, I/O => stracked bar chart
         // Memory, VM => stacked area chart
-        var chart = ( isBarChart === true ) ? nv.models.multiBarChart() : nv.models.stackedAreaChart();
+        chart = ( isBarChart === true ) ? nv.models.multiBarChart() : nv.models.stackedAreaChart();
 
         chart.x(function(d) { return d[0] })   // We can modify the data accessor functions...
              .y(function(d) { return d[1] })   // ...in case your data is formatted differently.
@@ -102,11 +103,7 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
             .axisLabel(ylabel)
             .tickFormat(d3.format(',.2f'));
 
-        d3.select('#' + did + ' svg')
-          .datum(d3data)
-          .call(chart);
-        
-        nv.utils.windowResize(chart.update);
+        chartByDid[did] = chart;
 
         return chart;
     });
@@ -114,13 +111,9 @@ function drawAreaChart(did, data, xlabel, ylabel, isBarChart, isInOut) {
 
 //
 // Draw pie chart for process chart
-function drawPieChart(did, data) {
+function drawPieChart(did) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
-
-    var d3data = [ ];
-    for(var j = 1; j < data.length; j++)
-        d3data.push({label: data[j][0], value: data[j][1]});
 
     nv.addGraph(function() {
         var chart = nv.models.pieChart()
@@ -132,38 +125,31 @@ function drawPieChart(did, data) {
                        .showLegend(true) //nvd3.js v1.8.0
                        .showLabels(true);
 
-        d3.select('#' + did + ' svg')
-          .datum(d3data)
-          .call(chart);
+        chartByDid[did] = chart;
 
-        nv.utils.windowResize(chart.update);
-
+        // draw empty chart
         return chart;
     });
 }
 
 // Draw scatter chart for server insight
 //
-function drawScatterChart(did, data, xlabel, ylabel) {
+function drawScatterChart(did, xlabel, ylabel) {
     if ($('#' + did + " svg").length === 0)
         $('#' + did).html('<svg></svg>');
 
-    console.log(JSON.stringify(data));
-    var d3data = [];
-    for(var i = 1; i < data.length; i++) {
-        d3data.push({
-            key : data[i][0], 
-            values: [{x: data[i][1], y: data[i][2], size: data[i][4], network: data[i][3] }]
-        });
-    }
-    console.log(JSON.stringify(d3data));
-
     nv.addGraph(function() {
         var chart = nv.models.scatterChart()
+                    //.xScale(d3.scale.log())
+                    .forceX([0,2000]) // scale error so fix to 2 Mbytes/sec for demo
+                    .forceY([0,25])   // scale error so fix to 25 % usage:w
                     .showDistX(true)  //showDist, when true, will display those little distribution lines on the axis.
                     .showDistY(true)
                     //.transitionDuration(350) // transitionDuration is not a function error
+                    .duration(800)   // substition for transitionDuration()
                     .color(d3.scale.category10().range());
+
+        chart.xAxis.tickValues([0,1,10,100,1000,10000,100000,1000000]);
 
         // nvd3.js 1.8.1
         chart.tooltip.contentGenerator(function(obj) {
@@ -191,14 +177,81 @@ function drawScatterChart(did, data, xlabel, ylabel) {
         chart.xAxis.axisLabel(xlabel).tickFormat(d3.format('.02f'));
         chart.yAxis.axisLabel(ylabel).tickFormat(d3.format('.02f'));
 
+        chartByDid[did] = chart;
+
+        return chart;
+    });
+}
+
+// Update chart data and refresh chart
+function updateChartData(did, data, isInOut) {
+    var d3data = [];
+    var chart = chartByDid[did];
+
+    // Populate data
+    // TODO: change to websocket refresh
+    if (did === 'hosts_chart') {
+        for(var i = 1; i < data.length; i++) {
+            d3data.push({
+                key : data[i][0],
+                values: [{x: data[i][1], y: data[i][2], size: data[i][4], network: data[i][3] }]
+            });
+        }
+    }
+    else if (did === 'cpu_chart' || did === 'disk_chart' || did === 'network_chart' || did === 'nfs_chart'
+          || did === 'mem_chart' || did === 'swap_chart' ) {
+        for(var i = 1; i < data[0].length; i++) {
+            d3data.push({key: data[0][i], values:[]}); // series name ( header )
+        }
+
+        for(var j = 1; j < data.length; j++) { // rows
+            for(var i = 1; i < data[0].length; i++) { // series
+                // Disk and network chart draws write or send amount as minus value
+                if ( i == 2 && (data[0][i] === 'write' || data[0][i] === 'send') && isInOut === true)
+                    d3data[i-1].values.push([data[j][0], -data[j][i]]); // push key value order and insert d3data from 0 row
+                else
+                    d3data[i-1].values.push([data[j][0], data[j][i]]);
+            }
+        }
+    }
+    else if (did === 'process_cpu_chart' || did === 'process_mem_chart') {
+        for(var j = 1; j < data.length; j++)
+            d3data.push({label: data[j][0], value: data[j][1]});
+    }
+
+    // check chart is prepared to be drawn
+    if (typeof chart == 'function') {
         d3.select('#' + did + ' svg')
           .datum(d3data)
           .call(chart);
 
         nv.utils.windowResize(chart.update);
+    }
+}
 
-        return chart;
-    });
+function refreshDataCompleted(restype, did, data, start) {
+    var result = eval(data);
+
+    // preprecessing for MEM and SWAP
+    if (restype == 'MEM') {
+        result[0][1] = 'Real used';
+        for (var i = 1; i < result.length; i++) {
+            result[i][1] = result[i][1] - result[i][2];
+        }
+    } else if (restype == 'SWAP') {
+        result[0][1] = 'Virtual used';
+        for (var i = 1; i < result.length; i++) {
+            result[i][1] = result[i][1] - result[i][2];
+        }
+    }
+
+    reqStatus[restype] = false;
+    if (restype == 'DISK' || restype == 'NET')
+        updateChartData(did, result, true);
+    else 
+        updateChartData(did, result, false);
+
+    if (DEBUG) console.log(' ' + restype + ' chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
 }
 
 // Periodic server performance data fetch
@@ -206,138 +259,94 @@ function drawScatterChart(did, data, xlabel, ylabel) {
 function updateGraph(hostname, restype, fromDate, toDate) {
     var start = new Date();
 
+    reqStatus[restype] = true;
+
+    if (DEBUG) console.log('[' + start.toLocaleString() + '] Requesting ' + restype + ' data.');
+
     // hosts - always update this area
-    if (restype == "HOSTS" || restype == "ALL" || document.getElementById('hosts_chart')) {
-        reqStatus["HOSTS"] = true;
-        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting HOSTS data.");
+    if ((restype == "HOSTS" || restype == "ALL") && document.getElementById('hosts_chart')) {
         $.ajax({
             url: "/" + hostname + "/HOST?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
             data: {},
             success: function(data) {
-                var result = eval(data);
-                reqStatus["HOSTS"] = false;
-                drawScatterChart("hosts_chart", data, 'Disk (KB/s)', 'CPU (%)');
-                if (DEBUG) console.log(' HOSTS chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                refreshDataCompleted(restype, 'hosts_chart', data, start);
             }
         });
     }
 
     // cpu
     if (restype == "CPU" || restype == "ALL") {
-        reqStatus["CPU"] = true;
-        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting CPU data. ");
         $.ajax({
             url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User', 'Sys', 'Wait']",
             data: {},
             success: function(data) {
-                var result = eval(data);
-                reqStatus["CPU"] = false;
-                drawAreaChart("cpu_chart", result, 'Time', '%', true);
-                if (DEBUG) console.log('  CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                refreshDataCompleted(restype, 'cpu_chart', data, start);
             }
         });
     }
 
     // memory
     if (restype == "MEM" || restype == "ALL") {
-        reqStatus["MEM"] = true;
-        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting MEM data. ");
         $.ajax({
             url: "/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
             data: {},
             success: function(data) {
-                var result = eval(data);
-                reqStatus["MEM"] = false;
-                result[0][1] = 'Real used';
-                for (var i = 1; i < result.length; i++) {
-                    result[i][1] = result[i][1] - result[i][2];
-                }
-                drawAreaChart("mem_chart", result, 'Time', 'MB');
-                if (DEBUG) console.log('  MEM chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                refreshDataCompleted(restype, 'mem_chart', data, start);
             }
         });
     }
 
     // swap
     if (restype == "SWAP" || restype == "ALL") {
-        reqStatus["SWAP"] = true;
-        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting SWAP data. ");
         $.ajax({
             url: "/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
             data: {},
             success: function(data) {
-                var result = eval(data);
-                reqStatus["SWAP"] = false;
-                result[0][1] = 'Virtual used';
-                for (var i = 1; i < result.length; i++) {
-                    result[i][1] = result[i][1] - result[i][2];
-                }
-                drawAreaChart("swap_chart", result, 'Time', 'MB');
-                if (DEBUG) console.log('  SWAP chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                refreshDataCompleted(restype, 'swap_chart', data, start);
             }
         });
     }
 
     // disk
     if (restype == "DISK" || restype == "ALL") {
-        reqStatus["DISK"] = true;
-        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting DISK data. ");
         $.ajax({
             url: "/" + hostname + "/DISK_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
             data: {},
             success: function(data) {
-                var result = eval(data);
-                reqStatus["DISK"] = false;
-                drawAreaChart("disk_chart", result, 'Time', 'KB/s', true);
-                if (DEBUG) console.log(' DISK chart response:' + ((+new Date() - +start)) / 1000 + ' secs');
+                refreshDataCompleted(restype, 'disk_chart', data, start);
             }
         });
     }
 
     // network
     if (restype == "NET" || restype == "ALL") {
-        reqStatus["NET"] = true;
-        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting NET data. ");
         $.ajax({
             url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['recv', 'send']",
             data: {},
             success: function(data) {
-                var result = eval(data);
-                reqStatus["NET"] = false;
-                drawAreaChart("network_chart", result, 'Time', 'KB/s', true);
-                if (DEBUG) console.log(' NET chart response :' + ((+new Date() - +start)) / 1000 + ' secs');
+                refreshDataCompleted(restype, 'network_chart', data, start);
             }
         });
     }
 
     // process cpu usage
     if (restype == "PROCESS_CPU" || restype == "ALL") {
-        reqStatus["PROCESS_CPU"] = true;
-        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting PROCESS_CPU data. ");
         $.ajax({
             url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=cpu",
             data: {},
             success: function(data) {
-                var result = eval(data);
-                reqStatus["PROCESS_CPU"] = false;
-                drawPieChart("process_cpu_chart", data);
-                if (DEBUG) console.log(' PROCESS_CPU chart response: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                refreshDataCompleted(restype, 'process_cpu_chart', data, start);
             }
         });
     }
 
     // process mem usage
     if (restype == "PROCESS_MEM" || restype == "ALL") {
-        reqStatus["PROCESS_MEM"] = true;
-        if (DEBUG) console.log("[" + start.toLocaleString() + "] Requesting PROCESS_MEM data. ");
         $.ajax({
             url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=mem",
             data: {},
             success: function(data) {
-                var result = eval(data);
-                reqStatus["PROCESS_MEM"] = false;
-                drawPieChart("process_mem_chart", data, "Process usage by MEM");
-                if (DEBUG) console.log(' PROCESS_MEM chart respose: ' + ((+new Date() - +start)) / 1000 + ' secs');
+                refreshDataCompleted(restype, 'process_mem_chart', data, start);
             }
         });
     }
@@ -346,7 +355,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
 // Issue periodic chart refresh
 //
 function refresh_charts() {
-    var fromDate, toDate, now = new Date();
+    var now = new Date();
 
     /*
     fromDate = new Date($("#from").val() + " " + $("#from_time").val());
@@ -359,12 +368,15 @@ function refresh_charts() {
     fromDate = $('#period-navigator').dateRangeSlider('values').min;
     toDate = $('#period-navigator').dateRangeSlider('values').max;
     //console.log('fromDate:' + fromDate + ', toDate: ' + toDate);
-    if ( !isLoading("HOSTS") || !isLoading(getCurResType()) ) {
-        if ( !isLoading("HOSTS") ) {
+
+    if ( !isLoading("HOSTS") && !isLoading(getCurResType()) ) {
+        if ( !isLoading("HOSTS") && document.getElementById('hosts_chart') != null) {
             updateGraph("All", "HOSTS", new Date(now.getTime() - HOSTS_BACK_TIME ), now); // Draw last HOST_BACK_TIME
             if (DEBUG) console.log("[" + (new Date()).toLocaleString() + "] " + "Server insights chart refreshed." );
         } 
-        if ( !isLoading(getCurResType()) ) {
+
+        // prevent HOSTS to be called twice 
+        if ( getCurResType() !== 'HOSTS' && !isLoading(getCurResType()) ) {
             updateGraph($("#hosts").val(), getCurResType(), fromDate, toDate);
             if (DEBUG) console.log("[" + (new Date()).toLocaleString() + "] " + getCurResType() + " chart refreshed." );
         }
@@ -376,6 +388,27 @@ function refresh_charts() {
     setTimeout( refresh_charts, REFRESH_INTERVAL );
 }
 
+function drawChart(did) {
+    if (did === 'cpu_chart') drawAreaChart("cpu_chart", 'Time', '%', true);
+    if (did === 'hosts_chart') drawScatterChart("hosts_chart", 'Disk (KB/s)', 'CPU (%)');
+    if (did === 'mem_chart') drawAreaChart("mem_chart", 'Time', 'MB');
+    if (did === 'swap_chart') drawAreaChart("swap_chart", 'Time', 'MB');
+    if (did === 'disk_chart') drawAreaChart("disk_chart", 'Time', 'KB/s', true, true);
+    if (did === 'network_chart') drawAreaChart("network_chart", 'Time', 'KB/s', true, true);
+    if (did === 'process_cpu_chart') drawPieChart('process_cpu_chart', 'Process usage by CPU');
+    if (did === 'process_mem_chart') drawPieChart('process_mem_chart', 'Process usage by MEM');
+}
+
+function resizeChart() {
+    //console.log('window resized');
+    // Manual resize is buggy let it be refreshed by timer now.
+    for ( i = 0; i < chartByDid.length; i++ ) {
+        if ( typeof chartByDid[i] == 'function' ) {
+            //nv.utils.windowResize(chartByDid[i].update);
+        }
+    }
+}
+
 // Main function
 //
 $(function() {
@@ -385,19 +418,28 @@ $(function() {
         // TODO: consider other resource was set .
         if (curResType === 'HOSTS') {
            setCurResType('CPU');
+           updateGraph($("#hosts").val(), getCurResType(), fromDate, toDate);
         }
     }));
 
     $("#view").click(function(event) {
         setCurResType('CPU');
+        updateGraph($("#hosts").val(), getCurResType(), fromDate, toDate);
     });
+
+    // prepare cpu_chart and hosts_chart objects other are prepared after tab loading
+    drawChart('cpu_chart');
+    drawChart('hosts_chart');
+
+    // set resize event listener
+    window.addEventListener("resize", resizeChart);
 
     // Initiate first refresh_charts call
     // Refresh every REFRESH_INTERVAL milli seconds
     // excute when #cpu_chart or #hosts_chart div id exist
     if (document.getElementById('cpu_chart') || document.getElementById('hosts_chart')) {
-        setTimeout( refresh_charts, REFRESH_INTERVAL );
-        if (DEBUG) console.log('cpu_chart exists');
+        refresh_charts();
+        if (DEBUG) console.log('cpu_chart or hosts_chart exists');
     }
     else {
         if (DEBUG) console.log('no cpu charts');
@@ -499,6 +541,7 @@ $(function() {
 
 // JQuery UI Tab event handler
 //
+// TODO: change progress bar to overlay
 $(function() {
     $("#tabs").tabs({
         // event: "beforeActivate"
@@ -563,14 +606,12 @@ $(function() {
             }
 
             if (DEBUG) {
-            console.log("[Calling updateGraph from UI-tab] " +
-                "Hosts: " + $("#hosts").val() +
-                ", Tab: " + curRes +
-                ", From: " + fromDate.toLocaleString() +
-                ", To: " + toDate.toLocaleString());
+            console.log("Resource tab changed: " + 
+                " Hosts: " + $("#hosts").val() +
+                ", Tab: " + curRes
+                );
             }
             
-            refresh_charts();
             // TODO: remove old code
             //updateGraph($("#hosts").val(), curRes, fromDate, toDate);
         }
@@ -581,7 +622,7 @@ $(function() {
 // 
 function setLoading(areaid, reqResType, message) {
     var areaelem = document.getElementById(areaid);
-    var proghtml = '<div id="' + areaid + '_progressbar' + '" style="position: relative;">'
+    var proghtml = '<div id="' + areaid + '_progressbar' + '" style="position: relative; top: 30%;">'
                  + '  <div class="'
                  + areaid + '_progresslabel' 
                  + '" style="position: absolute; left: 15%; top: 4px; font-weight: bold; text-shadow: 1px 1px 0 #fff;"></div>'
@@ -613,10 +654,13 @@ function setLoading(areaid, reqResType, message) {
         var val = $("#" + areaid + "_progressbar").progressbar("value") || 0;
         //var val = progressBar.progressbar("value") || 0;
 
-        if (isLoading(reqResType) == true || val < 100) {
+        // TODO: adjust value according to loading time
+        if (isLoading(reqResType) || (val != 0  && val != 100)) {
             setTimeout(loading, 100);
         } else {
             if (DEBUG) console.log('[Progress Bar]' + reqResType + ' loading is completed... from progress bar');
+            drawChart(areaid);
+            updateGraph($("#hosts").val(), getCurResType(), fromDate, toDate);
         }
     }
 

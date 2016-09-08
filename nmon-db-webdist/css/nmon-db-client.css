@@ -16,6 +16,12 @@ text {
   font-weight: bold;
 }
 
+.ui-tabs {
+  position: relative;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
 .nmon-chart {
   border-size:0px;
   border-style:none;
@@ -103,7 +109,7 @@ text {
 }
 
 .panel-header {
-  padding: 5px 5px
+  padding: 5px 5px;
 }
 
 .panel-body {
@@ -111,5 +117,10 @@ text {
 }
 
 .panel-footer {
-  padding: 5px 5px
+  padding: 5px 5px;
+}
+
+#period-navigator {
+  margin-left: 10px;
+  margin-right: 10px;
 }
