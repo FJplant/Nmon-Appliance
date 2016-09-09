@@ -66,9 +66,15 @@ function NmonWriter(options) {
     // Nmon Writer instance variables
     this._bulk = [];
     this._bulk_unit = 1;
+    this._writable = true;
 
     if (typeof options['bulkUnit'] !== 'undefined') 
         this._bulk_unit = parseInt( options['bulkUnit'] );
+}
+
+// helper function for throttling stream
+NmonWriter.prototype.isWritable = function() {
+    return _writable;
 }
 
 // TODO: DB error handling
@@ -202,7 +208,9 @@ NmonWriter.prototype._flushSave = function(cb) {
 
             console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
             cb();  // notify db insert completion
+            this._isWritable = true;
         });
+        this._isWritable = false;
     } 
 }
 

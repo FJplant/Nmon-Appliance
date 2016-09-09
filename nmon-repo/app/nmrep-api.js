@@ -233,8 +233,6 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
         var nmonStream = new Readable();
 
         if (multipart) {
-            // TODO: handle \r\n CRLF problem.
-            //       some nmon file have DOS CRLF format it generates error
             // TODO: check the name limitation of jQuery.filer restriction
             //       jQuery.filer only works when name ends with [] for multiple file upload
             var nmonfiles = req.files['nmon-data-files[]'];
@@ -242,10 +240,13 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
             for (var i=0; i < nmonfiles.length; i++) {
                 console.log('Processing uploaded file: ' + nmonfiles[i].originalname
                            + ', size of: ' + nmonfiles[i].size);
-                console.log('Heap status' + JSON.stringify(process.memoryUsage()));
+                console.log('Heap status, before push' + JSON.stringify(process.memoryUsage()));
                 // TODO: streaming well not to use so much memory
+                //       there should be a flow controller between nmonfiles[i].buffer to csvToJson
+                //       emit data only nmonParser is ready
                 nmonStream.push(nmonfiles[i].buffer);
                 nmonStream.push(null);
+                console.log('Heap status, after push' + JSON.stringify(process.memoryUsage()));
                 nmonStream.pipe(csvToJson).pipe(nmonParser).pipe(nmonZZZZWriter);
             }
         }
