@@ -172,9 +172,11 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
     });
 
     // for debug purpose
+    /*
     csvToJson.on("data", function(data){
-         //console.log(data);
+        console.log(data);
     });
+    */
 
     // Intanciate nmon parser
     var nmonParser = new NmonParser({
