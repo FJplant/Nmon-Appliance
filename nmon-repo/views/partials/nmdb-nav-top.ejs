@@ -10,6 +10,7 @@
             <!-- /.navbar-header -->
 
             <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">Greetings, <%= user.local.email %></li>
                 <% include nmdb-nav-dropdown-messages %>
                 <% include nmdb-nav-dropdown-serverstatus %>
                 <% include nmdb-nav-dropdown-alerts %>
