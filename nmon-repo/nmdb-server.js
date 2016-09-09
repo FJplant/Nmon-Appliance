@@ -151,7 +151,8 @@ if (cluster.isMaster) {
 
     // Add bower component directory
     app.use('/bower_components',  express.static(__dirname + '/bower_components'));
-    
+    app.use('/images',  express.static(__dirname + '/nmon-db/v1/dist/images'));
+     
     //
     // Load nmon dashboard modules
     // routes ======================================================================
