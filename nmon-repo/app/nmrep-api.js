@@ -242,6 +242,8 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
             for (var i=0; i < nmonfiles.length; i++) {
                 console.log('Processing uploaded file: ' + nmonfiles[i].originalname
                            + ', size of: ' + nmonfiles[i].size);
+                console.log('Heap status' + JSON.stringify(process.memoryUsage()));
+                // TODO: streaming well not to use so much memory
                 nmonStream.push(nmonfiles[i].buffer);
                 nmonStream.push(null);
                 nmonStream.pipe(csvToJson).pipe(nmonParser).pipe(nmonZZZZWriter);
