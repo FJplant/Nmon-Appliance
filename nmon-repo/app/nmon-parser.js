@@ -25,6 +25,7 @@ function NmonParser(options) {
         return new NmonParser(options);
     }
 
+    if( options && options['bulkUnit']) options.highWaterMark = options['bulkUnit'];
     // init Transform
     Transform.call(this, options);
 
@@ -132,12 +133,22 @@ function NmonParser(options) {
 }
 util.inherits(NmonParser, Transform);
 
+// NmonParser.prototype._write function
+// To control stream data flow, it always return false
+// When, callback is called, previos phase pipe will write data to stream again
+NmonParser.prototype._write = function(chunk, encoding, callback) {
+    this._transform(chunk, encoding, callback);
+
+    return false;
+}
+
 // NmonParser.prototype._transform function
 //   is callback funtion of Transform stream handler
 NmonParser.prototype._transform = function(chunk, encoding, callback) {
     // Bug fix for: NMIO-208  CRLF problem for nmon file from windows
     // remove the '\r' from last last chunk data of nmon file from windows platform
     chunk[chunk.length - 1] = chunk[chunk.length - 1].replace('\r', '');
+    //console.log('T:'+chunk[0]+','+chunk[1]);
 
     // TODO: AIX BBB section
     // Process lines which starts with 'BBB'
@@ -191,11 +202,12 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
             this._docMETA['BBBP'] = this._docBBBP;          // assign _docBBBP to _docMETA
             this._writer.writeMETA(this._docMETA, callback);
             this.parseNmonZZZZ(chunk, function() {
-                // empty callback
+                // empty callback, until now ZZZZ is empty
             });
         }
-        else 
+        else {
             this.parseNmonZZZZ(chunk, callback);
+        }
     }
     else if (chunk[0] === 'UARG' && chunk[1] != '+Time') {   // Process UARG line
         this.parseNmonUARG(chunk);
@@ -273,7 +285,7 @@ NmonParser.prototype._flushSave = function(callback) {
 
             this._outputfile.write(JSON.stringify(this._docZZZZ), callback);
         }
-        else if (this._otuput === 'pipe')
+        else if (this._output === 'pipe')
             this.push(['performance', this._docZZZZ]);
     }
     else {

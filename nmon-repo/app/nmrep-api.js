@@ -12,7 +12,7 @@ var winston = require('winston'),
     bodyParser = require('body-parser'),
     mongojs = require('mongojs'),
     multer  = require('multer'),
-    csv = require('csv-streamify'),
+    csv = require('fast-csv'),
     Readable = require('stream').Readable,
     Transform = require('stream').Transform;
 
@@ -165,7 +165,16 @@ module.exports = function(app, passport) {
  *
  */
 function put_nmonlog(req, res, bulk_unit, multipart) {
-    var csvToJson = csv({objectMode: true});
+    var csvToJson = csv({
+        objectMode: true,
+        quote: null,
+        highWaterMark: bulk_unit
+    });
+
+    // for debug purpose
+    csvToJson.on("data", function(data){
+         //console.log(data);
+    });
 
     // Intanciate nmon parser
     var nmonParser = new NmonParser({
