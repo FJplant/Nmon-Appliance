@@ -81,9 +81,12 @@ NmonWriter.prototype.writeMETA = function(meta, callback) {
         }
         else {
             var AAA = meta['AAA'];
-            console.log('[nmon-writer.js] '  + 'host: ' + AAA['host'] + ', snap datetime: ' + AAA['snapdate'] + ' ' + AAA['snaptime']
+            console.log('[nmon-writer.js] '  + 'host: ' + AAA['host'] + ', snap datetime: ' + AAA['date'] + ' ' + AAA['time']
                       + ', meta data was successfully inserted db.');
         }
+
+        // clear unused meta data
+        meta = {};
 
         callback();
     });
@@ -156,6 +159,7 @@ NmonWriter.prototype._flushSave = function(cb) {
                 }
                 else {
                     //console.log('[nmon-writer.js] ' + ' 1 item was successfully inserted db.');
+                    console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
                 }
 
             });
@@ -196,7 +200,7 @@ NmonWriter.prototype._flushSave = function(cb) {
                 console.log('    ' + err.errmsg);
             }
 
-            //console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
+            console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
             cb();  // notify db insert completion
         });
     } 
