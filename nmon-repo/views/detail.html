@@ -15,9 +15,9 @@
             }]
           }"></script>
     <script type="text/javascript">
-        function getCategories() {
+        function getCategories(host) {
                 $.ajax({
-                url: "/categories",
+                url: '/api/v1/nmon-data/categories/' + host,
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
@@ -26,13 +26,12 @@
                         html += '<option value="' + result[i] + '">' + result[i] + '</option>';
                     }
                     $("#categories").html(html);
-                    getHosts($("#categories").val());
                 }
             });
         }
         function getHosts(category) {
                 $.ajax({
-                url: "/All/" + category + "/hosts",
+                url: "/api/v1/server/list",
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
@@ -41,17 +40,15 @@
                         html += '<option value="' + result[i] + '">' + result[i] + '</option>';
                     }
                     $("#hosts").html(html);
-                    getTitles($("#hosts").val(), $("#categories").val());
                 }
             });
         }
         function getTitles(host, category) {
                 $.ajax({
-                url: "/" + host + "/" + category + "/titles",
+                url: "/api/v1/nmon-data/fields/" + host + "/" + category,
                 data: {},
                 success: function( data ) {
                     var result = eval(data);
-                    console.log(result);
                     var html = '';
                     for (var i = 0; i < result.length; i++) {
                         html += '<option value="' + result[i] + '">' + result[i] + '</option>';
@@ -64,10 +61,13 @@
             var data = new google.visualization.DataTable();
             data.addColumn('datetime', x);
             data.addColumn('number', y);
-            console.log(row.length);
+            console.log('Row count: ' + row.length);
+
             for(var i = 0; i < row.length; i++) {
                 row[i][0] = new Date(row[i][0]);
+                row[i][1] = +row[i][1];
             }
+
             data.addRows(row);
 
             var options = {
@@ -80,35 +80,37 @@
             chart.draw(data, options);
         }
         $(function() {
-            $("#categories").change(function() {
-                getHosts($("#categories").val());
-            });
             $("#hosts").change(function() {
+                getCategories($("#hosts").val());
+            });
+            $("#categories").change(function() {
                 getTitles($("#hosts").val(), $("#categories").val());
             });
             $("#view").click(function(event) {
                 $.ajax({
-                    url: "/" + $("#hosts").val() + "/" + $("#categories").val() + "?data=['" + escape($("#fields").val()) + "']",
+                    url: "/api/v1/nmon-perf/" + $("#hosts").val() + "/" + $("#categories").val() + "?data=['" + escape($("#fields").val()) + "']",
                     data: {},
                     success: function( data ) {
                         var result = eval(data);
                         drawChart("time", $("#fields").val(), result);
                     }
                 });
+                console.log('[Requesting data] ' + 'server-name=' + $("#hosts").val() + ', categories=' + $("#categories").val()
+                          + ', fields=' + $("#fields").val());
             });
-            getCategories();
+            getHosts();
         });
     </script>
   </head>
   <body>
     <h1>NMONW</h1>
     <div class="menu">
-        <label for="categories">category : </label>
-        <select name="categories" id="categories">
-        </select>
-
         <label for="hosts">host : </label>
         <select name="hosts" id="hosts">
+        </select>
+
+        <label for="categories">category : </label>
+        <select name="categories" id="categories">
         </select>
 
         <label for="fields">field : </label>

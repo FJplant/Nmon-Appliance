@@ -22,12 +22,12 @@
         cpu_usagePerProcess = processDim.group().reduceSum(function(d) {return +d.cpu_usage;});
     function render_plots(){
         processRingChart
-            .width(200).height(200)
+            .width(280).height(280)
             .dimension(processDim)
             .group(cpu_usagePerProcess)
             .innerRadius(50);
         serverRowChart
-            .width(250).height(200)
+            .width(280).height(195)
             .dimension(serverDim)
             .group(cpu_usagePerServer)
             .elasticX(true);

@@ -7,30 +7,20 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
-
+"use strict";
 var url = require('url'),
     winston = require('winston'),
-    mongojs = require('mongojs');
+    mongojs = require('mongojs'),
     nmdb = require('../config/nmdb-config.js');
 
 // expose this function to our app using module.exports
 module.exports = function(app, passport) {
-    // Add GET methods for nmon-db
-    app.get('/categories', function(req, res) {
-        service(req, res);
-    });
-
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/, function(req, res) {
-        service(req, res);
-    });
-
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/, function(req, res) {
-        service(req, res);
-    });
-
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, function(req, res) {
-        service(req, res);
-    });
+    // map GET methods to doGet for nmon-db
+    app.get(nmdb.env.NMDB_API_PREFIX + '/nmon-data/categories/*', doGet); // temporary end point
+    app.get(nmdb.env.NMDB_API_PREFIX + '/nmon-data/fields/*', doGet);     // temporary end point
+    app.get(nmdb.env.NMDB_API_PREFIX + '/server/list', doGet);
+    app.get(nmdb.env.NMDB_API_PREFIX + '/server/stat/*', doGet);
+    app.get(nmdb.env.NMDB_API_PREFIX + '/nmon-perf/*', doGet);
 }
 
 /*
@@ -66,60 +56,52 @@ var nmondbZZZZ = mongodb.collection('nmon-perf'),
 var graph_row_number = nmdb.env.NMDB_GRAPH_ROW_NUMBER;
 
 /*
- * service funtion
+ * doGet funtion
  */
-function service(req, res) {
+function doGet(req, res) {
     var url_info = url.parse(req.url, true);
     var pathname = url_info.pathname;
     var searchparam = url_info.search;
     var method = req.method;
 
     log.debug('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname + searchparam) );
+    // for debug
+    console.log('[doGet(), client request] ' + JSON.stringify(pathname) + ', params: ' + searchparam);
 
     try {
-        if ( pathname == '/categories' ) {
-            if( method == 'GET' ) {
-                log.debug('Call get_categories with parameters: %s', searchparam);
-                get_categories(req, res);
+        if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/nmon-data/categories') ) {
+            log.debug('Call get_nmon_categories with parameters: %s', searchparam);
+            get_nmon_categories(req, res);
 
-                return;
-            }
+            return;
         }
-        else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/) ) {
-            if( method == 'GET' ) {
-                log.debug('Call get_hosts with parameters: %s', searchparam);
-                get_hosts(req, res);
+        if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/nmon-data/fields') ) {
+            log.debug('Call get_title with parameters: %s', searchparam);
+            get_nmon_fields(req, res);
 
-                return;
-            }
+            return;
         }
-        else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/) ) {
-            if( method == 'GET' ) {
-                log.debug('Call get_titles with parameters: %s', searchparam);
-                get_titles(req, res);
+        else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/server/list') ) {
+            log.debug('Call get_server_list with parameters: %s', searchparam);
+            get_server_list(req, res);
 
-                return;
-            }
+            return;
         }
-        else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/) ) {
-            if( method == 'GET' ) {
-                var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
+        else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/server/stat') ) {
+            log.debug('Call get_host_fields with parameters: %s', searchparam);
+            return get_server_stat(req, res);
+        }
+        else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/nmon-perf') ) {
+            var m = req.params[0].split('/');
 
-                if (m[2] === 'TOP' ) {
-                    log.debug('Call get_top_fields with parameters: %s', searchparam);
+            if (m[1] === 'TOP' ) {
+                log.debug('Call get_nmon_top_fields with parameters: %s', searchparam);
                 
-                    return get_top_fields(req, res);
-                } 
-                else if (m[2] === 'HOST') {
-                    log.debug('Call get_host_fields with parameters: %s', searchparam);
+                return get_nmon_top_fields(req, res);
+            } else {
+                log.debug('Call get_nmon_perf with parameters: %s', searchparam);
 
-                    return get_host_fields(req, res);
-                }
-                else {
-                    log.debug('Call get_fields with parameters: %s', searchparam);
-
-                    return get_fields(req, res);
-                }
+                return get_nmon_perf(req, res);
             }
         }
     }
@@ -129,14 +111,48 @@ function service(req, res) {
 }
 
 /*
- * Get categories
+ * Get hosts
  *
  * TODO: change to restful API
  */
-function get_categories(req, res) {
+function get_server_list(req, res) {
+    var url_info = url.parse(req.url, true);
+
+    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
+
+    try {
+        nmondbZZZZ.distinct('host', {}, function (err, doc) {
+            if( err )
+                return error_handler(res, err, 500);
+            res.writeHead(200, {'Content-Type': 'text/json'});
+            if( doc ) {
+                res.end(JSON.stringify(doc));
+            }
+            else {
+                res.end();
+            }
+        });
+    }
+    catch(e) {
+        error_handler(res, e, 500);
+    }
+}
+
+/*
+ * Get nmon categories
+ *
+ * TODO: change to restful API
+ */
+function get_nmon_categories(req, res) {
     var result = [];
     var categories = nmondbCategories;
-    categories.find().sort({name:1}).forEach(function(err, doc) {
+
+    var query = { };
+    if (req.params[0] !== 'All') {
+        query['host'] = req.params[0];
+    }
+
+    categories.find(query).forEach(function(err, doc) {
         if( err )
             return error_handler(res, err, 500);
         if( doc ) {
@@ -150,52 +166,31 @@ function get_categories(req, res) {
 }
 
 /*
- * Get hosts
+ * Get nmon fields
  *
  * TODO: change to restful API
  */
-function get_hosts(req, res) {
+function get_nmon_fields(req, res) {
     var url_info = url.parse(req.url, true);
 
-    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
-
-    nmondbZZZZ.distinct('host', {}, function (err, doc) {
-        if( err )
-            return error_handler(res, err, 500);
-        res.writeHead(200, {'Content-Type': 'text/json'});
-        if( doc ) {
-            res.end(JSON.stringify(doc));
-        }
-        else {
-            res.end();
-        }
-    });
-}
-
-/*
- * Get titles
- *
- * TODO: change to restful API
- */
-function get_titles(req, res) {
-    var url_info = url.parse(req.url, true);
-
-    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
+    var m = req.params[0].split('/');
     var query = { };
-    if (m[1] !== 'All') {
-        query['host'] = m[1];
+    if (m[0] !== 'All') {
+        query['host'] = m[0];
     }
-    var fields = { _id: 0 };
-    fields[m[2]] = 1;
+    var fields = {};
+    fields[m[1]] = 1;
 
+    //console.log(JSON.stringify(query) + ',' + JSON.stringify(fields));
     nmondbZZZZ.findOne(query, fields, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
         var results = [];
         if( doc ) {
-            for (key in doc[m[2]])
+            for (var key in doc[m[1]]) {
                 if (key !== 'host' && key !== 'datetime' && key !== '_id')
                     results.push(key);
+            }
         }
         res.writeHead(200, {'Content-Type': 'text/json'});
         res.end(JSON.stringify(results))
@@ -208,32 +203,39 @@ function get_titles(req, res) {
  *
  * TODO: change to restful API
  */
-function get_fields(req, res) {
+function get_nmon_perf(req, res) {
     var url_info = url.parse(req.url, true);
     // m holds parsed data from /<host-name>/<resource_type>/
     // ex) 
     //    ["/nmon-base/CPU_ALL","nmon-base","CPU_ALL"]
     //    ["/nmon-base/MEM","nmon-base","MEM"]
-    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
+    var m = req.params[0].split('/');
     // At this time, results returns array of array staring with headers
     var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
-    
-    date[0] = new Date( parseInt(date[0]));
-    date[1] = new Date( parseInt(date[1]));
+
+    if (typeof date !== 'undefined') {
+        // type change 
+        // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
+        date[0] = new Date( parseInt(date[0]));
+        date[1] = new Date( parseInt(date[1]));
+    }    
+
+    //console.log('url_info: ' + url_info + ', m:' + JSON.stringify(m) + ', data:' + JSON.stringify(data) + ', date:' + JSON.stringify(date));
+
     var fields = {datetime:1, _id: 0};
     var average = ['Time'];
     for (var i = 0; i < data.length; i++) {
-        fields[m[2] + '.' + data[i]] = 1;
+        fields[m[1] + '.' + data[i]] = 1;
         average.push(data[i]);
     }
     results.push(average);
 
     // build query...
     var query = {};
-    if (m[1] !== 'All') {      // if host is not set to 'All', then limit to some host
-        query['host'] = m[1];
+    if (m[0] !== 'All') {      // if host is not set to 'All', then limit to some host
+        query['host'] = m[0];
     }
     if (typeof date !== 'undefined') {
         query['datetime'] = { $gt : date[0], $lt : date[1] };
@@ -264,7 +266,7 @@ function get_fields(req, res) {
 
                     // calc average
                     for (var i = 0; i < data.length; i++) {
-                        average[i+1] += doc[m[2]][data[i]];
+                        average[i+1] += doc[m[1]][data[i]];
                     }
 
                     // Strange calculation is here average just keep by granularity 
@@ -300,25 +302,24 @@ function get_fields(req, res) {
  *
  * TODO: change to restful API
  */
-function get_top_fields(req, res) {
+function get_nmon_top_fields(req, res) {
     var url_info = url.parse(req.url, true);
     var results = [];
-
-    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
-
+    var m = req.params[0].split('/');
     var date = eval(url_info.query['date']);
-
-    // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
-    date[0] = new Date( parseInt(date[0]));
-    date[1] = new Date( parseInt(date[1]));
-
     var type = url_info.query['type'];
 
     var match = {};
-    if (m[1] !== 'All')
-        match['host'] = m[1];
-    if (typeof date !== 'undefined')
+    if (m[0] !== 'All')
+        match['host'] = m[0];
+    if (typeof date !== 'undefined') {
+        // type change 
+        // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
+        date[0] = new Date( parseInt(date[0]));
+        date[1] = new Date( parseInt(date[1]));
+
         match['datetime'] = { $gt : date[0], $lt : date[1] };
+    }
 
     var group = { _id : { command: '$TOP.Command' } };
     if (type === 'cpu')
@@ -349,22 +350,32 @@ function get_top_fields(req, res) {
 }
 
 /*
- * Get host utilization fields for server insight
+ * Get server utilization fields for server insight
  *
- * TODO: change to restful API
+ * TODO: 1. change to restful API
+ *       2. process one server name
  */
-function get_host_fields(req, res) {
+function get_server_stat(req, res) {
     var url_info = url.parse(req.url, true);
     var results = {};
     var date = eval(url_info.query['date']);
 
-    // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
-    date[0] = new Date( parseInt(date[0]));
-    date[1] = new Date( parseInt(date[1]));
-
     var match = {};
-    if (typeof date !== 'undefined')
-        match['datetime'] = { $gt : date[0], $lt : date[1] };
+
+    if (typeof date !== 'undefined') {
+        // type change 
+        // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
+        date[0] = new Date( parseInt(date[0]));
+        date[1] = new Date( parseInt(date[1]));
+
+    } else {
+        var now = new Date();
+        date = [];
+        date[0] = new Date(now.getTime() - 1000*60*1); // recent 1 minutes average
+        date[1] = now;
+    }
+
+    match['datetime'] = { $gt : date[0], $lt : date[1] };
 
     var group = { _id : { host: '$host' } };
     group['val'] = { $avg : { $add: ["$CPU_ALL.User", "$CPU_ALL.Sys"] } };
@@ -424,7 +435,7 @@ function get_host_fields(req, res) {
 
                             var data = [['Host', 'Disk (KB/s)', 'CPU (%)', 'Network (KB/s)', 'No of CPUs']];
                             var hosts = Object.keys(results).sort();
-                            console.log(JSON.stringify(hosts));
+                            //console.log(JSON.stringify(hosts));
                             for(var i = 0; i < hosts.length; i++) {
                                 data.push([hosts[i], results[hosts[i]]['disk'], results[hosts[i]]['cpu'], results[hosts[i]]['net'], results[hosts[i]]['no']]);
                             }

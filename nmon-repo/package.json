@@ -9,7 +9,7 @@
     "connect-flash": "~0.1.1",
     "connect-mongo": "latest",
     "cookie-parser": "~1.4.3",
-    "csv-streamify": "latest",
+    "fast-csv": "latest",
     "ejs": "~1.0.0",
     "express": "latest",
     "express-session": "latest",

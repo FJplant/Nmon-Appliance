@@ -7,6 +7,7 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
+"use strict";
 
 module.exports = NmonWriter;
 
@@ -15,7 +16,7 @@ var MongoClient = require('mongodb').MongoClient,
     util = require('util');
 
 // TODO: remove nmdb environment. This is not realted to generic nmon-parser.js
-// var nmdb = require('../config/nmdb-config.js');
+var nmdb = require('../config/nmdb-config.js');
 
 /*
  * Initialize mongodb connection
@@ -66,9 +67,15 @@ function NmonWriter(options) {
     // Nmon Writer instance variables
     this._bulk = [];
     this._bulk_unit = 1;
+    this._writable = true;
 
     if (typeof options['bulkUnit'] !== 'undefined') 
         this._bulk_unit = parseInt( options['bulkUnit'] );
+}
+
+// helper function for throttling stream
+NmonWriter.prototype.isWritable = function() {
+    return _writable;
 }
 
 // TODO: DB error handling
@@ -81,9 +88,12 @@ NmonWriter.prototype.writeMETA = function(meta, callback) {
         }
         else {
             var AAA = meta['AAA'];
-            console.log('[nmon-writer.js] '  + 'host: ' + AAA['host'] + ', snap datetime: ' + AAA['snapdate'] + ' ' + AAA['snaptime']
+            console.log('[nmon-writer.js] '  + 'host: ' + AAA['host'] + ', snap datetime: ' + AAA['date'] + ' ' + AAA['time']
                       + ', meta data was successfully inserted db.');
         }
+
+        // clear unused meta data
+        meta = {};
 
         callback();
     });
@@ -93,7 +103,7 @@ NmonWriter.prototype.writeMETA = function(meta, callback) {
 NmonWriter.prototype.writeUARG = function(uarg) {
     // TODO: call callack when completed
     nmondbUARG.insert(uarg);
-    console.log("UARG written: " + uarg['host'] + ', ' + uarg['snapdate'] + ' ' + uarg['snaptime'] +  ', ' + uarg['FullCommand']);
+//    console.log("UARG written: " + uarg['host'] + ', ' + uarg['snapdate'] + ' ' + uarg['snaptime'] +  ', ' + uarg['FullCommand']);
 }
 
 // TODO: header should be moved to parser
@@ -122,6 +132,7 @@ NmonWriter.prototype.writeZZZZ = function(zzzz, callback) {
         // log some periodic message
         console.log('Pushed host: ' + zzzz['host']
                   + ', Snapframe: ' + zzzz['snapframe']
+                  + ', Snapdate: ' + zzzz['snapdate']
                   + ', Snaptime: ' + zzzz['snaptime']
                   + ', Keys: ' + Object.keys(zzzz).length
                   + ', Bulk Unit: ' + this._bulk_unit
@@ -155,6 +166,7 @@ NmonWriter.prototype._flushSave = function(cb) {
                 }
                 else {
                     //console.log('[nmon-writer.js] ' + ' 1 item was successfully inserted db.');
+                    console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
                 }
 
             });
@@ -197,7 +209,9 @@ NmonWriter.prototype._flushSave = function(cb) {
 
             console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
             cb();  // notify db insert completion
+            this._isWritable = true;
         });
+        this._isWritable = false;
     } 
 }
 

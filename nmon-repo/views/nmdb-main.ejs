@@ -22,17 +22,14 @@
             </div>
             <!-- /.row -->
             <div class="row">
-                <div class="col-lg-8">
+                <div class="col-lg-9">
                     <% include partials/nmdb-server-insight %>
-                    <% include partials/nmdb-process-insight.ejs %>
                     <% include partials/nmdb-server-insight-old %>
-                    <% include partials/example-areachart %>
-                    <% include partials/example-barchart %>
                     <% include partials/nmdb-timeline %>
                 </div>
                 <!-- /.col-lg-8 -->
-                <div class="col-lg-4">
-                    <% include partials/example-donutchart %>
+                <div class="col-lg-3">
+                    <% include partials/nmdb-process-insight.ejs %>
                     <% include partials/nmdb-notifications %>
                     <% include partials/nmdb-chat %>
                 </div>
@@ -44,11 +41,6 @@
 
     </div>
     <!-- /#wrapper -->
-    <!-- Morris Charts JavaScript -->
-    <script src="/bower_components/raphael/raphael.min.js"></script>
-    <script src="/bower_components/morrisjs/morris.min.js"></script>
-    <script src="dist/js/morris-data.js"></script>
-
     <% include partials/nmdb-footer %>
 
     <script src="dist/js/nmon-db-client.js"></script>

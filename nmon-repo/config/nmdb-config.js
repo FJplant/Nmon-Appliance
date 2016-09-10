@@ -38,6 +38,7 @@ module.exports = {
         NMDB_GRAPH_ROW_NUMBER: 150.0,
         //NMDB_GRAPH_ROW_NUMBER: 1200.0,
 
+        NMDB_API_PREFIX: '/api/v1',
         // file upload
         NMDB_UPLOAD_CSV_MAX_COUNT : 100,
         NMDB_UPLOAD_NMONDATA_MAX_COUNT : 500,
@@ -49,8 +50,8 @@ module.exports = {
         NMREP_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-api.log'),
         NMREP_LOG_LEVEL: 'debug',
         NMREP_PARSER_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-parser.log'),
-        NMREP_PARSER_LOG_LEVEL: 'verbose',
+        NMREP_PARSER_LOG_LEVEL: 'info',
         NMREP_PARSER_ZZZZ_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmrep-parser-zzzz.log'),
-        NMREP_PARSER_ZZZZ_LOG_LEVEL: 'verbose'
+        NMREP_PARSER_ZZZZ_LOG_LEVEL: 'info'
     }
 };

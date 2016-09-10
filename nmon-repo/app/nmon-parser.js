@@ -7,7 +7,6 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
-
 module.exports = NmonParser;
 
 var fs = require('fs'),
@@ -25,6 +24,7 @@ function NmonParser(options) {
         return new NmonParser(options);
     }
 
+    if( options && options['bulkUnit']) options.highWaterMark = options['bulkUnit'];
     // init Transform
     Transform.call(this, options);
 
@@ -132,12 +132,22 @@ function NmonParser(options) {
 }
 util.inherits(NmonParser, Transform);
 
+// NmonParser.prototype._write function
+// To control stream data flow, it always return false
+// When, callback is called, previos phase pipe will write data to stream again
+NmonParser.prototype._write = function(chunk, encoding, callback) {
+    this._transform(chunk, encoding, callback);
+
+    return false;
+}
+
 // NmonParser.prototype._transform function
 //   is callback funtion of Transform stream handler
 NmonParser.prototype._transform = function(chunk, encoding, callback) {
     // Bug fix for: NMIO-208  CRLF problem for nmon file from windows
     // remove the '\r' from last last chunk data of nmon file from windows platform
     chunk[chunk.length - 1] = chunk[chunk.length - 1].replace('\r', '');
+    //console.log('T:'+chunk[0]+','+chunk[1]);
 
     // TODO: AIX BBB section
     // Process lines which starts with 'BBB'
@@ -191,11 +201,12 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
             this._docMETA['BBBP'] = this._docBBBP;          // assign _docBBBP to _docMETA
             this._writer.writeMETA(this._docMETA, callback);
             this.parseNmonZZZZ(chunk, function() {
-                // empty callback
+                // empty callback, until now ZZZZ is empty
             });
         }
-        else 
+        else {
             this.parseNmonZZZZ(chunk, callback);
+        }
     }
     else if (chunk[0] === 'UARG' && chunk[1] != '+Time') {   // Process UARG line
         this.parseNmonUARG(chunk);
@@ -233,15 +244,15 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
     // IOADAPT
     // JFSFILE
     // JFSINODE
-    // LARGEPAGE
     // MEM
     // MEMNEW
     // MEMUSE
+    // PAGE
+    // LARGEPAGE
     // NET
     // NETERROR
     // NETPACKET
     // NETSIZE
-    // PAGE
     // PROC
     // PROCAIO
     // TOP
@@ -273,7 +284,7 @@ NmonParser.prototype._flushSave = function(callback) {
 
             this._outputfile.write(JSON.stringify(this._docZZZZ), callback);
         }
-        else if (this._otuput === 'pipe')
+        else if (this._output === 'pipe')
             this.push(['performance', this._docZZZZ]);
     }
     else {
@@ -502,12 +513,18 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
     this._docZZZZ['CPU'] = [];
     this._docZZZZ['CPU_ALL'] = {};
     this._docZZZZ['MEM'] = {};
-    this._docZZZZ['VM'] = {};
+    this._docZZZZ['MEMNEW'] = {};     // AIX only
+    this._docZZZZ['MEMUSE'] = {};     // AIX only
+    this._docZZZZ['PAGE'] = {};       // AIX only
+    this._docZZZZ['LARGEPAGE'] = {};  // AIX only
+    this._docZZZZ['VM'] = {};         // Linux only
     this._docZZZZ['PROC'] = {};
+    this._docZZZZ['FILE'] = {};       // AIX only
     this._docZZZZ['NET'] = [];
     this._docZZZZ['NETPACKET'] = [];
     this._docZZZZ['DISKSTATS'] = [];
     this._docZZZZ['JFSFILE'] = {};
+    this._docZZZZ['PROCAIO'] = {};    // AIX only
     this._docZZZZ['TOP'] = []; // store in array
 
     // initialize MEM_ALL, DISK_ALL, NET_ALL
@@ -589,7 +606,7 @@ NmonParser.prototype.parseNmonPerf = function(chunk) {
 NmonParser.prototype.parseNmonPerfHeader = function(chunk) {
     // if found new row header, add it to categories
     if (!(chunk[0] === 'TOP' && chunk.length <= 2)) {   // if not a top first section which has only flag fields
-        this._writer.addCategory({name: chunk[0]});
+        this._writer.addCategory({host: this.state._hostname, name: chunk[0]});
         this._rawHeader[chunk[0]] = chunk;
         
         // Initialize disk list. 
@@ -737,8 +754,26 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
                 else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
                     old_fields['Virtual free'] = parseFloat(chunk[i]);
             }
-            else if (h[0] === 'VM' || h[0] === 'PROC') {
+            else if (h[0] === 'MEMNEW') { // AIX only
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'MEMUSE') { // AIX only
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'PAGE') { // AIX only
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'LARGEPAGE') { // AIX only
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'VM') { // Linux only
                 fields[h[i]] = parseInt(chunk[i]);
+            }
+            else if (h[0] === 'PROC') {
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'FILE') {
+                fields[h[i]] = +chunk[i];
             }
             else if (h[0] === 'NET') {
                 if( h[i].indexOf('read') != -1 ) {
@@ -786,6 +821,9 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
             }
             else if (h[0].indexOf("JFSFILE")== 0) {
                 fields[h[i]] = parseFloat(chunk[i]);
+            }
+            else if (h[0] === 'PROCAIO') {
+                fields[h[i]] = +chunk[i];
             }
             else if (h[0] === 'TOP') {
                 // skip T0001 - T0001 has total time after boot

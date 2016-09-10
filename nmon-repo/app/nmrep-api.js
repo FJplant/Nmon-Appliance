@@ -12,7 +12,7 @@ var winston = require('winston'),
     bodyParser = require('body-parser'),
     mongojs = require('mongojs'),
     multer  = require('multer'),
-    csv = require('csv-streamify'),
+    csv = require('fast-csv'),
     Readable = require('stream').Readable,
     Transform = require('stream').Transform;
 
@@ -165,7 +165,18 @@ module.exports = function(app, passport) {
  *
  */
 function put_nmonlog(req, res, bulk_unit, multipart) {
-    var csvToJson = csv({objectMode: true});
+    var csvToJson = csv({
+        objectMode: true,
+        quote: null,
+        highWaterMark: bulk_unit
+    });
+
+    // for debug purpose
+    /*
+    csvToJson.on("data", function(data){
+        console.log(data);
+    });
+    */
 
     // Intanciate nmon parser
     var nmonParser = new NmonParser({
@@ -189,7 +200,10 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
     // processing nmon log upload by http request chaining 
     // in order of request -> parser -> writer
     nmonParser.on('finish', function() {
-        // nmonParser._flushSave();  // TODO: check this code is necessary
+        // This code is necessary due to remained snap frames
+        nmonParser._flushSave(function() {
+            // dummy callback
+        });
         log.info('Parsing of nmon data file finished.');
         // send HTTP 200 OK
         res.writeHead(200);
@@ -197,7 +211,7 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
     });
 
     nmonZZZZWriter.on('finish', function() {
-        // nmonParser._flushSave();  // TODO: check this code is necessary
+        //nmonParser._flushSave();  // TODO: check this code is necessary
         log.info('Storing of nmon data file finished.');
     });
 
@@ -219,8 +233,6 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
         var nmonStream = new Readable();
 
         if (multipart) {
-            // TODO: handle \r\n CRLF problem.
-            //       some nmon file have DOS CRLF format it generates error
             // TODO: check the name limitation of jQuery.filer restriction
             //       jQuery.filer only works when name ends with [] for multiple file upload
             var nmonfiles = req.files['nmon-data-files[]'];
@@ -228,8 +240,13 @@ function put_nmonlog(req, res, bulk_unit, multipart) {
             for (var i=0; i < nmonfiles.length; i++) {
                 console.log('Processing uploaded file: ' + nmonfiles[i].originalname
                            + ', size of: ' + nmonfiles[i].size);
+                console.log('Heap status, before push' + JSON.stringify(process.memoryUsage()));
+                // TODO: streaming well not to use so much memory
+                //       there should be a flow controller between nmonfiles[i].buffer to csvToJson
+                //       emit data only nmonParser is ready
                 nmonStream.push(nmonfiles[i].buffer);
                 nmonStream.push(null);
+                console.log('Heap status, after push' + JSON.stringify(process.memoryUsage()));
                 nmonStream.pipe(csvToJson).pipe(nmonParser).pipe(nmonZZZZWriter);
             }
         }
