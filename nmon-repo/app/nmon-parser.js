@@ -518,10 +518,12 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
     this._docZZZZ['MEMUSE'] = {};     // AIX only
     this._docZZZZ['VM'] = {};
     this._docZZZZ['PROC'] = {};
+    this._docZZZZ['FILE'] = {};       // AIX only
     this._docZZZZ['NET'] = [];
     this._docZZZZ['NETPACKET'] = [];
     this._docZZZZ['DISKSTATS'] = [];
     this._docZZZZ['JFSFILE'] = {};
+    this._docZZZZ['PROCAIO'] = {};    // AIX only
     this._docZZZZ['TOP'] = []; // store in array
 
     // initialize MEM_ALL, DISK_ALL, NET_ALL
@@ -760,6 +762,9 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
             else if (h[0] === 'VM' || h[0] === 'PROC') {
                 fields[h[i]] = parseInt(chunk[i]);
             }
+            else if (h[0] === 'FILE') {
+                fields[h[i]] = +chunk[i];
+            }
             else if (h[0] === 'NET') {
                 if( h[i].indexOf('read') != -1 ) {
                     var adapter_idx = i - 2;
@@ -806,6 +811,9 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
             }
             else if (h[0].indexOf("JFSFILE")== 0) {
                 fields[h[i]] = parseFloat(chunk[i]);
+            }
+            else if (h[0] === 'PROCAIO') {
+                fields[h[i]] = +chunk[i];
             }
             else if (h[0] === 'TOP') {
                 // skip T0001 - T0001 has total time after boot
