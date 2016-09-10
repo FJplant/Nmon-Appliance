@@ -5,6 +5,7 @@ var HOSTS_BACK_TIME = 1000*60*1;    // in milli seconds, 1 minutes
 var REFRESH_INTERVAL = 2000;        // in milli seconds
 var DEBUG = false;                  // for debug purpose
 
+var NMON_API_URL_PREFIX = '/api/v1' // API URL prefix
 var fromDate = null,                // page global fromDate and toDate
     toDate = null;               
 
@@ -47,9 +48,9 @@ function setCurResType(newResType) {
 
 //
 // Get host lists and add them to options box
-function getHosts(category) {
+function getServerList() {
     $.ajax({
-        url: "/All/" + category + "/hosts",
+        url: NMON_API_URL_PREFIX + '/server/list',
         data: {},
         success: function(data) {
             var result = eval(data);
@@ -266,7 +267,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // hosts - always update this area
     if ((restype == "HOSTS" || restype == "ALL") && document.getElementById('hosts_chart')) {
         $.ajax({
-            url: "/" + hostname + "/HOST?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
+            url: NMON_API_URL_PREFIX + '/server/stat/' + hostname + "?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'hosts_chart', data, start);
@@ -277,7 +278,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // cpu
     if (restype == "CPU" || restype == "ALL") {
         $.ajax({
-            url: "/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User', 'Sys', 'Wait']",
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/CPU_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['User', 'Sys', 'Wait']",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'cpu_chart', data, start);
@@ -288,7 +289,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // memory
     if (restype == "MEM" || restype == "ALL") {
         $.ajax({
-            url: "/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'mem_chart', data, start);
@@ -299,7 +300,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // swap
     if (restype == "SWAP" || restype == "ALL") {
         $.ajax({
-            url: "/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Virtual total', 'Virtual free']",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'swap_chart', data, start);
@@ -310,7 +311,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // disk
     if (restype == "DISK" || restype == "ALL") {
         $.ajax({
-            url: "/" + hostname + "/DISK_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/DISK_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['read', 'write']",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'disk_chart', data, start);
@@ -321,7 +322,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // network
     if (restype == "NET" || restype == "ALL") {
         $.ajax({
-            url: "/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['recv', 'send']",
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/NET_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['recv', 'send']",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'network_chart', data, start);
@@ -332,7 +333,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // process cpu usage
     if (restype == "PROCESS_CPU" || restype == "ALL") {
         $.ajax({
-            url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=cpu",
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=cpu",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'process_cpu_chart', data, start);
@@ -343,7 +344,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // process mem usage
     if (restype == "PROCESS_MEM" || restype == "ALL") {
         $.ajax({
-            url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=mem",
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=mem",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'process_mem_chart', data, start);
@@ -412,7 +413,7 @@ function resizeChart() {
 // Main function
 //
 $(function() {
-    getHosts('CPU_ALL');
+    getServerList();
 
     $("#hosts").on('change', (function(event) {
         // TODO: consider other resource was set .

@@ -7,6 +7,7 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
+"use strict";
 
 module.exports = NmonWriter;
 
@@ -15,7 +16,7 @@ var MongoClient = require('mongodb').MongoClient,
     util = require('util');
 
 // TODO: remove nmdb environment. This is not realted to generic nmon-parser.js
-// var nmdb = require('../config/nmdb-config.js');
+var nmdb = require('../config/nmdb-config.js');
 
 /*
  * Initialize mongodb connection
@@ -66,9 +67,15 @@ function NmonWriter(options) {
     // Nmon Writer instance variables
     this._bulk = [];
     this._bulk_unit = 1;
+    this._writable = true;
 
     if (typeof options['bulkUnit'] !== 'undefined') 
         this._bulk_unit = parseInt( options['bulkUnit'] );
+}
+
+// helper function for throttling stream
+NmonWriter.prototype.isWritable = function() {
+    return _writable;
 }
 
 // TODO: DB error handling
@@ -202,7 +209,9 @@ NmonWriter.prototype._flushSave = function(cb) {
 
             console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
             cb();  // notify db insert completion
+            this._isWritable = true;
         });
+        this._isWritable = false;
     } 
 }
 

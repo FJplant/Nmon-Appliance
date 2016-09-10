@@ -7,7 +7,6 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
-
 module.exports = NmonParser;
 
 var fs = require('fs'),
@@ -601,7 +600,7 @@ NmonParser.prototype.parseNmonPerf = function(chunk) {
 NmonParser.prototype.parseNmonPerfHeader = function(chunk) {
     // if found new row header, add it to categories
     if (!(chunk[0] === 'TOP' && chunk.length <= 2)) {   // if not a top first section which has only flag fields
-        this._writer.addCategory({name: chunk[0]});
+        this._writer.addCategory({host: this.state._hostname, name: chunk[0]});
         this._rawHeader[chunk[0]] = chunk;
         
         // Initialize disk list. 

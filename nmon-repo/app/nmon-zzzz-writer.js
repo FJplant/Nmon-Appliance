@@ -7,12 +7,13 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
-
+"use strict";
 module.exports = NmonZZZZWriter;
 
 var MongoClient = require('mongodb').MongoClient,
     mongojs = require('mongojs'),
-    util = require('util');
+    util = require('util'),
+    nmdb = require('../config/nmdb-config.js');
 
 const Transform = require('stream').Transform;
 
