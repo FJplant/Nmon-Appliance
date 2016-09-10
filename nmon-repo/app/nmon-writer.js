@@ -7,6 +7,7 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
+"use strict";
 
 module.exports = NmonWriter;
 
@@ -15,7 +16,7 @@ var MongoClient = require('mongodb').MongoClient,
     util = require('util');
 
 // TODO: remove nmdb environment. This is not realted to generic nmon-parser.js
-// var nmdb = require('../config/nmdb-config.js');
+var nmdb = require('../config/nmdb-config.js');
 
 /*
  * Initialize mongodb connection

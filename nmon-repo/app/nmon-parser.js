@@ -7,7 +7,6 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
-
 module.exports = NmonParser;
 
 var fs = require('fs'),
