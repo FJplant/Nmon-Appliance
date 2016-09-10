@@ -244,15 +244,15 @@ NmonParser.prototype._transform = function(chunk, encoding, callback) {
     // IOADAPT
     // JFSFILE
     // JFSINODE
-    // LARGEPAGE
     // MEM
     // MEMNEW
     // MEMUSE
+    // PAGE
+    // LARGEPAGE
     // NET
     // NETERROR
     // NETPACKET
     // NETSIZE
-    // PAGE
     // PROC
     // PROCAIO
     // TOP
@@ -513,12 +513,18 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
     this._docZZZZ['CPU'] = [];
     this._docZZZZ['CPU_ALL'] = {};
     this._docZZZZ['MEM'] = {};
-    this._docZZZZ['VM'] = {};
+    this._docZZZZ['MEMNEW'] = {};     // AIX only
+    this._docZZZZ['MEMUSE'] = {};     // AIX only
+    this._docZZZZ['PAGE'] = {};       // AIX only
+    this._docZZZZ['LARGEPAGE'] = {};  // AIX only
+    this._docZZZZ['VM'] = {};         // Linux only
     this._docZZZZ['PROC'] = {};
+    this._docZZZZ['FILE'] = {};       // AIX only
     this._docZZZZ['NET'] = [];
     this._docZZZZ['NETPACKET'] = [];
     this._docZZZZ['DISKSTATS'] = [];
     this._docZZZZ['JFSFILE'] = {};
+    this._docZZZZ['PROCAIO'] = {};    // AIX only
     this._docZZZZ['TOP'] = []; // store in array
 
     // initialize MEM_ALL, DISK_ALL, NET_ALL
@@ -748,8 +754,26 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
                 else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
                     old_fields['Virtual free'] = parseFloat(chunk[i]);
             }
-            else if (h[0] === 'VM' || h[0] === 'PROC') {
+            else if (h[0] === 'MEMNEW') { // AIX only
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'MEMUSE') { // AIX only
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'PAGE') { // AIX only
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'LARGEPAGE') { // AIX only
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'VM') { // Linux only
                 fields[h[i]] = parseInt(chunk[i]);
+            }
+            else if (h[0] === 'PROC') {
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'FILE') {
+                fields[h[i]] = +chunk[i];
             }
             else if (h[0] === 'NET') {
                 if( h[i].indexOf('read') != -1 ) {
@@ -797,6 +821,9 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
             }
             else if (h[0].indexOf("JFSFILE")== 0) {
                 fields[h[i]] = parseFloat(chunk[i]);
+            }
+            else if (h[0] === 'PROCAIO') {
+                fields[h[i]] = +chunk[i];
             }
             else if (h[0] === 'TOP') {
                 // skip T0001 - T0001 has total time after boot
