@@ -65,7 +65,8 @@ function doGet(req, res) {
     var method = req.method;
 
     log.debug('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname + searchparam) );
-    console.log(JSON.stringify(pathname));
+    // for debug
+    console.log('[doGet(), client request] ' + JSON.stringify(pathname));
 
     try {
         if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/nmon-data/categories') ) {
@@ -182,15 +183,13 @@ function get_nmon_fields(req, res) {
     var fields = {};
     fields[m[1]] = 1;
 
-    console.log(JSON.stringify(query) + ',' + JSON.stringify(fields));
+    //console.log(JSON.stringify(query) + ',' + JSON.stringify(fields));
     nmondbZZZZ.findOne(query, fields, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
         var results = [];
         if( doc ) {
-            console.log(JSON.stringify(doc));
             for (var key in doc[m[1]]) {
-                console.log(key);
                 if (key !== 'host' && key !== 'datetime' && key !== '_id')
                     results.push(key);
             }
