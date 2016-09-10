@@ -10,6 +10,7 @@
 
 // set up ======================================================================
 // initialize cluster
+"use strict";
 var os = require('os'),                 // to get CPU informations
     cluster = require('cluster'),       // to manage multi process
     log = console;                      // redirect log to console
