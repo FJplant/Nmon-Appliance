@@ -267,7 +267,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // hosts - always update this area
     if ((restype == "HOSTS" || restype == "ALL") && document.getElementById('hosts_chart')) {
         $.ajax({
-            url: "/" + hostname + "/HOST?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
+            url: NMON_API_URL_PREFIX + '/server/stat/' + hostname + "?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'hosts_chart', data, start);

@@ -15,11 +15,12 @@ var url = require('url'),
 
 // expose this function to our app using module.exports
 module.exports = function(app, passport) {
-    // map GET methods to service for nmon-db
-    app.get('/categories', service);
-    app.get(nmdb.env.NMDB_API_PREFIX + '/server/list', service);
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/, service);
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, service);
+    // map GET methods to doGet for nmon-db
+    app.get('/categories', doGet);
+    app.get(nmdb.env.NMDB_API_PREFIX + '/server/list', doGet);
+    app.get(nmdb.env.NMDB_API_PREFIX + '/server/stat/*', doGet);
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/, doGet);
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, doGet);
 }
 
 /*
@@ -55,9 +56,9 @@ var nmondbZZZZ = mongodb.collection('nmon-perf'),
 var graph_row_number = nmdb.env.NMDB_GRAPH_ROW_NUMBER;
 
 /*
- * service funtion
+ * doGet funtion
  */
-function service(req, res) {
+function doGet(req, res) {
     var url_info = url.parse(req.url, true);
     var pathname = url_info.pathname;
     var searchparam = url_info.search;
@@ -67,48 +68,39 @@ function service(req, res) {
 
     try {
         if ( pathname == '/categories' ) {
-            if( method == 'GET' ) {
-                log.debug('Call get_categories with parameters: %s', searchparam);
-                get_categories(req, res);
+            log.debug('Call get_categories with parameters: %s', searchparam);
+            get_categories(req, res);
 
-                return;
-            }
+            return;
         }
         else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/server/list') ) {
-            if( method == 'GET' ) {
-                log.debug('Call get_server_list with parameters: %s', searchparam);
-                get_server_list(req, res);
+            log.debug('Call get_server_list with parameters: %s', searchparam);
+            get_server_list(req, res);
 
-                return;
-            }
+            return;
         }
         else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/) ) {
-            if( method == 'GET' ) {
-                log.debug('Call get_titles with parameters: %s', searchparam);
-                get_titles(req, res);
+            log.debug('Call get_titles with parameters: %s', searchparam);
+            get_titles(req, res);
 
-                return;
-            }
+            return;
+        }
+        else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/server/stat') ) {
+            log.debug('Call get_host_fields with parameters: %s', searchparam);
+            return get_host_fields(req, res);
         }
         else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/) ) {
-            if( method == 'GET' ) {
-                var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
+            var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
 
-                if (m[2] === 'TOP' ) {
+            if (m[2] === 'TOP' ) {
                     log.debug('Call get_top_fields with parameters: %s', searchparam);
                 
                     return get_top_fields(req, res);
-                } 
-                else if (m[2] === 'HOST') {
-                    log.debug('Call get_host_fields with parameters: %s', searchparam);
+            } 
+            else {
+                log.debug('Call get_fields with parameters: %s', searchparam);
 
-                    return get_host_fields(req, res);
-                }
-                else {
-                    log.debug('Call get_fields with parameters: %s', searchparam);
-
-                    return get_fields(req, res);
-                }
+                return get_fields(req, res);
             }
         }
     }
@@ -345,20 +337,30 @@ function get_top_fields(req, res) {
 /*
  * Get host utilization fields for server insight
  *
- * TODO: change to restful API
+ * TODO: 1. change to restful API
+ *       2. process one server name
  */
 function get_host_fields(req, res) {
     var url_info = url.parse(req.url, true);
     var results = {};
     var date = eval(url_info.query['date']);
 
-    // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
-    date[0] = new Date( parseInt(date[0]));
-    date[1] = new Date( parseInt(date[1]));
-
     var match = {};
-    if (typeof date !== 'undefined')
-        match['datetime'] = { $gt : date[0], $lt : date[1] };
+
+    if (typeof date !== 'undefined') {
+        // type change 
+        // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
+        date[0] = new Date( parseInt(date[0]));
+        date[1] = new Date( parseInt(date[1]));
+
+    } else {
+        var now = new Date();
+        date = [];
+        date[0] = new Date(now.getTime() - 1000*60*1); // recent 1 minutes average
+        date[1] = now;
+    }
+
+    match['datetime'] = { $gt : date[0], $lt : date[1] };
 
     var group = { _id : { host: '$host' } };
     group['val'] = { $avg : { $add: ["$CPU_ALL.User", "$CPU_ALL.Sys"] } };
