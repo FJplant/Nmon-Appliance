@@ -20,7 +20,7 @@ module.exports = function(app, passport) {
     app.get(nmdb.env.NMDB_API_PREFIX + '/nmon-data/fields/*', doGet);     // temporary end point
     app.get(nmdb.env.NMDB_API_PREFIX + '/server/list', doGet);
     app.get(nmdb.env.NMDB_API_PREFIX + '/server/stat/*', doGet);
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, doGet);
+    app.get(nmdb.env.NMDB_API_PREFIX + '/nmon-perf/*', doGet);
 }
 
 /*
@@ -66,7 +66,7 @@ function doGet(req, res) {
 
     log.debug('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname + searchparam) );
     // for debug
-    console.log('[doGet(), client request] ' + JSON.stringify(pathname));
+    console.log('[doGet(), client request] ' + JSON.stringify(pathname) + ', params: ' + searchparam);
 
     try {
         if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/nmon-data/categories') ) {
@@ -90,6 +90,11 @@ function doGet(req, res) {
         else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/server/stat') ) {
             log.debug('Call get_host_fields with parameters: %s', searchparam);
             return get_server_stat(req, res);
+        }
+        else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/nmon-perf') ) {
+            log.debug('Call get_nmon_perf with parameters: %s', searchparam);
+
+            return get_nmon_perf(req, res);
         }
         else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/) ) {
             var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
@@ -205,13 +210,13 @@ function get_nmon_fields(req, res) {
  *
  * TODO: change to restful API
  */
-function get_fields(req, res) {
+function get_nmon_perf(req, res) {
     var url_info = url.parse(req.url, true);
     // m holds parsed data from /<host-name>/<resource_type>/
     // ex) 
     //    ["/nmon-base/CPU_ALL","nmon-base","CPU_ALL"]
     //    ["/nmon-base/MEM","nmon-base","MEM"]
-    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
+    var m = req.params[0].split('/');
     // At this time, results returns array of array staring with headers
     var results = [];
     var data = eval(url_info.query['data']);
@@ -222,23 +227,23 @@ function get_fields(req, res) {
         // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
         date[0] = new Date( parseInt(date[0]));
         date[1] = new Date( parseInt(date[1]));
-
     }    
 
-    console.log('url_info: ' + url_info + ', m:' + JSON.stringify(m) + ', data:' + JSON.stringify(data) + ', date:' + JSON.stringify(date));
+    //console.log('url_info: ' + url_info + ', m:' + JSON.stringify(m) + ', data:' + JSON.stringify(data) + ', date:' + JSON.stringify(date));
+    console.log(JSON.stringify(date) + 'm: ' + JSON.stringify(m));
 
     var fields = {datetime:1, _id: 0};
     var average = ['Time'];
     for (var i = 0; i < data.length; i++) {
-        fields[m[2] + '.' + data[i]] = 1;
+        fields[m[1] + '.' + data[i]] = 1;
         average.push(data[i]);
     }
     results.push(average);
 
     // build query...
     var query = {};
-    if (m[1] !== 'All') {      // if host is not set to 'All', then limit to some host
-        query['host'] = m[1];
+    if (m[0] !== 'All') {      // if host is not set to 'All', then limit to some host
+        query['host'] = m[0];
     }
     if (typeof date !== 'undefined') {
         query['datetime'] = { $gt : date[0], $lt : date[1] };
@@ -269,7 +274,7 @@ function get_fields(req, res) {
 
                     // calc average
                     for (var i = 0; i < data.length; i++) {
-                        average[i+1] += doc[m[2]][data[i]];
+                        average[i+1] += doc[m[1]][data[i]];
                     }
 
                     // Strange calculation is here average just keep by granularity 
