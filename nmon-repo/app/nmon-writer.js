@@ -166,7 +166,7 @@ NmonWriter.prototype._flushSave = function(cb) {
                 }
                 else {
                     //console.log('[nmon-writer.js] ' + ' 1 item was successfully inserted db.');
-                    console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
+                    //console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
                 }
 
             });
