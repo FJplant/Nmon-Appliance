@@ -333,7 +333,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // process cpu usage
     if (restype == "PROCESS_CPU" || restype == "ALL") {
         $.ajax({
-            url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=cpu",
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=cpu",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'process_cpu_chart', data, start);
@@ -344,7 +344,7 @@ function updateGraph(hostname, restype, fromDate, toDate) {
     // process mem usage
     if (restype == "PROCESS_MEM" || restype == "ALL") {
         $.ajax({
-            url: "/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=mem",
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/TOP?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&type=mem",
             data: {},
             success: function(data) {
                 refreshDataCompleted(restype, 'process_mem_chart', data, start);

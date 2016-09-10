@@ -92,22 +92,16 @@ function doGet(req, res) {
             return get_server_stat(req, res);
         }
         else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/nmon-perf') ) {
-            log.debug('Call get_nmon_perf with parameters: %s', searchparam);
+            var m = req.params[0].split('/');
 
-            return get_nmon_perf(req, res);
-        }
-        else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/) ) {
-            var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
-
-            if (m[2] === 'TOP' ) {
-                    log.debug('Call get_top_fields with parameters: %s', searchparam);
+            if (m[1] === 'TOP' ) {
+                log.debug('Call get_nmon_top_fields with parameters: %s', searchparam);
                 
-                    return get_top_fields(req, res);
-            } 
-            else {
-                log.debug('Call get_fields with parameters: %s', searchparam);
+                return get_nmon_top_fields(req, res);
+            } else {
+                log.debug('Call get_nmon_perf with parameters: %s', searchparam);
 
-                return get_fields(req, res);
+                return get_nmon_perf(req, res);
             }
         }
     }
@@ -162,7 +156,6 @@ function get_nmon_categories(req, res) {
         if( err )
             return error_handler(res, err, 500);
         if( doc ) {
-            console.log(JSON.stringify(doc));
             result.push(doc['name']);
         }
         else {
@@ -230,7 +223,6 @@ function get_nmon_perf(req, res) {
     }    
 
     //console.log('url_info: ' + url_info + ', m:' + JSON.stringify(m) + ', data:' + JSON.stringify(data) + ', date:' + JSON.stringify(date));
-    console.log(JSON.stringify(date) + 'm: ' + JSON.stringify(m));
 
     var fields = {datetime:1, _id: 0};
     var average = ['Time'];
@@ -310,25 +302,24 @@ function get_nmon_perf(req, res) {
  *
  * TODO: change to restful API
  */
-function get_top_fields(req, res) {
+function get_nmon_top_fields(req, res) {
     var url_info = url.parse(req.url, true);
     var results = [];
-
-    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
-
+    var m = req.params[0].split('/');
     var date = eval(url_info.query['date']);
-
-    // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
-    date[0] = new Date( parseInt(date[0]));
-    date[1] = new Date( parseInt(date[1]));
-
     var type = url_info.query['type'];
 
     var match = {};
-    if (m[1] !== 'All')
-        match['host'] = m[1];
-    if (typeof date !== 'undefined')
+    if (m[0] !== 'All')
+        match['host'] = m[0];
+    if (typeof date !== 'undefined') {
+        // type change 
+        // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
+        date[0] = new Date( parseInt(date[0]));
+        date[1] = new Date( parseInt(date[1]));
+
         match['datetime'] = { $gt : date[0], $lt : date[1] };
+    }
 
     var group = { _id : { command: '$TOP.Command' } };
     if (type === 'cpu')

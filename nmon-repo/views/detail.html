@@ -88,7 +88,7 @@
             });
             $("#view").click(function(event) {
                 $.ajax({
-                    url: "/" + $("#hosts").val() + "/" + $("#categories").val() + "?data=['" + escape($("#fields").val()) + "']",
+                    url: "/api/v1/nmon-perf/" + $("#hosts").val() + "/" + $("#categories").val() + "?data=['" + escape($("#fields").val()) + "']",
                     data: {},
                     success: function( data ) {
                         var result = eval(data);
