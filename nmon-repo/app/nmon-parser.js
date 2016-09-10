@@ -514,6 +514,8 @@ NmonParser.prototype.parseNmonZZZZ = function(chunk, callback) {
     this._docZZZZ['CPU'] = [];
     this._docZZZZ['CPU_ALL'] = {};
     this._docZZZZ['MEM'] = {};
+    this._docZZZZ['MEMNEW'] = {};     // AIX only
+    this._docZZZZ['MEMUSE'] = {};     // AIX only
     this._docZZZZ['VM'] = {};
     this._docZZZZ['PROC'] = {};
     this._docZZZZ['NET'] = [];
@@ -748,6 +750,12 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
                     old_fields['Virtual total'] = parseFloat(chunk[i]);
                 else if (h[i] === 'swapfree' || h[i] === 'Virtual free(MB)')
                     old_fields['Virtual free'] = parseFloat(chunk[i]);
+            }
+            else if (h[0] === 'MEMNEW') {
+                fields[h[i]] = +chunk[i];
+            }
+            else if (h[0] === 'MEMUSE') {
+                fields[h[i]] = +chunk[i];
             }
             else if (h[0] === 'VM' || h[0] === 'PROC') {
                 fields[h[i]] = parseInt(chunk[i]);
