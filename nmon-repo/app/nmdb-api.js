@@ -16,10 +16,10 @@ var url = require('url'),
 // expose this function to our app using module.exports
 module.exports = function(app, passport) {
     // map GET methods to doGet for nmon-db
-    app.get('/categories', doGet);
+    app.get(nmdb.env.NMDB_API_PREFIX + '/nmon-data/categories/*', doGet); // temporary end point
+    app.get(nmdb.env.NMDB_API_PREFIX + '/nmon-data/fields/*', doGet);     // temporary end point
     app.get(nmdb.env.NMDB_API_PREFIX + '/server/list', doGet);
     app.get(nmdb.env.NMDB_API_PREFIX + '/server/stat/*', doGet);
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/, doGet);
     app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, doGet);
 }
 
@@ -65,23 +65,24 @@ function doGet(req, res) {
     var method = req.method;
 
     log.debug('Served by worker PID[%d]: %s', process.pid, (method + ' ' + pathname + searchparam) );
+    console.log(JSON.stringify(pathname));
 
     try {
-        if ( pathname == '/categories' ) {
-            log.debug('Call get_categories with parameters: %s', searchparam);
-            get_categories(req, res);
+        if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/nmon-data/categories') ) {
+            log.debug('Call get_nmon_categories with parameters: %s', searchparam);
+            get_nmon_categories(req, res);
+
+            return;
+        }
+        if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/nmon-data/fields') ) {
+            log.debug('Call get_title with parameters: %s', searchparam);
+            get_nmon_fields(req, res);
 
             return;
         }
         else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/server/list') ) {
             log.debug('Call get_server_list with parameters: %s', searchparam);
             get_server_list(req, res);
-
-            return;
-        }
-        else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/) ) {
-            log.debug('Call get_titles with parameters: %s', searchparam);
-            get_titles(req, res);
 
             return;
         }
@@ -107,27 +108,6 @@ function doGet(req, res) {
     catch(e) {
         error_handler(res, e, 500);
     }
-}
-
-/*
- * Get categories
- *
- * TODO: change to restful API
- */
-function get_categories(req, res) {
-    var result = [];
-    var categories = nmondbCategories;
-    categories.find().sort({name:1}).forEach(function(err, doc) {
-        if( err )
-            return error_handler(res, err, 500);
-        if( doc ) {
-            result.push(doc['name']);
-        }
-        else {
-            res.writeHead(200, {'Content-Type': 'text/json'});
-            res.end(JSON.stringify(result));
-        }
-    });
 }
 
 /*
@@ -159,29 +139,61 @@ function get_server_list(req, res) {
 }
 
 /*
- * Get titles
+ * Get nmon categories
  *
  * TODO: change to restful API
  */
-function get_titles(req, res) {
+function get_nmon_categories(req, res) {
+    var result = [];
+    var categories = nmondbCategories;
+
+    var query = { };
+    if (req.params[0] !== 'All') {
+        query['host'] = req.params[0];
+    }
+
+    categories.find(query).forEach(function(err, doc) {
+        if( err )
+            return error_handler(res, err, 500);
+        if( doc ) {
+            console.log(JSON.stringify(doc));
+            result.push(doc['name']);
+        }
+        else {
+            res.writeHead(200, {'Content-Type': 'text/json'});
+            res.end(JSON.stringify(result));
+        }
+    });
+}
+
+/*
+ * Get nmon fields
+ *
+ * TODO: change to restful API
+ */
+function get_nmon_fields(req, res) {
     var url_info = url.parse(req.url, true);
 
-    var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/);
+    var m = req.params[0].split('/');
     var query = { };
-    if (m[1] !== 'All') {
-        query['host'] = m[1];
+    if (m[0] !== 'All') {
+        query['host'] = m[0];
     }
-    var fields = { _id: 0 };
-    fields[m[2]] = 1;
+    var fields = {};
+    fields[m[1]] = 1;
 
+    console.log(JSON.stringify(query) + ',' + JSON.stringify(fields));
     nmondbZZZZ.findOne(query, fields, function (err, doc) {
         if( err )
             return error_handler(res, err, 500);
         var results = [];
         if( doc ) {
-            for (key in doc[m[2]])
+            console.log(JSON.stringify(doc));
+            for (var key in doc[m[1]]) {
+                console.log(key);
                 if (key !== 'host' && key !== 'datetime' && key !== '_id')
                     results.push(key);
+            }
         }
         res.writeHead(200, {'Content-Type': 'text/json'});
         res.end(JSON.stringify(results))
@@ -205,9 +217,17 @@ function get_fields(req, res) {
     var results = [];
     var data = eval(url_info.query['data']);
     var date = eval(url_info.query['date']);
-    
-    date[0] = new Date( parseInt(date[0]));
-    date[1] = new Date( parseInt(date[1]));
+
+    if (typeof date !== 'undefined') {
+        // type change 
+        // db type changed from UTC time number to UTC string. 2016.9.5. by ymk
+        date[0] = new Date( parseInt(date[0]));
+        date[1] = new Date( parseInt(date[1]));
+
+    }    
+
+    console.log('url_info: ' + url_info + ', m:' + JSON.stringify(m) + ', data:' + JSON.stringify(data) + ', date:' + JSON.stringify(date));
+
     var fields = {datetime:1, _id: 0};
     var average = ['Time'];
     for (var i = 0; i < data.length; i++) {
