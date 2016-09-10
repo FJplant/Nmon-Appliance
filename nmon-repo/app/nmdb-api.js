@@ -87,7 +87,7 @@ function doGet(req, res) {
         }
         else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/server/stat') ) {
             log.debug('Call get_host_fields with parameters: %s', searchparam);
-            return get_host_fields(req, res);
+            return get_server_stat(req, res);
         }
         else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/) ) {
             var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/);
@@ -335,12 +335,12 @@ function get_top_fields(req, res) {
 }
 
 /*
- * Get host utilization fields for server insight
+ * Get server utilization fields for server insight
  *
  * TODO: 1. change to restful API
  *       2. process one server name
  */
-function get_host_fields(req, res) {
+function get_server_stat(req, res) {
     var url_info = url.parse(req.url, true);
     var results = {};
     var date = eval(url_info.query['date']);
