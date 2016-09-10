@@ -5,6 +5,7 @@ var HOSTS_BACK_TIME = 1000*60*1;    // in milli seconds, 1 minutes
 var REFRESH_INTERVAL = 2000;        // in milli seconds
 var DEBUG = false;                  // for debug purpose
 
+var NMON_API_URL_PREFIX = '/api/v1' // API URL prefix
 var fromDate = null,                // page global fromDate and toDate
     toDate = null;               
 
@@ -47,9 +48,9 @@ function setCurResType(newResType) {
 
 //
 // Get host lists and add them to options box
-function getHosts(category) {
+function getServerList() {
     $.ajax({
-        url: "/All/" + category + "/hosts",
+        url: NMON_API_URL_PREFIX + '/server/list',
         data: {},
         success: function(data) {
             var result = eval(data);
@@ -412,7 +413,7 @@ function resizeChart() {
 // Main function
 //
 $(function() {
-    getHosts('CPU_ALL');
+    getServerList();
 
     $("#hosts").on('change', (function(event) {
         // TODO: consider other resource was set .

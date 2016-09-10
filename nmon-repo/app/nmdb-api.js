@@ -7,30 +7,19 @@
  *      since Aug 12, 2015
  * (c)2015,2016 All rights reserved to Junkoo Hea, Youngmo Kwon.
  */
-
+"use strict";
 var url = require('url'),
     winston = require('winston'),
-    mongojs = require('mongojs');
+    mongojs = require('mongojs'),
     nmdb = require('../config/nmdb-config.js');
 
 // expose this function to our app using module.exports
 module.exports = function(app, passport) {
-    // Add GET methods for nmon-db
-    app.get('/categories', function(req, res) {
-        service(req, res);
-    });
-
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/, function(req, res) {
-        service(req, res);
-    });
-
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/, function(req, res) {
-        service(req, res);
-    });
-
-    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, function(req, res) {
-        service(req, res);
-    });
+    // map GET methods to service for nmon-db
+    app.get('/categories', service);
+    app.get(nmdb.env.NMDB_API_PREFIX + '/server/list', service);
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/titles$/, service);
+    app.get(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)$/, service);
 }
 
 /*
@@ -85,10 +74,10 @@ function service(req, res) {
                 return;
             }
         }
-        else if ( pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/) ) {
+        else if ( pathname.match(nmdb.env.NMDB_API_PREFIX + '/server/list') ) {
             if( method == 'GET' ) {
-                log.debug('Call get_hosts with parameters: %s', searchparam);
-                get_hosts(req, res);
+                log.debug('Call get_server_list with parameters: %s', searchparam);
+                get_server_list(req, res);
 
                 return;
             }
@@ -154,22 +143,27 @@ function get_categories(req, res) {
  *
  * TODO: change to restful API
  */
-function get_hosts(req, res) {
+function get_server_list(req, res) {
     var url_info = url.parse(req.url, true);
 
     var m = url_info.pathname.match(/^\/([A-Za-z0-9_\-]+)\/([A-Za-z0-9_]+)\/hosts$/);
 
-    nmondbZZZZ.distinct('host', {}, function (err, doc) {
-        if( err )
-            return error_handler(res, err, 500);
-        res.writeHead(200, {'Content-Type': 'text/json'});
-        if( doc ) {
-            res.end(JSON.stringify(doc));
-        }
-        else {
-            res.end();
-        }
-    });
+    try {
+        nmondbZZZZ.distinct('host', {}, function (err, doc) {
+            if( err )
+                return error_handler(res, err, 500);
+            res.writeHead(200, {'Content-Type': 'text/json'});
+            if( doc ) {
+                res.end(JSON.stringify(doc));
+            }
+            else {
+                res.end();
+            }
+        });
+    }
+    catch(e) {
+        error_handler(res, e, 500);
+    }
 }
 
 /*
