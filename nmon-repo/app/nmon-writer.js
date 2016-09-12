@@ -209,9 +209,7 @@ NmonWriter.prototype._flushSave = function(cb) {
 
             console.log('Process memory usage: ' + JSON.stringify(process.memoryUsage()));
             cb();  // notify db insert completion
-            this._isWritable = true;
         });
-        this._isWritable = false;
     } 
 }
 
