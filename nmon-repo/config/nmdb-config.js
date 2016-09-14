@@ -35,8 +35,9 @@ module.exports = {
         NMDB_WEB_PUBLIC:  '/web-static',
         NMDB_LOG_FILE: p.join(NMDB_LOG_PATH, 'nmdb-api.log'),
         NMDB_LOG_LEVEL: 'debug', 
-        NMDB_GRAPH_ROW_NUMBER: 150.0,
         //NMDB_GRAPH_ROW_NUMBER: 1200.0,
+        NMDB_GRAPH_ROW_NUMBER: 200.0,    // TODO: consider smart phone's size, 200 is suitable for smart phone
+                                         //       and, 300 is adequate for PC. 
 
         NMDB_API_PREFIX: '/api/v1',
         // file upload

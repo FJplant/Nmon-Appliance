@@ -832,21 +832,29 @@ NmonParser.prototype.parseNmonPerfLog = function(chunk) {
                     if (h[0] === 'TOP') {
                         switch ( h[i] ) {
                             case 'Command': 
+                            case 'WLMclass':   // AIX only
                                 fields[h[i]] = chunk[i]; 
                                 break;
                             case '%CPU':
                             case '%Usr':
                             case '%Sys':
+                            case '%RAM':       // AIX only
                                 fields[h[i]] = parseFloat(chunk[i]);
                                 break;
+                            case 'Threads':    // AIX only
                             case 'Size':
-                            case 'ResSet':
+                            case 'ResSet':     // Linux only
                             case 'ResText':
                             case 'ResData':
-                            case 'ShdLib':
-                            case 'MinorFault':
-                            case 'MajorFault':
-                                fields[h[i]] = parseInt(chunk[i]);
+                            case 'CharIO':     // AIX only
+                            case 'Paging':     // AIX only
+                            case 'ShdLib':     // Linux only
+                            case 'MinorFault': // Linux only
+                            case 'MajorFault': // Linux only
+                                fields[h[i]] = +chunk[i];
+                                break;
+                            default:                       // treat AIX TOP log
+                                fields[h[i]] = chunk[i];
                                 break;
                         }
                     }
