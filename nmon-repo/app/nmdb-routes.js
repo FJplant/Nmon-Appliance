@@ -161,6 +161,12 @@ module.exports = function(app, passport) {
         });
     });
 
+    app.get('/nmon-db/v1/example-dc-nq', isLoggedIn, function(req, res) {
+        res.render('example-dc-nq.ejs', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
     app.get('/nmon-db/v1/tables', isLoggedIn, function(req, res) {
         res.render('tables.ejs', {
             user : req.user // get the user out of session and pass to template
