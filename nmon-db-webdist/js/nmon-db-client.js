@@ -18,7 +18,8 @@ var reqStatus = {
     "NET": false,
     "NFS": false,
     "PROCESS_CPU": false,
-    "PROCESS_MEM": false
+    "PROCESS_MEM": false,
+    "MEM_VM": false
 };
 
 var curChart = null;
@@ -31,7 +32,8 @@ var chartByDid = {
     'mem_chart' : null,
     'swap_chart': null,
     'process_cpu_chart': null,
-    'process_mem_chart': null
+    'process_mem_chart': null,
+    'mem_vm_chart': null
 }
 
 function isLoading(restype) {
@@ -63,6 +65,77 @@ function getServerList() {
             $("#hosts").html(html);
         }
     });
+}
+
+//
+// Draw Stacked Area or Stacked Bar chart for CPU, Memory, Virtual Memory, Disk, Network
+//
+// TODO: Add view finder window
+function drawDCChart(did, xlabel, ylabel, isBarChart) {
+    var memChart = dc.lineChart('#mem_vm_chart');
+    //var vmChart = dc.barChart('#monthly-volume-chart');
+
+    if ($('#' + did + " svg").length === 0)
+        $('#' + did).html('<svg></svg>');
+
+        //Specify an area chart by using a line chart with `.renderArea(true)`.
+    // <br>API: [Stack Mixin](https://github.com/dc-js/dc.js/blob/master/web/docs/api-latest.md#stack-mixin),
+    // [Line Chart](https://github.com/dc-js/dc.js/blob/master/web/docs/api-latest.md#line-chart)
+    memChart /* dc.lineChart('#monthly-move-chart', 'chartGroup') */
+        .renderArea(true)
+        .width(990)
+        .height(200)
+        .transitionDuration(1000)
+        .margins({top: 30, right: 50, bottom: 25, left: 40})
+        .dimension(moveMonths)
+        .mouseZoomable(true)
+    // Specify a "range chart" to link its brush extent with the zoom of the current "focus chart".
+        .rangeChart(volumeChart)
+        .x(d3.time.scale().domain([new Date(1985, 0, 1), new Date(2012, 11, 31)]))
+        .round(d3.time.month.round)
+        .xUnits(d3.time.months)
+        .elasticY(true)
+        .renderHorizontalGridLines(true)
+    //##### Legend
+
+        // Position the legend relative to the chart origin and specify items' height and separation.
+        .legend(dc.legend().x(800).y(10).itemHeight(13).gap(5))
+        .brushOn(false)
+        // Add the base layer of the stack with group. The second parameter specifies a series name for use in the
+        // legend.
+        // The `.valueAccessor` will be used for the base layer
+        .group(indexAvgByMonthGroup, 'Monthly Index Average')
+        .valueAccessor(function (d) {
+            return d.value.avg;
+        })
+        // Stack additional layers with `.stack`. The first paramenter is a new group.
+        // The second parameter is the series name. The third is a value accessor.
+        .stack(monthlyMoveGroup, 'Virtual Memory', function (d) {
+            return d.value;
+        })
+        // Title can be called by any stack layer.
+        .title(function (d) {
+            var value = d.value.avg ? d.value.avg : d.value;
+            if (isNaN(value)) {
+                value = 0;
+            }
+            return dateFormat(d.key) + '\n' + numberFormat(value);
+        });
+
+    //#### Rendering
+
+    //simply call `.renderAll()` to render all charts on the page
+    dc.renderAll();
+    /*
+    // Or you can render charts belonging to a specific chart group
+    dc.renderAll('group');
+    // Once rendered you can call `.redrawAll()` to update charts incrementally when the data
+    // changes, without re-rendering everything
+    dc.redrawAll();
+    // Or you can choose to redraw only those charts associated with a specific chart group
+    dc.redrawAll('group');
+    */
+    console.log('chart is ready');
 }
 
 //
@@ -200,7 +273,7 @@ function updateChartData(did, data, isInOut) {
         }
     }
     else if (did === 'cpu_chart' || did === 'disk_chart' || did === 'network_chart' || did === 'nfs_chart'
-          || did === 'mem_chart' || did === 'swap_chart' ) {
+          || did === 'mem_chart' || did === 'swap_chart' || did === 'mem_vm_chart' ) {
         for(var i = 1; i < data[0].length; i++) {
             d3data.push({key: data[0][i], values:[]}); // series name ( header )
         }
@@ -234,7 +307,7 @@ function refreshDataCompleted(restype, did, data, start) {
     var result = eval(data);
 
     // preprecessing for MEM and SWAP
-    if (restype == 'MEM') {
+    if (restype == 'MEM' || restype == 'MEM_VM') {
         result[0][1] = 'Real used';
         for (var i = 1; i < result.length; i++) {
             result[i][1] = result[i][1] - result[i][2];
@@ -351,6 +424,17 @@ function updateGraph(hostname, restype, fromDate, toDate) {
             }
         });
     }
+
+    // process mem usage
+    if (restype == "MEM_VM" || restype == "ALL") {
+        $.ajax({
+            url: NMON_API_URL_PREFIX + "/nmon-perf/" + hostname + "/MEM_ALL?date=[" + fromDate.getTime() + "," + toDate.getTime() + "]&data=['Real total', 'Real free']",
+            data: {},
+            success: function(data) {
+                refreshDataCompleted(restype, 'mem_vm_chart', data, start);
+            }
+        });
+    }
 }
 
 // Issue periodic chart refresh
@@ -398,6 +482,7 @@ function drawChart(did) {
     if (did === 'network_chart') drawAreaChart("network_chart", 'Time', 'KB/s', true, true);
     if (did === 'process_cpu_chart') drawPieChart('process_cpu_chart', 'Process usage by CPU');
     if (did === 'process_mem_chart') drawPieChart('process_mem_chart', 'Process usage by MEM');
+    if (did === 'mem_vm_chart') drawDCChart('mem_vm_chart', 'Memory chart');
 }
 
 function resizeChart() {
@@ -572,6 +657,10 @@ $(function() {
                 case "Memory":
                     curRes = "MEM";
                     setLoading("mem_chart", curRes, "Loading Memory chart. Wait a moment...");
+                    break;
+                case "Memory usage v2":
+                    curRes = "MEM_VM";
+                    setLoading("mem_vm_chart", curRes, "Loading Memory and Virtual memory chart. Wait a moment...");
                     break;
                 case "Swap":
                     curRes = "SWAP";
