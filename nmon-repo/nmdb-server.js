@@ -148,12 +148,12 @@ if (cluster.isMaster) {
 
     // Add static page directory
     // Add web-static
-    app.use(express.static(__dirname + nmdb.env.NMDB_WEB_PUBLIC));
+    var web_public_dir = __dirname + nmdb.env.NMDB_WEB_PUBLIC;
+    app.use(express.static(web_public_dir));
 
-    // Add bower component directory
-    app.use('/bower_components',  express.static(__dirname + '/bower_components'));
-    app.use('/images',  express.static(__dirname + '/nmon-db/v1/dist/images'));
-     
+    // Add images directory
+    app.use('/images',  express.static(web_public_dir + '/nmon-db/v1/dist/images'));
+
     //
     // Load nmon dashboard modules
     // routes ======================================================================
