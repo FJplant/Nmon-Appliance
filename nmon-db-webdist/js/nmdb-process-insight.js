@@ -5,7 +5,8 @@
     // TODO: below does not work
     //serverRowChart.selectAll('text.row').style('fill','black');
 
-    var connection = new WebSocket('ws://nmrep-dev.fjint.com:8001/websocket');
+    //var connection = new WebSocket('ws://nmrep-dev.fjint.com:8001/websocket');
+    var connection = new WebSocket('ws://nmon-base.fjint.com:8001/websocket');
     var data1 = [
         //{process: 'oracle', cpu_usage: 30.5, server: 'nmon-tokyo', 'total':1},
         {process: 'node', cpu_usage: 25.3, server: 'nmrep-dev', 'total':2},
