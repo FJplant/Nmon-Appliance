@@ -45,3 +45,20 @@ $(function() {
         }
     }
 });
+
+// Toggle nav side bar
+$(document).ready(function() {
+     $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+          if ($("#wrapper").hasClass("toggled")) {
+              // following .collapse('hide') code seems not working
+              $('#wrapper.toggled').find("#sidebar-wrapper").find(".collapse").collapse('hide');
+              $("#wrapper.toggled").find("#sidebar-wrapper").hide();
+              $("#wrapper.toggled").find("#page-wrapper").css('margin-left', '0px');
+          } else {
+              $("#wrapper").find("#sidebar-wrapper").show();
+              $("#wrapper").find("#page-wrapper").css('margin-left', '250px');
+          }
+      });
+});
