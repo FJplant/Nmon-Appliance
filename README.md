@@ -2,7 +2,7 @@
     This repository is a git repository for Nmon.io development project.
 
 ### Nmon.io components ###
-![Nmon.io Components](http://www.fjplant.com/nmon.io/images/nmon-io-components.png "Nmon.io Components")
+![Nmon.io Components](https://github.com/FJinT/Nmon-Appliance/blob/master/nmon-arch/Nmon.io%20Components%20v2.png?raw=true)
 
 ### Websites related to nmon.io services ###
     * http://nmon.io ( public website )
